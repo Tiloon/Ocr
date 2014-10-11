@@ -13,14 +13,14 @@ LDLIBS=`pkg-config --libs gtk+-2.0`
 all: obj/main
 	mv obj/main ./ocrocaml
 
-obj/main: obj/gui_gui.o obj/main.o
+obj/main: obj/gui.o obj/loader.o obj/main.o
 
 obj/%.o: src/%.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@ $(LDFLAGS) $(LDLIBS)
 
 
 # TODO : there should be a way to do "obj/`path`_%.o: src/`path`/%.c
-obj/gui_%.o: src/gui/%.c
+obj/%.o: src/*/%.c
 	$(CC) $(CFLAGS) -c $< -o $@ $(LDFLAGS) $(LDLIBS)
 
 clean:

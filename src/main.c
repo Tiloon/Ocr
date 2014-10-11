@@ -16,12 +16,18 @@ int main(int argc, char *argv[])
     struct s_flags flags;
     flags.gui = 0;
 
-    if((argc <= 1) || get_flags(argc, argv, &flags))
+    if(argc <= 1)
     {
         show_help();
         return 0;
     }
-    printf("couco\n");
+
+    if(get_flags(argc, argv, &flags))
+    {
+        show_help();
+        return 1;
+    }
+
     if(flags.gui)
         gui_main(argc, argv);
 
