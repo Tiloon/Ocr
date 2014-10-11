@@ -1,5 +1,5 @@
 CC=clang
-CFLAGS= -Wall -Wextra -std=c99 -O2
+CFLAGS= -Wall -Wextra -Wall -std=c99 -O2
 LDFLAGS=`pkg-config --cflags gtk+-2.0`
 LDLIBS=`pkg-config --libs gtk+-2.0`
 
@@ -15,16 +15,18 @@ all: obj/main
 
 obj/main: obj/gui.o obj/loader.o obj/main.o
 
-obj/%.o: src/%.c
+obj:
+	mkdir obj
+
+obj/%.o: src/%.c obj
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@ $(LDFLAGS) $(LDLIBS)
 
-
 # TODO : there should be a way to do "obj/`path`_%.o: src/`path`/%.c
-obj/%.o: src/*/%.c
+obj/%.o: src/*/%.c obj
 	$(CC) $(CFLAGS) -c $< -o $@ $(LDFLAGS) $(LDLIBS)
 
 clean:
-	rm -f *~ *.o obj/* ./ocrocaml
+	rm -rf *~ *.o obj/* ./ocrocaml obj/
 
 
 # END
