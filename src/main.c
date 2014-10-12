@@ -48,6 +48,7 @@ void show_help()
         "Arguments : \n"
         "    -f \"filter\"[,opt]      apply filter with options\n"
         "    -i \"file\"              load picture \"file\"\n"
+        "    -ofilters \"file\"       save file after applying filters\n"
         "\n\n"
         "More about this software : http://ocrocaml.ovh/\n");
 }
@@ -74,6 +75,15 @@ int get_flags(int argc, char *argv[], struct s_flags *flags)
             if(picture_load_from_file(argv[i]))
                 return print_flag_error(argv[i], FLAG_INVALID_ARG);
             printf("Image loaded (%s)\n", argv[i]);
+        }
+        else if(strcmp(argv[i], "-f") == 0)
+        {
+            i++;
+            if(i >= argc)
+                return print_flag_error(argv[i - 1], FLAG_MISSING_ARG);
+            if(filter_add(argv[i]))
+                return print_flag_error(argv[i], FLAG_INVALID_ARG);
+            printf("Filter added : %s\n", argv[i]);
         }
         else
             return print_flag_error(argv[i], FLAG_UNDEFINED);
