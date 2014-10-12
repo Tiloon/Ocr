@@ -1,5 +1,9 @@
 12/10/2014
--> Déclarer les neurones dans les cases des layers
--> Faire les méthodes freeLayer et freeNeural
--> Faire la méthode des sommes (sans le biais?)
--> Faire la méthode computeOutput avec la fonction Sigmoid
+-> Déclarer les neurones dans les cases des layers (done)
+-> Faire les méthodes freeLayer et freeNeural (done)
+-> Faire la méthode des sommes (sans le biais?) (done)
+-> Faire la méthode computeOutput avec la fonction Sigmoid (done
+
+13/10/2014
+-> Trouver d'où vient l'erreur du printf poids
+-> Faire avec l'apprentissage et avec le Bias
