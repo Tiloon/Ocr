@@ -1,0 +1,5 @@
+12/10/2014
+-> Déclarer les neurones dans les cases des layers
+-> Faire les méthodes freeLayer et freeNeural
+-> Faire la méthode des sommes (sans le biais?)
+-> Faire la méthode computeOutput avec la fonction Sigmoid
