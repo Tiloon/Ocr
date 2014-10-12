@@ -13,7 +13,7 @@ LDLIBS=`pkg-config --libs gtk+-2.0`
 all: obj/main
 	mv obj/main ./ocrocaml
 
-obj/main: obj/gui.o obj/loader.o obj/main.o
+obj/main: obj/filters.o obj/sample_filter.o obj/gui.o obj/loader.o obj/main.o
 
 obj:
 	mkdir obj

@@ -1,7 +1,5 @@
 #include "main.h"
 
-
-
 void show_help(void);
 int get_flags(int argc, char *argv[], struct s_flags *flags);
 int print_flag_error(char *flag, int error);
@@ -25,8 +23,14 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    if(flags.filename)
+    {
+        filters_apply_all(picture_get_image());
+    }
+
     if(flags.gui)
         gui_main(argc, argv);
+
 
     return 0;
 }
@@ -39,6 +43,11 @@ void show_help()
         "(Compiled : " __DATE__ " " __TIME__")\n"
         "usage : ocrocaml [arguments] -i file    Process file\n"
         "   or : ocrocaml -gui                   Graphical Interface\n"
+        "   or : ocrocaml -help \"keyword\"        Get help about keywod"
+        "\n\n"
+        "Arguments : \n"
+        "    -f \"filter\"[,opt]      apply filter with options\n"
+        "    -i \"file\"              load picture \"file\"\n"
         "\n\n"
         "More about this software : http://ocrocaml.ovh/\n");
 }
@@ -62,7 +71,7 @@ int get_flags(int argc, char *argv[], struct s_flags *flags)
             if(i >= argc)
                 return print_flag_error(argv[i - 1], FLAG_MISSING_ARG);
             flags->filename = argv[i];
-            if(load_from_file(argv[i]))
+            if(picture_load_from_file(argv[i]))
                 return print_flag_error(argv[i], FLAG_INVALID_ARG);
             printf("Image loaded (%s)\n", argv[i]);
         }

@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "picture/loader.h"
+#include "filters/filters.h"
 
 #ifndef NOGUI
 #include "gui/gui.h"

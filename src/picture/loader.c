@@ -2,7 +2,7 @@
 
 static GdkPixbuf *picture = NULL;
 
-int load_from_file(const char *filename)
+int picture_load_from_file(const char *filename)
 {
     GError *err;
 
@@ -19,7 +19,7 @@ int load_from_file(const char *filename)
     return 0;
 }
 
-GdkPixbuf *get_image()
+GdkPixbuf *picture_get_image()
 {
     return picture;
 }
