@@ -9,7 +9,8 @@ int main(int argc, char *argv[])
     struct s_flags flags;
 
     flags.gui = 0;
-    flags.filename = 0;
+    flags.filename = NULL;
+    flags.filteroutput = NULL;
 
     if(argc <= 1)
     {
@@ -25,7 +26,15 @@ int main(int argc, char *argv[])
 
     if(flags.filename)
     {
-        filters_apply_all(picture_get_image());
+
+        if(filters_apply_all(picture_get_image()))
+            return 1;
+
+        if(flags.filteroutput)
+        {
+            if(picture_save_to_file(flags.filteroutput))
+                return 1;
+        }
     }
 
     if(flags.gui)
@@ -84,6 +93,16 @@ int get_flags(int argc, char *argv[], struct s_flags *flags)
             if(filter_add(argv[i]))
                 return print_flag_error(argv[i], FLAG_INVALID_ARG);
             printf("Filter added : %s\n", argv[i]);
+        }
+        else if(strcmp(argv[i], "-ofilters") == 0)
+        {
+            if(flags->filteroutput)
+                return print_flag_error(argv[i], FLAG_ALREADY_SET);
+
+            i++;
+            if(i >= argc)
+                return print_flag_error(argv[i - 1], FLAG_MISSING_ARG);
+            flags->filteroutput = argv[i];
         }
         else
             return print_flag_error(argv[i], FLAG_UNDEFINED);

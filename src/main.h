@@ -18,6 +18,7 @@
 struct s_flags {
     char gui;
     char* filename;
+    char* filteroutput;
     // Other flags
 };
 

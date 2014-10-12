@@ -32,7 +32,7 @@ int picture_save_to_file(const char *filename)
         return 1;
     }
 
-    if(filetype == NULL)
+    if((filetype == NULL) || (*(++filetype) == 0))
     {
         fprintf(stderr, "Can't save : filename extension ?\n   %s", filename);
         return 1;

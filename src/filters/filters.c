@@ -11,6 +11,43 @@ const struct s_filter_entry filter_list[] = {
 
 static char **filter_stack = NULL;
 
+
+int filter_get_id(const char *name)
+{
+    unsigned int i;
+    for(i = 0; i < FILTER_LIST_SZE; i++)
+    {
+        if(strcmp(name, filter_list[i].filter_name) == 0)
+            return i;
+    }
+
+    // Filer not found
+    return -1;
+}
+
+char* filter_get_name(char *rule, char **params)
+{
+    unsigned int i;
+    char *filtername;
+
+    for(i = 0; rule[i] && (rule[i] != ','); i++)
+        ;
+
+    // no params => *params = "\0"
+    // else params is set after the first comma.
+    if(params)
+        *params = rule + i + (!rule[i]);
+
+    if(!rule[i])
+        return rule;
+
+    filtername = malloc(sizeof(char) * i);
+    strncpy(filtername, rule, i - 1);
+    filtername[i - 1] = 0;
+
+    return filtername;
+}
+
 int get_filter_about(unsigned int id, char **name, char **help)
 {
     // If id > filter_list.length, return fail
@@ -34,43 +71,20 @@ void print_filter_error(const char *str, const char *filter_name)
 int filters_apply_all(GdkPixbuf *picture)
 {
     unsigned int i;
-    printf("%p", picture);
-    for(i = 0; filter_stack[i] != 0; i++)
+    int id;
+    char *params;
+
+    if(filter_stack == NULL)
+        return 0;
+
+    for(i = 0; filter_stack[i] != NULL; i++)
     {
+        id = filter_get_id(filter_get_name(filter_stack[i], &params));
+        if(filter_list[id].filter_func(picture, params))
+            return 1;
     }
 
     return 0;
-}
-
-int filter_exists(const char *name)
-{
-    unsigned int i;
-    for(i = 0; i < FILTER_LIST_SZE; i++)
-    {
-        if(strcmp(name, filter_list[i].filter_name) == 0)
-            return 0;
-    }
-
-    // Filer not found
-    return 1;
-}
-
-char* filter_get_name(char *rule)
-{
-    unsigned int i;
-    char *filtername;
-
-    for(i = 0; rule[i] && (rule[i] != ','); i++)
-        ;
-
-    if(!rule[i])
-        return rule;
-
-    filtername = malloc(sizeof(char) * i);
-    strncpy(filtername, rule, i - 1);
-    filtername[i - 1] = 0;
-
-    return filtername;
 }
 
 int filter_add(char *rule)
@@ -80,8 +94,8 @@ int filter_add(char *rule)
     unsigned int i;
     char* filtername;
 
-    filtername = filter_get_name(rule);
-    if(filter_exists(filtername))
+    filtername = filter_get_name(rule, NULL);
+    if(filter_get_id(filtername) < 0)
     {
         print_filter_error("Filter doesn't exists.\n", filtername);
         return 1;
