@@ -1,8 +1,10 @@
 #include "filters.h"
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
+#include <glib.h>
 
-#define FILTER_LIST_SZE (sizeof(filter_list) / sizeof(*filter_list))
+#define FILTER_LIST_SZE 1
 
 const struct s_filter_entry filter_list[] = {
     {sample_filter, sample_filter_name, sample_filter_help_msg}

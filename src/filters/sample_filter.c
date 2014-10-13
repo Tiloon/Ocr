@@ -3,36 +3,47 @@
 
 int sample_filter(GdkPixbuf *picture, char *parameters)
 {
-    unsigned int i, j, channels, height, width, grey;
-    guchar *pixels;
+    printf("%s\n", parameters);
+    int ht,wt;
+    int i,j;
+    int rowstride;
+    int bpp;
+    int grayscale;
 
-    printf("%s", parameters);
-    channels = gdk_pixbuf_get_n_channels(picture);
-    width = gdk_pixbuf_get_width(picture);
-    height = gdk_pixbuf_get_height(picture);
-    pixels = gdk_pixbuf_get_pixels(picture);
-
-    // check if we have only 24bpp (3channels, no alpha)
-    if(channels != 3 ||
-        gdk_pixbuf_get_bits_per_sample(picture) != 8)
-    {
-        print_filter_error("sample_filter only allow 24bpp pictures"
-            "(3chanels)", sample_filter_name);
+    gchar *pixel;
+    if(gdk_pixbuf_get_bits_per_sample(picture)!=8)
         return 1;
-    }
-
-    for(i = 0; i < height; i++)
+    //look at 3 bytes per pixel.
+    //getting attributes of height,
+    ht=gdk_pixbuf_get_height(picture);
+    //width, and bpp.Also get pointer
+    wt=gdk_pixbuf_get_width(picture);
+    //to pixels.
+    pixel=gdk_pixbuf_get_pixels(picture);
+    bpp=3;
+    rowstride=wt*bpp;
+    for(i=0;i<ht;i++) //iterate over the height of image.
     {
-        for(j = 0; j < width; j++)
+        for(j=0;j<rowstride;j+=bpp)
+        //read every pixel in the row.skip//bpp bytes
         {
-            grey = pixels[i * width + j * channels];
-            grey += pixels[i * width + j * channels + 1];
-            grey += pixels[i * width + j * channels + 2];
-            grey = grey / 3;
+            grayscale = pixel[i*rowstride + j];
+            grayscale += pixel[i*rowstride + j + 1];
+            grayscale += pixel[i*rowstride + j + 2];
+            //access pixel[i][j] as
+            // pixel[i*rowstride + j]
+            //access red,green and blue as
+            //pixel[i*rowstride + j+0]=0;
+            //pixel[i*rowstride + j+1]=0;
+            //pixel[i*rowstride + j+2]=blue
+            if(grayscale > 0)
+                grayscale = 0;
+            else
+                grayscale = ~0;
 
-            pixels[i * width + j * channels] = grey;
-            pixels[i * width + j * channels] = grey;
-            pixels[i * width + j * channels] = grey;
+            pixel[i*rowstride + j] = grayscale;
+            pixel[i*rowstride + j + 1] = grayscale;
+            pixel[i*rowstride + j + 2] = grayscale;
         }
     }
 
