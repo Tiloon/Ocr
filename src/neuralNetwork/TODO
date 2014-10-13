@@ -5,5 +5,7 @@
 -> Faire la méthode computeOutput avec la fonction Sigmoid (done
 
 13/10/2014
--> Trouver d'où vient l'erreur du printf poids
+-> Trouver d'où vient l'erreur du printf poids (clang et O2, double -> long double)
 -> Faire avec l'apprentissage et avec le Bias
+-> Faire les méthodes FreeLayer et FreeNeural
+
