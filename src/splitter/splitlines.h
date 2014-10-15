@@ -4,6 +4,6 @@
 #include<gtk/gtk.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
-extern int splitLines(GdkPixbuf *picture);
+extern int *splitLines(GdkPixbuf *picture);
 
 #endif
