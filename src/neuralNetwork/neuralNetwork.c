@@ -13,8 +13,9 @@
 //            DEFINE                   //
 //*************************************//
 
-#define BIAS 0
-
+#define FIRST_BIAS 0
+#define ALPHA 0.5 //Used for learning part
+#define eta 0.1   //Also used for learning part
 
 
 //***********************************//
@@ -29,9 +30,12 @@ int main(void)
     /*NN with 3 layer, 1 input, 1 hidden 1 output*/
     /*No Learning for now*/
 
+    //Variables declaration
     Layer Input;
     Layer Hidden;
     Layer Output;
+    
+    long double error;
 
     initializeLayer(&Input, 2, 2);
     initializeLayer(&Hidden, 4, 4);
@@ -93,14 +97,24 @@ void initializeLayer(Layer *Layer, unsigned pNumberUnits, unsigned pNumberLinks)
     Layer->Units = malloc (sizeof (Neural) * pNumberUnits);
     //Initialize Bias value for each neuron
     for(i=0; i<pNumberUnits;i++)
-	Layer->Units[i].bias = BIAS;
-    //Malloc matrix for the weights of each Neural
+	Layer->Units[i].bias = FIRST_BIAS;
+    //Malloc matrix for the weights of each neuron
     Layer->weights = malloc(sizeof(long double) * pNumberUnits);
   
     for(numberLinks = 0; numberLinks < pNumberLinks; numberLinks++)
     {
 	Layer->weights[numberLinks] = malloc(sizeof(long double) * pNumberLinks);
     }
+
+    //Malloc matrix for the delta weights of each neuron
+    Layer->deltaWeights = malloc(sizeof(long double) * pNumberUnits);
+    for(i=0; i<pNumberUnits; i++)
+    {
+	Layer->deltaWeights[i] = malloc(sizeof(long double) * pNumberLinks);
+    }
+    
+    //Will be used for computing delta H
+    Layer-> sumDeltaOutputWeights = malloc(sizeof(long double) * pNumberUnits);
 }
 
 void freeLayer(Layer *Layer)
@@ -110,11 +124,12 @@ void freeLayer(Layer *Layer)
     //***************//
 
 
-    //Free the weights[][] tab
-    /*for(x = 0; x < Layer->numberUnits; x++)
-      {
-      free(Layer->weights[x]);
-      }*/
+    /* Free the weights[][] tab
+    ** for(x = 0; x < Layer->numberUnits; x++)
+    **  {
+    **     free(Layer->weights[x]);
+    **  }
+    */
   
     //Free the weights[] tab
     free(Layer->weights);
@@ -128,7 +143,6 @@ void  computeSum(Layer *Layer1, Layer *Layer2)
     for(l2 = 0; l2 < Layer2->numberUnits; l2++)
     {
 	Layer2->Units[l2].sumedValue = Layer2->Units[l2].bias; 
-	//Layer2->Units[l2].sumedValue = BIAS; 
 	for(l1 = 0; l1 < Layer1->numberUnits; l1++)
 	{
 	    Layer2->Units[l2].sumedValue += 
@@ -146,3 +160,37 @@ void computeData(Layer *Input, Layer *Hidden, Layer *Output)
     computeSum(Input, Hidden);
     computeSum(Hidden, Output);
 }
+
+void computeError(long double **expected, long double **computed, 
+		  long double *error,
+		  unsigned nbPatterns, unsigned nbOutputNeurons)
+{
+    // p as pattern and n as (output) neuron 
+    unsigned p, n;
+    for(p=0; p < nbPatterns; p++)
+    {
+	for(n=0; n < nbOutputNeurons; n++)
+	{
+	    *error += 0.5 * 
+		(expected[p][n] - computed[p][n]) * 
+		(expected[p][n] - computed[p][n]) ;
+	}
+    }
+}
+
+void computeDeltaOutput(long double **expected, Layer *OutputLayer, 
+			unsigned numberPatterns)
+{
+    //p as patterns, n as (output) neurons
+    unsigned p, n;
+    for(p = 0; p < numberPatterns; p++)
+    {
+	for(n = 0; n < OutputLayer->numberUnits; n++)
+	{
+	    //OutputLayer->delta[n] = expected
+	}
+    }
+}
+
+
+
