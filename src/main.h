@@ -5,6 +5,7 @@
 #include <string.h>
 #include "picture/loader.h"
 #include "filters/filters.h"
+#include "imgToBinary/imgToBinary.h"
 
 #ifndef NOGUI
 #include "gui/gui.h"
