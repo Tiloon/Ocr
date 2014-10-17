@@ -89,6 +89,7 @@ int text_image_segmentation(char *pic, uint w, uint h, char **mask)
     subsample_pic(3, &seed, &w, &h);
 
     // Opening with SE=5x5
+    morph_open(seed, w, h, 2, 2);
 
     expansion_1x4(&seed, &w, &h);
     expansion_1x4(&seed, &w, &h);
@@ -99,6 +100,7 @@ int text_image_segmentation(char *pic, uint w, uint h, char **mask)
     // mask = overlapping_components(mask, seed);
 
     // dilation with SE=3x3
+    morph_dilate(*mask, w, h, 1, 1);
 
     expansion_1x4(mask, &w, &h);
     expansion_1x4(mask, &w, &h);
