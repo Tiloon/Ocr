@@ -19,38 +19,47 @@ int *splitLines(GdkPixbuf *picture)
     row = width * bpp;
     line_found = 0;
     lines = malloc(1 * sizeof(*lines));
+    i = 0;
 
     //add super while pour chaque ligne
     while(1)
     {
-        for(i = 0; i < height && line_found == 0; i++) //cherche un premier noir apres un bloc de blanc => haut de ligne
+        for(; i < height && line_found == 0; i++) //cherche un premier noir apres un bloc de blanc => haut de ligne
         {
             for(j = 0; j < row && line_found == 0; j += bpp)
             {
-                if(pixels[ i * row + j] == 255 && pixels[i * row + j + 1] == 255 && pixels[i * row + j + 2] == 255)
+                if(pixels[ i * row + j] == 0 
+		&& pixels[i * row + j + 1] == 0 
+		&& pixels[i * row + j + 2] == 0)
                     line_found = 1;
             }
         }
         if(i >= heigth)
             return lines;
 
+	i++;
         lines = realloc(lines, (nb_line + 1) * sizeof(*lines));
         lines[nb_line] = i;
         nb_line++;
         line_found = 0;
-        for(i = 0; i < height && line_found == 0; i++) //cherche un premier blanc apres un bloc de noir => bas de ligne
+        for(; i < height && line_found == 1; i++) //cherche un premier blanc apres un bloc de noir => bas de ligne
         {
+	    line_found = 0;
             for(j = 0; j < row && line_found == 0; j += bpp)
             {
-                if(pixels[i * row + j] == 0 && pixels[i * row + j + 1] == 0 && pixels[i * row + j + 2] == 0)
+                if(pixels[i * row + j] == 0 
+		&& pixels[i * row + j + 1] == 0 
+		&& pixels[i * row + j + 2] == 0)
                     line_found = 1;
             }
         }
         if(i >= heigth)
         {
+            lines = realloc(lines, (nb_line + 1) * sizeof(*lines));
             lines[nb_line] = i - 1; //derniere ligne = noir, faut quand meme prendre le bas de ligne
             return lines;
         }
+	lines = realloc(lines, (nb_line + 1) * sizeof(*lines));
         lines[nb_line] = i - 1;
         nb_line++;
         line_found = 0;
