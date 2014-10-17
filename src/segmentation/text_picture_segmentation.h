@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include "morphology.h"
 
 typedef unsigned int uint;
 

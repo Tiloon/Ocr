@@ -5,6 +5,8 @@
 #include <string.h>
 #include "picture/loader.h"
 #include "filters/filters.h"
+#include "segmentation/text_picture_segmentation.h"
+
 #include "imgToBinary/imgToBinary.h"
 
 #ifndef NOGUI
