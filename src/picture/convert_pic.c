@@ -1,7 +1,6 @@
 #include "imgToBinary.h"
 
-
-int imgToBinary(GdkPixbuf *picture, struct s_binarypic *binarypic)
+int gdk_to_binary(GdkPixbuf *picture, struct s_binarypic *binarypic)
 {
     unsigned int i, j;
     unsigned char *pixel_tab;
@@ -22,5 +21,11 @@ int imgToBinary(GdkPixbuf *picture, struct s_binarypic *binarypic)
                 (pixel_tab[(i * binarypic->w * j) * 3 + 2] / 3) >= 128;
         }
     }
+    return 0;
+}
+
+int binary_to_gdk(struct s_binarypic *binarypic, GdkPixbuf *picture);
+{
+    // TODO : implement this <3
     return 0;
 }

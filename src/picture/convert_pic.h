@@ -5,6 +5,7 @@
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include "binarypic.h"
 
-int imgToBinary(GdkPixbuf *picture, struct s_binarypic *binarypic);
+int gdk_to_binary(GdkPixbuf *picture, struct s_binarypic *binarypic);
+int binary_to_gdk(struct s_binarypic *binarypic, GdkPixbuf *picture);
 
 #endif
