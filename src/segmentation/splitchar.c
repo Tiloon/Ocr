@@ -14,6 +14,8 @@
 	nbrCar = 0;
 	carFound = 0;
 	j = 0;
+        rep = malloc(0 * sizeof(*rep)); //need confirmation
+
 
 	while(1)
 	{
@@ -36,6 +38,7 @@
 			return rep;
 		//condition d arret
 		carFound = 0;
+  	        rep = realloc(rep, (nbrCar + 1) * sizeof(*rep)); //need confirm
 		rep[nbrCar].x = coord;
 		rep[nbrCar].y = tab[nbrLigne];
 		rep[nbrCar].height = tab[nbrLigne] - tab[nbrLigne+1];
