@@ -1,7 +1,9 @@
-#ifndef SPLITCHAR.H
-#define SPLITCHAR.H
+#ifndef SPLITCHAR_H
+#define SPLITCHAR_H
 
-#include "splitlines.h"
+#include <gtk/gtk.h>
+#include <gdk-pixbuf/gdk-pixbuf.h>
+
 
 
 struct s_caractere {

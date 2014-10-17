@@ -2,14 +2,14 @@
 #include <stdlib.h>
 
 int *splitLines(GdkPixbuf *picture)
-{
+{	//need remplacer GdkPixbuf par binarized image
     int i, j, height, width, row, bpp, line_found, nb_line;
     gchar *pixels;
     int *lines; // pair pair, lines[0] haut de la premiere ligne, lines[1] bas de la premiere ligne, lines[2] haut de la seconde ligne etc
                 //need malloc ou *lines(mais du coup ca marche? ou need lines[]) fait le taffe? jsuis pas sur d avoir bien compris donc aucasou j ecris ca
 
     if(gdk_pixbuf_get_bits_per_sample(picture) != 8)   //handle only 24 bit images.
-        return; //add error
+        return 1; //add error
 
     nb_line = 0;
     bpp = 3; // gdk_pixbuf_get_n_channels(picture) needed?
@@ -34,7 +34,7 @@ int *splitLines(GdkPixbuf *picture)
                     line_found = 1;
             }
         }
-        if(i >= heigth)
+        if(i >= height)
             return lines;
 
 	i++;
@@ -53,7 +53,7 @@ int *splitLines(GdkPixbuf *picture)
                     line_found = 1;
             }
         }
-        if(i >= heigth)
+        if(i >= height)
         {
             lines = realloc(lines, (nb_line + 1) * sizeof(*lines));
             lines[nb_line] = i - 1; //derniere ligne = noir, faut quand meme prendre le bas de ligne
