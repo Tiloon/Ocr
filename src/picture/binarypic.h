@@ -1,5 +1,5 @@
-#ifndef LOADER_H
-#define LOADER_H
+#ifndef BINARYPIC_H
+#define BINARYPIC_H
 
 struct s_binarypic
 {

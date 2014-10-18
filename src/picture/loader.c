@@ -21,14 +21,19 @@ int picture_load_from_file(const char *filename)
 
 int picture_save_to_file(const char *filename)
 {
+    return picture_save_pixbuf(picture, filename);
+}
+
+int picture_save_pixbuf(GdkPixbuf *pic, const char *filename)
+{
     GError *err;
     char *filetype;
 
     err = NULL;
     filetype = strrchr(filename, '.');
-    if(picture == NULL)
+    if(pic == NULL)
     {
-        fprintf(stderr, "Can't save : no picture loaded.");
+        fprintf(stderr, "Can't save : picture adress is NULL.");
         return 1;
     }
 
@@ -38,7 +43,7 @@ int picture_save_to_file(const char *filename)
         return 1;
     }
 
-    if(gdk_pixbuf_save(picture, filename, filetype, &err, NULL) == FALSE)
+    if(gdk_pixbuf_save(pic, filename, filetype, &err, NULL) == FALSE)
     {
         fprintf(stderr, "Unable to load picture :\n\t-> %s\n", err->message);
         g_error_free(err);

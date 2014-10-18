@@ -5,8 +5,6 @@
 #include <string.h>
 #include "morphology.h"
 
-typedef unsigned int uint;
-
 int text_image_segmentation(char *pic, uint w, uint h, char **mask);
 
 #endif

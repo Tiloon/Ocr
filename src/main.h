@@ -3,11 +3,12 @@
 
 #include <stdio.h>
 #include <string.h>
+
+#include "picture/binarypic.h"
 #include "picture/loader.h"
 #include "filters/filters.h"
 #include "segmentation/text_picture_segmentation.h"
-
-#include "imgToBinary/imgToBinary.h"
+#include "picture/convert_pic.h"
 
 #ifndef NOGUI
 #include "gui/gui.h"

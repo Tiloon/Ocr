@@ -26,7 +26,6 @@ int main(int argc, char *argv[])
 
     if(flags.filename)
     {
-
         if(filters_apply_all(picture_get_image()))
             return 1;
 
@@ -35,6 +34,14 @@ int main(int argc, char *argv[])
             if(picture_save_to_file(flags.filteroutput))
                 return 1;
         }
+        // Debug
+        struct s_binarypic *pic;
+        GdkPixbuf *pixbuf;
+        pic = calloc(1, sizeof(struct s_binarypic));
+        pixbuf = NULL;
+        gdk_to_binary(picture_get_image(), pic);
+        binary_to_gdk(pic, &pixbuf);
+        picture_save_pixbuf(pixbuf, "./truc.png");
     }
 
     if(flags.gui)
