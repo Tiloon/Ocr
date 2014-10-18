@@ -1,5 +1,5 @@
-#ifndef SPLITLINES_H
-#define SPLITLINES_H
+#ifndef SPLIT_LINES_H
+#define SPLIT_LINES_H
 
 #include <gtk/gtk.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
