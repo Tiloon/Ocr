@@ -4,13 +4,14 @@ struct Neural
     long double computedValue;
     long double sumedValue;
     long double bias;
+    long double deltaBias;
     long double *weights;
     //number of weights to each next neuron
     unsigned numberWeights; 
     //Will be used for computing the delta for delta2
     long double delta;
     //Will be used for computing the final variation for updating the weights
-    long double delta2;
+    long double *deltaWeights;
 };
 typedef struct Layer Layer;
 struct Layer
@@ -25,10 +26,7 @@ struct Layer
 //And also call sigmoid function and update each neuron value
 void computeSum(Layer *Layer1, Layer *Layer2);
 
-//compute the sum for one neuron unit from layer1
-//to layer2 and return a result
-//will be used to compute delta Hiddenx
-long double computeSum2(Layer *Layer1, unsigned unit, Layer *Layer2);
+
 long double sigmoid(long double x);
 void initializeLayer(Layer *Layer, unsigned numberUnits, 
 		     unsigned numberWeights);
@@ -57,7 +55,8 @@ void computeDeltaHidden(Layer *HiddenLayer, Layer *OutputLayer);
 ** It is used for Weights Input -> Hidden and Hidden -> Output
 ** It is the same calculus
 */
-long double computeDeltaWeight(long double eta, long double alpha, Layer *nextLayer, Layer *ActualLayer);
+void computeDeltaWeight(long double eta, long double alpha, Layer *LayerToUpdate,
+			Layer *NextLayer);
 
 //Will use the computeDeltaWeight function to update the value of the weights
 void updateWeights(Layer *LayerToUpdate);
