@@ -8,6 +8,7 @@
 #include "picture/loader.h"
 #include "filters/filters.h"
 #include "segmentation/text_picture_segmentation.h"
+#include "segmentation/split_lines.h"
 #include "picture/convert_pic.h"
 
 #include "segmentation/morphology.h"

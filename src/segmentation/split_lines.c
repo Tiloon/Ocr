@@ -30,10 +30,15 @@ struct s_rectangle* splitLines(struct s_binarypic *picture)
 
         for(j = 0; j < picture->w; j++)
         {
+            // First black pixel we meet
+            if(is_white && (picture->pixels[i * picture->w + j] == 0))
+                left = j;
+
             is_white = is_white && picture->pixels[i * picture->w + j];
+
+            // Last black pixel we meet
             if(picture->pixels[i * picture->w + j] == 0)
-            {
-            }
+                right = j;
         }
         if(!is_white)
         {
@@ -57,6 +62,8 @@ struct s_rectangle* splitLines(struct s_binarypic *picture)
         }
         line_found = !is_white;
     }
+
+    lines[current] = 0;
 
     return lines;
 }
