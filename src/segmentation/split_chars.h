@@ -1,15 +1,9 @@
 #ifndef SPLIT_CHARS_H
 #define SPLIT_CHARS_H
 
-#include <gtk/gtk.h>
-#include <gdk-pixbuf/gdk-pixbuf.h>
+#include "../picture/binarypic.h"
+#include "rectangle.h"
 
+struct s_rectangle * splitChars(struct s_binarypic picture, int *tab)
 
-
-struct s_caractere {
-  unsigned int x;
-  unsigned int y;
-  unsigned int w;
-  unsigned int h;
-};
 #endif
