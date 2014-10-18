@@ -1,23 +1,24 @@
 typedef struct Neural Neural;
 struct Neural
 {
-  long double computedValue;
-  long double sumedValue;
-  long double bias;
-  
-  //Will be used for computing the delta for updating the weights
-  long double delta;
+    long double computedValue;
+    long double sumedValue;
+    long double bias;
+    long double *weights;
+    //number of weights to each next neuron
+    unsigned numberWeights; 
+    //Will be used for computing the delta for delta2
+    long double delta;
+    //Will be used for computing the final variation for updating the weights
+    long double delta2;
 };
 typedef struct Layer Layer;
 struct Layer
 {
-              
-  //Will be used to update the value of the weights between layers
-  long double **deltaWeights;
-  unsigned numberUnits;
-  unsigned numberLinks;
-  Neural *Units;
-  long double **weights;
+    unsigned numberUnits;
+    //* unsigned numberLinks;
+    Neural *Units;
+    //* long double **weights;
 };
 
 //Compute the sum of each neuron on Layer1 to each neuron on Layer2
@@ -28,11 +29,12 @@ void computeSum(Layer *Layer1, Layer *Layer2);
 //to layer2 and return a result
 //will be used to compute delta Hiddenx
 long double computeSum2(Layer *Layer1, unsigned unit, Layer *Layer2);
-
 long double sigmoid(long double x);
-//Number links <=> view of the layer view, not of eu each neuron
-void initializeLayer(Layer *Layer, unsigned numberUnits, unsigned numberLinks);
+void initializeLayer(Layer *Layer, unsigned numberUnits, 
+		     unsigned numberWeights);
 void freeLayer(Layer *Layer);
+void initializeNeuron(Neural *Neural, unsigned numberWeights);
+void freeNeuron(Neural *Neural);
 void computeData(Layer *Input, Layer *Hidden, Layer *Output);
 
 /* Compute the error between what expected and what computed
