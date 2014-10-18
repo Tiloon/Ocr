@@ -60,10 +60,11 @@ int main(void)
 
     
     computeData(&Input, &Hidden, &Output);
+    //long double testComputeSum2 = computeSum2(&Hidden, 0, &Output);
     
-    printf("%Lf\n"
-	   "%Lf\n\n"
-	   ,Output.Units[0].sumedValue, Output.Units[0].computedValue);
+    /*printf("%Lf\n"
+      "%Lf\n\n"
+      , testComputeSum2, Output.Units[0].sumedValue);*/
 
     return 0;
 }
@@ -94,10 +95,10 @@ void initializeNeuron(Neural *Neuron, unsigned pNumberWeights)
     Neuron->computedValue = 0;
     Neuron->sumedValue = 0;
     Neuron->bias = FIRST_BIAS;
+    Neuron->deltaBias = 0;
     Neuron->numberWeights = pNumberWeights;
     Neuron->delta = 0;
-    Neuron->delta2 = 0;
-
+    
     //Malloc the weights tab
     Neuron->weights = malloc(sizeof(long double) * pNumberWeights);
     
@@ -105,6 +106,15 @@ void initializeNeuron(Neural *Neuron, unsigned pNumberWeights)
     for(w = 0; w < pNumberWeights; w++)
     {
 	Neuron->weights[w] = 0;
+    }
+
+    //Malloc the delta weights tab
+    Neuron->deltaWeights = malloc(sizeof(long double) * pNumberWeights);
+    
+    //Initialize all the delta weights
+    for(w = 0; w < pNumberWeights; w++)
+    {
+	Neuron->deltaWeights[w] = 0;
     }
 }
 
@@ -121,7 +131,6 @@ void freeNeuron(Neural *Neural)
 void  computeSum(Layer *Layer1, Layer *Layer2)
 {
     unsigned l1, l2;
-
     for(l2 = 0; l2 < Layer2->numberUnits; l2++)
     {
 	Layer2->Units[l2].sumedValue = Layer2->Units[l2].bias;
@@ -133,15 +142,6 @@ void  computeSum(Layer *Layer1, Layer *Layer2)
 	Layer2->Units[l2].computedValue = sigmoid(Layer2->Units[l2].sumedValue);
     }
 }
-
-long double computeSum2(Layer *Layer1, unsigned units, Layer *Layer2)
-{
-    unsigned numberLinks;
-    long double result = 0;
-    return result;
-}
-
-
 
 long double sigmoid(long double x)
 {
@@ -192,19 +192,50 @@ void computeDeltaOutput(long double **expected, Layer *OutputLayer,
 
 void computeDeltaHidden(Layer *HiddenLayer, Layer *OutputLayer)
 {
-    long double sumValueWeights;
-    //hN for Hidden neurons and On for Output neurons 
-    unsigned hN;
-    unsigned oN;
+    long double deltaH;
+    //h for Hidden neurons and O for Output neurons 
+    unsigned h;
+    unsigned o;
   
-    for(hN = 0; hN < HiddenLayer->numberUnits; hN++)
+    for(h = 0; h < HiddenLayer->numberUnits; h++)
     {
-	for(oN = 0; oN < OutputLayer->numberUnits; oN++)
+	deltaH = 0;
+	for(o = 0; o < OutputLayer->numberUnits; o++)
 	{
 	    //Compute the delta for each hidden neuron
-	    sumValueWeights = 0;
-	  
-	  
-	}     
+	    deltaH +=  
+		(HiddenLayer->Units[h].weights[o] *
+		 OutputLayer->Units[o].delta);
+	}
+	deltaH = deltaH * HiddenLayer->Units[h].computedValue
+	    * (1.0 - HiddenLayer->Units[h].computedValue);
+	HiddenLayer->Units[h].delta = deltaH;
+    }
+}
+
+void computeDeltaWeight(long double eta0, long double alpha,
+			Layer *LayerToUpdate, Layer *NextLayer)
+{
+    //for counting the units of the Layer to update, n for next Layer
+    unsigned u, n;
+    for(u = 0; u < LayerToUpdate->numberUnits; u++)
+    {
+	//Update deltaBias
+	LayerToUpdate->Units[u].deltaBias = 
+	    (eta * LayerToUpdate->Units[u].computedValue)
+	    + (alpha * LayerToUpdate->Units[u].deltaBias); 
+	//Update Bias Weight
+	LayerToUpdate->Units[u].bias += LayerToUpdate->Units[u].deltaBias;
+    
+	for(n = 0; n < NextLayer->numberUnits; n++)
+	{
+	    LayerToUpdate->Units[u].deltaWeights[n] = 
+		(eta0 * LayerToUpdate->Units[u].computedValue  *
+		 NextLayer->Units[n].delta) + 
+		(alpha * LayerToUpdate->Units[u].deltaWeights[n]);
+	    
+	    LayerToUpdate->Units[u].weights[n] += 
+		LayerToUpdate->Units[u].deltaWeights[n];
+	}
     }
 }
