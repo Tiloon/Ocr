@@ -16,7 +16,7 @@ GTKLIBS=`pkg-config --libs gtk+-2.0`
 all: obj/ocrocaml
 	mv obj/ocrocaml ./ocrocaml
 
-obj/ocrocaml: obj/convert_pic.o obj/filters.o obj/sample_filter.o obj/gui.o obj/loader.o obj/main.o
+obj/ocrocaml: obj/morphology.o obj/convert_pic.o obj/filters.o obj/sample_filter.o obj/gui.o obj/loader.o obj/main.o
 	$(CC) $(CFLAGS) $(GTKLIBS) -o obj/ocrocaml obj/*.o
 
 obj:

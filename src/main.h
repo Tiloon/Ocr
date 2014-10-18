@@ -10,6 +10,8 @@
 #include "segmentation/text_picture_segmentation.h"
 #include "picture/convert_pic.h"
 
+#include "segmentation/morphology.h"
+
 #ifndef NOGUI
 #include "gui/gui.h"
 #endif

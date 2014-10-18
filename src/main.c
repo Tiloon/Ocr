@@ -40,6 +40,7 @@ int main(int argc, char *argv[])
         pic = calloc(1, sizeof(struct s_binarypic));
         pixbuf = NULL;
         gdk_to_binary(picture_get_image(), pic);
+        morph_erode(pic->pixels, pic->w, pic->h, 2, 2);
         binary_to_gdk(pic, &pixbuf);
         picture_save_pixbuf(pixbuf, "./truc.png");
     }
