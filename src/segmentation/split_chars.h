@@ -1,6 +1,7 @@
 #ifndef SPLIT_CHARS_H
 #define SPLIT_CHARS_H
 
+#include <stdlib.h>
 #include "../picture/binarypic.h"
 #include "rectangle.h"
 

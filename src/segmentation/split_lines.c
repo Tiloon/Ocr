@@ -46,21 +46,21 @@ struct s_rectangle* splitLines(struct s_binarypic *picture)
             {
                 lines = realloc(lines,
                         (current + 1) * sizeof(struct s_rectangle));
-                lines[current].y = j;
+                lines[current].y = i; //=i
                 lines[current].x = left;
                 lines[current].w = right;
                 current++;
-            }
+            } //on actualise x et w tant qu'on est sur la même ligne
             lines[current - 1].x = min(lines[current - 1].x, left);
-            lines[current - 1].w = min(lines[current - 1].w, right);
+            lines[current - 1].w = max(lines[current - 1].w, right); //max au lieu de min
         }
         if(is_white && line_found)
         {
-            lines[current - 1].h = j - lines[current - 1].y;
+            lines[current - 1].h = i - lines[current - 1].y; //j => i
             lines[current - 1].w = lines[current - 1].w -
                 lines[current - 1].x;
         }
-        line_found = !is_white;
+        line_found = !is_white; //=1
     }
 
     lines[current] = 0;
