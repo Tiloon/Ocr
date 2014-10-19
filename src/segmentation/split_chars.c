@@ -46,21 +46,21 @@ struct s_rectangle* splitChars(struct s_binarypic picture,int *tab)
             {
                 chars = realloc(chars,
                         (current + 1) * sizeof(struct s_rectangle));
-                chars[current].y = up; //=i
+                chars[current].y = up;
                 chars[current].x = j;
-                chars[current].h = down; //last j
+                chars[current].h = down;
                 current++;
-            } //on actualise x et w tant qu'on est sur la même ligne
+            }
             chars[current - 1].y = min(chars[current - 1].y, up);
-            chars[current - 1].h = max(chars[current - 1].h, down); //max au lieu de min
+            chars[current - 1].h = max(chars[current - 1].h, down);
         }
         if(is_white && char_found)
         {
-            chars[current - 1].w = j - chars[current - 1].x; //j => i
+            chars[current - 1].w = j - chars[current - 1].x;
             chars[current - 1].h = chars[current - 1].h -
                 chars[current - 1].y;
         }
-        char_found = !is_white; //=1
+        char_found = !is_white;
     }
 
     chars[current] = 0;
