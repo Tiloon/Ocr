@@ -1,6 +1,6 @@
-//***********************************************************************//
-//                      THE GAME                                         //
-//***********************************************************************//
+//*************************************************************** ***//
+//                      THE GAME                                     //
+//*******************************************************************//
 
 
 #include <stdio.h>
@@ -15,14 +15,17 @@
 
 #define FIRST_BIAS 0
 #define ALPHA 0.5 //Used for learning part
-#define eta 0.1   //Also used for learning part
+#define ETA 0.1   //Also used for learning part
 
 
 //***********************************//
 // Tests functions                   //
 //**********************************///
+void printt(long double tab[4][2])
+{
+    printf("%Lf\n",  tab[0][0]);
 
-
+}
 
 int main(void)
 {
@@ -31,12 +34,50 @@ int main(void)
     /*No Learning for now*/
 
     //Variables declaration
+    
     Layer Input;
     Layer Hidden;
     Layer Output;
  
-    long double error;
+    long double error = 0;
+    long double *results;
+    
+       
+   
+    unsigned i = 0;
+    
+       
+    long double **input;
+//[4][2] = {{0,0},{0,1},{1,0},{1,1}};
+    long double expected[4][1] = {{0}, {1}, {1}, {0}};
+    
+    input = malloc(sizeof(long double) * 4);
+    for(i = 0; i < 4; i++)
+	input[i] = malloc(sizeof(long double) * 2);
+    
+    input[0][0] = 12;
+    input[0][1] = 120;
+    input[1][0] = 1;
+    input[1][1] = 10;
+    input[2][0] = 1;
+    input[2][1] = 11;
+    input[3][0] = 7;
+    input[3][1] = 70;
+    
 
+    
+    /*printf("%Lf\n", input[0][0]);
+    printf("%Lf\n", input[0][1]);
+    printf("%Lf\n", input[1][0]);
+    printf("%Lf\n", input[1][1]);
+    printf("%Lf\n", input[2][0]);
+    printf("%Lf\n", input[2][1]);
+    printf("%Lf\n", input[3][0]);
+    printf("%Lf\n", input[3][1]);*/
+
+    printf(input);
+
+    
     initializeLayer(&Input, 3, 2);
     initializeLayer(&Hidden, 2, 1);
     initializeLayer(&Output, 1, 1);
@@ -57,20 +98,17 @@ int main(void)
 
     Hidden.Units[0].weights[0] = 0.2;
     Hidden.Units[1].weights[0] = 0.1;
-
+    
     
     computeData(&Input, &Hidden, &Output);
-    //long double testComputeSum2 = computeSum2(&Hidden, 0, &Output);
+    //printt(&input);
     
-    /*printf("%Lf\n"
-      "%Lf\n\n"
-      , testComputeSum2, Output.Units[0].sumedValue);*/
-
     return 0;
 }
 
 
-void initializeLayer(Layer *Layer, unsigned pNumberUnits, unsigned pNumberWeights)
+void initializeLayer(Layer *Layer, unsigned pNumberUnits, 
+		     unsigned pNumberWeights)
 {
     Neural Neural;
     unsigned i;
@@ -159,8 +197,10 @@ void computeError(long double **expected, long double **computed,
 {
     // p as pattern and n as (output) neuron 
     unsigned p, n;
+    
+    
     for(p=0; p < nbPatterns; p++)
-    {
+    {	
 	for(n=0; n < nbOutputNeurons; n++)
 	{
 	    *error += 0.5 * 
@@ -222,7 +262,7 @@ void computeDeltaWeight(long double eta0, long double alpha,
     {
 	//Update deltaBias
 	LayerToUpdate->Units[u].deltaBias = 
-	    (eta * LayerToUpdate->Units[u].computedValue)
+	    (eta0 * LayerToUpdate->Units[u].computedValue)
 	    + (alpha * LayerToUpdate->Units[u].deltaBias); 
 	//Update Bias Weight
 	LayerToUpdate->Units[u].bias += LayerToUpdate->Units[u].deltaBias;
@@ -238,4 +278,26 @@ void computeDeltaWeight(long double eta0, long double alpha,
 		LayerToUpdate->Units[u].deltaWeights[n];
 	}
     }
+}
+
+void resultsToTab(Layer *OutputLayer, long double **results)
+{
+    *results = malloc (sizeof(long double)  * OutputLayer->numberUnits);
+    unsigned u;
+    for(u = 0; u < OutputLayer->numberUnits; u++)
+    {
+	(*results)[u] = OutputLayer->Units[u].computedValue;	
+    }
+}
+
+void learning(long double **expected, long double **computed,
+    long double *error, unsigned nbPatterns,
+    Layer *Input, Layer *Hidden, Layer *Output,
+    long double eta0, long double alpha)
+{
+    computeError(expected, computed, error, nbPatterns, Output->numberUnits);
+    //computeDeltaOutput(expected, Output, nbPatterns);
+    //computeDeltaHidden(Hidden, Output);
+    //computeDeltaWeight(eta0, alpha, Input, Hidden);
+    //computeDeltaWeight(eta0, alpha, Hidden, Output);
 }
