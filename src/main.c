@@ -40,7 +40,10 @@ int main(int argc, char *argv[])
         pic = calloc(1, sizeof(struct s_binarypic));
         pixbuf = NULL;
         gdk_to_binary(picture_get_image(), pic);
-        splitLines(pic);
+        struct s_rectangle *lines = splitLines(pic);
+        draw_rectangle(picture_get_image(), lines[0], 0, 0, ~0);
+        printf("x : %u, y : %u, w : %u, h : %u\n", lines[0].x, lines[0].y, lines[0].w, lines[0].h);
+        picture_save_to_file("./teste.png");
         morph_erode(pic->pixels, pic->w, pic->h, 2, 2);
         binary_to_gdk(pic, &pixbuf);
         picture_save_pixbuf(pixbuf, "./truc.png");

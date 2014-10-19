@@ -3,9 +3,8 @@
 
 int sample_filter(GdkPixbuf *picture, char *parameters)
 {
-    printf("%s\n", parameters);
-    int ht,wt;
-    int i,j;
+    int ht, wt;
+    int i, j;
     int rowstride;
     int bpp;
     unsigned int grayscale;
