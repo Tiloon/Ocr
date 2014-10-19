@@ -39,13 +39,13 @@ void computeData(Layer *Input, Layer *Hidden, Layer *Output);
 ** Will be used for continuing (or not) the learning loop 
 ** Expected x= nbPattern to recognize, y= nbOutput neurons
 */
-void computeError(long double **expected, long double **computed, long double *error, unsigned nbPatterns, unsigned nbOutputNeurons);
+void computeError(long double ***expected, long double ***computed, long double *error, unsigned nbPatterns, unsigned nbOutputNeurons);
 
 
 /* Compute the delta for each output neurone
 ** expected is a tab of value of length OuputLayer.Units
 */
-void  computeDeltaOutput(long double **expected, Layer *OutputLayer,
+void  computeDeltaOutput(long double ***expected, Layer *OutputLayer,
 			 unsigned numberPatterns);
 
 // Compute the delta for each hidden neurone
@@ -65,7 +65,14 @@ void updateWeights(Layer *LayerToUpdate);
 void resultsToTab(Layer *OutputLayer, long double **results);
 
 //Gather all the functions of learning part
-void learning(long double **expected, long double **computed,
+void learning(long double ***expected, long double ***computed,
 	      long double *error, unsigned nbPatterns,
 	      Layer *Input, Layer *Hidden, Layer *Output,
 	      long double eta0, long double alpha);
+
+//Compute result with a specific pattern
+void computePattern(long double ***expected, long double ***computed,
+		    long double *patterns, long double nbPatterns, 
+		    Layer *Input, Layer *Hidden, Layer *Output,
+		    long double eta0, long double alpha, long double *error,
+		    long double *results);

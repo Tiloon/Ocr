@@ -21,10 +21,12 @@
 //***********************************//
 // Tests functions                   //
 //**********************************///
-void printt(long double tab[4][2])
+void printt(long double ***tab)
 {
-    printf("%Lf\n",  tab[0][0]);
-
+    unsigned j = 0, i = 0;
+    for(i = 0; i < 4; i++)
+	for(j = 0; j < 2; j++)
+	    printf("%Lf\n\n", (*tab)[i][j]);
 }
 
 int main(void)
@@ -42,43 +44,37 @@ int main(void)
     long double error = 0;
     long double *results;
     
-       
-   
+    long double *input1 = {0, 0};
+    long double *input2 = {1, 0};
+    long double *input3 = {0, 1};
+    long double *input4 = {1, 1};
+
     unsigned i = 0;
-    
-       
-    long double **input;
-//[4][2] = {{0,0},{0,1},{1,0},{1,1}};
-    long double expected[4][1] = {{0}, {1}, {1}, {0}};
-    
-    input = malloc(sizeof(long double) * 4);
+        
+    long double **expected;
+    long double **computed;
+
+    computed = malloc(sizeof(long double) * 4);
     for(i = 0; i < 4; i++)
-	input[i] = malloc(sizeof(long double) * 2);
-    
-    input[0][0] = 12;
-    input[0][1] = 120;
-    input[1][0] = 1;
-    input[1][1] = 10;
-    input[2][0] = 1;
-    input[2][1] = 11;
-    input[3][0] = 7;
-    input[3][1] = 70;
-    
+        computed[i] = malloc(sizeof(long double) * 1);
+
+    computed[0][0] = 0.537430;
+    computed[1][0] = 0.544749;
+    computed[2][0] = 0.545359;
+    computed[3][0] = 0.551927;
 
     
-    /*printf("%Lf\n", input[0][0]);
-    printf("%Lf\n", input[0][1]);
-    printf("%Lf\n", input[1][0]);
-    printf("%Lf\n", input[1][1]);
-    printf("%Lf\n", input[2][0]);
-    printf("%Lf\n", input[2][1]);
-    printf("%Lf\n", input[3][0]);
-    printf("%Lf\n", input[3][1]);*/
-
-    printf(input);
-
+    expected = malloc(sizeof(long double) * 4);
+    for(i = 0; i < 4; i++)
+    	expected[i] = malloc(sizeof(long double) * 1);
     
-    initializeLayer(&Input, 3, 2);
+    
+    expected[0][0] = 0;
+    expected[1][0] = 1;
+    expected[2][0] = 1;
+    expected[3][0] = 0;
+            
+    initializeLayer(&Input, 2, 2);
     initializeLayer(&Hidden, 2, 1);
     initializeLayer(&Output, 1, 1);
     
@@ -87,21 +83,25 @@ int main(void)
     Input.Units[0].weights[1] = 0.2;
    
     
-    Input.Units[1].computedValue = 2;
+    Input.Units[1].computedValue = 1;
     Input.Units[1].weights[0] = 0.5;
     Input.Units[1].weights[1] = 0.3;
-
- 
-    Input.Units[2].computedValue = 3;
-    Input.Units[2].weights[0] = 0.5;
-    Input.Units[2].weights[1] = 0.1;
-
+   
     Hidden.Units[0].weights[0] = 0.2;
     Hidden.Units[1].weights[0] = 0.1;
     
     
     computeData(&Input, &Hidden, &Output);
-    //printt(&input);
+
+    for(i = 0; i < 1000; i++)
+    {
+	error = 0;
+        //TO DO
+	computePattern(&expected, &computed, input1, 4, &Input, &Hidden,
+		       &Output, ETA, ALPHA, &error, results);
+	printf("%Lf\n", Output.Units[0].computedValue); 
+    }
+
     
     return 0;
 }
@@ -191,26 +191,24 @@ void computeData(Layer *Input, Layer *Hidden, Layer *Output)
     computeSum(Hidden, Output);
 }
 
-void computeError(long double **expected, long double **computed, 
+void computeError(long double ***expected, long double ***computed, 
 		  long double *error,
 		  unsigned nbPatterns, unsigned nbOutputNeurons)
 {
     // p as pattern and n as (output) neuron 
-    unsigned p, n;
-    
-    
-    for(p=0; p < nbPatterns; p++)
+    unsigned p, n;    
+    for(p = 0; p < nbPatterns; p++)
     {	
-	for(n=0; n < nbOutputNeurons; n++)
+	for(n = 0; n < nbOutputNeurons; n++)
 	{
 	    *error += 0.5 * 
-		(expected[p][n] - computed[p][n]) * 
-		(expected[p][n] - computed[p][n]) ;
+		((*expected)[p][n] - (*computed)[p][n]) * 
+		((*expected)[p][n] - (*computed)[p][n]) ;
 	}
     }
 }
 
-void computeDeltaOutput(long double **expected, Layer *OutputLayer, 
+void computeDeltaOutput(long double ***expected, Layer *OutputLayer, 
 			unsigned numberPatterns)
 {
     //p as patterns, n as (output) neurons
@@ -222,7 +220,7 @@ void computeDeltaOutput(long double **expected, Layer *OutputLayer,
 	    //Compute the delta for each output neuron
 	    //This calculus is actually the derivate of the sigmoid function
 	    OutputLayer->Units[n].delta = 
-		(expected[p][n] - OutputLayer->Units[n].computedValue) * 
+		((*expected)[p][n] - OutputLayer->Units[n].computedValue) * 
 		OutputLayer->Units[n].computedValue *
 		(1.0 - OutputLayer->Units[n].computedValue);
 	}
@@ -290,14 +288,29 @@ void resultsToTab(Layer *OutputLayer, long double **results)
     }
 }
 
-void learning(long double **expected, long double **computed,
-    long double *error, unsigned nbPatterns,
-    Layer *Input, Layer *Hidden, Layer *Output,
-    long double eta0, long double alpha)
+void learning(long double ***expected, long double ***computed,
+	      long double *error, unsigned nbPatterns,
+	      Layer *Input, Layer *Hidden, Layer *Output,
+	      long double eta0, long double alpha)
 {
     computeError(expected, computed, error, nbPatterns, Output->numberUnits);
-    //computeDeltaOutput(expected, Output, nbPatterns);
-    //computeDeltaHidden(Hidden, Output);
-    //computeDeltaWeight(eta0, alpha, Input, Hidden);
-    //computeDeltaWeight(eta0, alpha, Hidden, Output);
+    computeDeltaOutput(expected, Output, nbPatterns);
+    computeDeltaHidden(Hidden, Output);
+    computeDeltaWeight(eta0, alpha, Input, Hidden);
+    computeDeltaWeight(eta0, alpha, Hidden, Output);
+}
+
+void computePattern(long double ***expected, long double ***computed,
+                    long double *patterns, long double nbPatterns,
+                    Layer *Input, Layer *Hidden, Layer *Output,
+                    long double eta0, long double alpha, long double *error,
+                    long double *results)
+{
+    unsigned u;
+    for(u = 0; u < Input->numberUnits; u++)
+    {
+	Input->Units[u].computedValue = patterns[u];
+	learning(expected, computed, error, nbPatterns, Input, Hidden,
+		 Output, eta0, alpha);
+    }
 }
