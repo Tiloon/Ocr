@@ -1,0 +1,4 @@
+-> Mettre en place le learning
+-> 1)Donner une liste de liste de pattern (0, 1... pour les XOR)
+-> Et lancer le learning.
+-> Trouver d'où vient le segfault...

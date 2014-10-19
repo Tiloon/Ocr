@@ -1,77 +1,69 @@
 #include "split_chars.h"
 
+    unsigned int max(unsigned int a, unsigned int b)
+{
+    return a > b ? a : b;
+}
+
+unsigned int min(unsigned int a, unsigned int b)
+{
+    return a < b ? a : b;
+}
+
 struct s_rectangle* splitChars(struct s_binarypic picture,int *tab)
 {
-    int i,j, height, width, row, bpp;
-    int nbrCar, nbrLigne, carFound, coord, coord2;
-    struct s_caractere *rep; //need alloc i guess
-    char *pixel;
+    unsigned int i, j, is_white, char_found, up, down;
+    size_t current;
+    struct s_rectangle *chars;
 
-    height = gdk_pixbuf_get_height(picture);
-    width = gdk_pixbuf_get_width(picture);
-    pixel = gdk_pixbuf_get_pixels(picture);
+    current = 0;
+    chars = malloc(1 * sizeof(struct s_rectangle));
+    char_found = 0;
 
-
-    if(gdk_pixbuf_get_bits_per_sample(pixel)!=8)
-        return 1; //add error
-
-    nbrLigne = 0;
-    nbrCar = 0;
-    carFound = 0;
-    j = 0;
-    bpp = 3;
-    row = width * bpp;
-    rep = malloc(0 * sizeof(*rep)); //need confirmation
-
-
-    while(1)
+    for(j = 0; i < picture->w; j++)
     {
+        is_white = 1;
 
-        for(;j<width && carFound==0;j+=bpp)
+        // up and down are chars bounds.
+        up = picture->h;
+        down = 0;
+
+        for(i = 0; i < picture->h; i++)
         {
-            for(i=tab[nbrLigne];i<=tab[nbrLigne+1]
-                    && carFound == 0;i++)
-            {
-                if(pixel[tab[nbrLigne]*row+j] == 0
-                        && pixel[tab[nbrLigne]*row+j+1]==0
-                        && pixel[tab[nbrLigne]*row+j+2]==0)
-                {
-                    carFound = 1;
-                    coord = j;
-                }
-            }
+            // First black pixel we meet
+            if(is_white && (picture->pixels[i * picture->w + j] == 0))
+                up = i;
+
+            is_white = is_white && picture->pixels[i * picture->w + j];
+
+            // Last black pixel we meet
+            if(picture->pixels[i * picture->w + j] == 0)
+                down = i;
         }
-        if(j>=width)
-            return rep;
-        //condition d arret
-        carFound = 0;
-        rep = realloc(rep, (nbrCar + 1) * sizeof(*rep)); //need confirm
-        rep[nbrCar].x = coord;
-        rep[nbrCar].y = tab[nbrLigne];
-        rep[nbrCar].h = tab[nbrLigne] - tab[nbrLigne+1];
-        for(;j<width && carFound == 1;j+=bpp)
+        if(!is_white)
         {
-            carFound = 0;
-            for(i=tab[nbrLigne];i<=tab[nbrLigne+1]
-                    && carFound == 0;i++)
+            if(!char_found)
             {
-                if(pixel[ i * row + j] == 255
-                        && pixel[i * row + j + 1] == 255
-                        && pixel[i * row + j + 2] == 255)
-                {
-                    carFound = 1;
-                    coord2 = j;
-                }
-
+                chars = realloc(chars,
+                        (current + 1) * sizeof(struct s_rectangle));
+                chars[current].y = up;
+                chars[current].x = j;
+                chars[current].h = down;
+                current++;
             }
+            chars[current - 1].y = min(chars[current - 1].y, up);
+            chars[current - 1].h = max(chars[current - 1].h, down);
         }
-        if(j>=width)
-            return rep;
-        //condition d arret
-        rep[nbrCar].w = coord2 - coord;
-        carFound = 0;
-        nbrLigne += 2;
-        nbrCar++;
+        if(is_white && char_found)
+        {
+            chars[current - 1].w = j - chars[current - 1].x;
+            chars[current - 1].h = chars[current - 1].h -
+                chars[current - 1].y;
+        }
+        char_found = !is_white;
+    }
 
-    } //endwhile
+    chars[current] = 0;
+
+    return chars;
 }
