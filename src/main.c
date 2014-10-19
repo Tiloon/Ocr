@@ -41,8 +41,12 @@ int main(int argc, char *argv[])
         pixbuf = NULL;
         gdk_to_binary(picture_get_image(), pic);
         struct s_rectangle *lines = splitLines(pic);
-        draw_rectangle(picture_get_image(), lines[0], 0, 0, ~0);
-        printf("x : %u, y : %u, w : %u, h : %u\n", lines[0].x, lines[0].y, lines[0].w, lines[0].h);
+        while(lines->x)
+        {
+            draw_rectangle(picture_get_image(), *lines, 0, 0, ~0);
+            printf("x : %u, y : %u, w : %u, h : %u\n", lines->x, lines->y, lines->w, lines->h);
+            lines++;
+        }
         picture_save_to_file("./teste.png");
         morph_erode(pic->pixels, pic->w, pic->h, 2, 2);
         binary_to_gdk(pic, &pixbuf);
