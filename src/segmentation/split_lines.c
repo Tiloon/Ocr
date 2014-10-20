@@ -46,7 +46,7 @@ struct s_rectangle* splitLines(struct s_binarypic *picture)
         }
         if(is_white && line_found)
         {
-            lines[current - 1].h = i; // - lines[current - 1].y;
+            lines[current - 1].h = i - lines[current - 1].y; // - lines[current - 1].y;
             lines[current - 1].w = lines[current - 1].w -
                 lines[current - 1].x;
         }

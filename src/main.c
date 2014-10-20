@@ -41,19 +41,21 @@ int main(int argc, char *argv[])
         pixbuf = NULL;
         gdk_to_binary(picture_get_image(), pic);
         struct s_rectangle *lines = splitLines(pic);
+        struct s_rectangle *chars, *base_chars;
         while(lines->x)
         {
             draw_rectangle(picture_get_image(), *lines, 0, 0, ~0);
             printf("\nline : \n");
             printf("x : %u, y : %u, w : %u, h : %u\n", lines->x, lines->y, lines->w, lines->h);
-            struct s_rectangle *chars = splitChars(*pic, lines);
+            base_chars = chars= splitChars(pic, lines);
             printf("\nchars : \n");
-            while(chars->y)
+            while(chars && chars->y)
             {
                 draw_rectangle(picture_get_image(), *chars, ~0, 0, 0);
                 printf("x : %u, y : %u, w : %u, h : %u\n", chars->x, chars->y, chars->w, chars->h);
                 chars++;
             }
+            free(base_chars);
             lines++;
         }
         picture_save_to_file("./teste.png");

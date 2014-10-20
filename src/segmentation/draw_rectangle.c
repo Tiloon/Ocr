@@ -18,7 +18,7 @@ int draw_rectangle(GdkPixbuf *picture, struct s_rectangle rect, guchar r,
     bpp = 3;
     rowstride = wt * bpp;
 
-    for(i = rect.y; i < rect.h; i++)
+    for(i = rect.y; i < (rect.h + rect.y); i++)
     {
         if(i > ht)
             break;
@@ -38,9 +38,9 @@ int draw_rectangle(GdkPixbuf *picture, struct s_rectangle rect, guchar r,
         pixel[rect.y * rowstride + i * 3  + 1] = g;
         pixel[rect.y * rowstride + i * 3 + 2] = b;
 
-        pixel[rect.h * rowstride + i * 3] = r;
-        pixel[rect.h * rowstride + i * 3 + 1] = g;
-        pixel[rect.h * rowstride + i * 3 + 2] = b;
+        pixel[(rect.h + rect.y) * rowstride + i * 3] = r;
+        pixel[(rect.h + rect.y) * rowstride + i * 3 + 1] = g;
+        pixel[(rect.h + rect.y) * rowstride + i * 3 + 2] = b;
     }
     return 0;
 }
