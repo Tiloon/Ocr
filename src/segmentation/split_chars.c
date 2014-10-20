@@ -1,14 +1,5 @@
 #include "split_chars.h"
 
-    unsigned int max(unsigned int a, unsigned int b)
-{
-    return a > b ? a : b;
-}
-
-unsigned int min(unsigned int a, unsigned int b)
-{
-    return a < b ? a : b;
-}
 
 struct s_rectangle* splitChars(struct s_binarypic picture, 
 	struct s_rectangle *line)
@@ -64,7 +55,10 @@ struct s_rectangle* splitChars(struct s_binarypic picture,
         char_found = !is_white;
     }
 
-    chars[current] = 0;
+    chars[current].w = 0;
+    chars[current].x = 0;
+    chars[current].y = 0;
+    chars[current].h = 0;
 
     return chars;
 }

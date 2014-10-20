@@ -1,15 +1,5 @@
 #include "split_lines.h"
 
-unsigned int max(unsigned int a, unsigned int b)
-{
-    return a > b ? a : b;
-}
-
-unsigned int min(unsigned int a, unsigned int b)
-{
-    return a < b ? a : b;
-}
-
 struct s_rectangle* splitLines(struct s_binarypic *picture)
 {
     unsigned int i, j, is_white, line_found, left, right;

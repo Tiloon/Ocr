@@ -9,6 +9,7 @@
 #include "filters/filters.h"
 #include "segmentation/text_picture_segmentation.h"
 #include "segmentation/split_lines.h"
+#include "segmentation/split_chars.h"
 #include "picture/convert_pic.h"
 #include "segmentation/draw_rectangle.h"
 #include "segmentation/morphology.h"
