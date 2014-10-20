@@ -43,47 +43,33 @@ int main(void)
  
     long double error = 0;
     long double *results;
+    results = malloc(sizeof(long double) *1);
     
-    long double *input1 = {0, 0};
-    long double *input2 = {1, 0};
-    long double *input3 = {0, 1};
-    long double *input4 = {1, 1};
+    //long double input1[] = {0, 0};
+    //long double input2[] = {1, 0};
+    //long double input3[] = {0, 1};
+    //long double input4[] = {1, 1};
+    
+    long double *expected1;
+    expected1 = malloc(sizeof(long double)*1);
+    expected1[0] = 0;
+    
+    long double *expected2 = {1};
+    long double *expected3 = {1};
+    long double *expected4 = {0};
 
     unsigned i = 0;
         
-    long double **expected;
-    long double **computed;
-
-    computed = malloc(sizeof(long double) * 4);
-    for(i = 0; i < 4; i++)
-        computed[i] = malloc(sizeof(long double) * 1);
-
-    computed[0][0] = 0.537430;
-    computed[1][0] = 0.544749;
-    computed[2][0] = 0.545359;
-    computed[3][0] = 0.551927;
-
-    
-    expected = malloc(sizeof(long double) * 4);
-    for(i = 0; i < 4; i++)
-    	expected[i] = malloc(sizeof(long double) * 1);
-    
-    
-    expected[0][0] = 0;
-    expected[1][0] = 1;
-    expected[2][0] = 1;
-    expected[3][0] = 0;
-            
     initializeLayer(&Input, 2, 2);
     initializeLayer(&Hidden, 2, 1);
     initializeLayer(&Output, 1, 1);
     
-    Input.Units[0].computedValue = 1;
+    Input.Units[0].computedValue = -12;
     Input.Units[0].weights[0] = 0.5;
     Input.Units[0].weights[1] = 0.2;
    
     
-    Input.Units[1].computedValue = 1;
+    Input.Units[1].computedValue = -12;
     Input.Units[1].weights[0] = 0.5;
     Input.Units[1].weights[1] = 0.3;
    
@@ -93,13 +79,14 @@ int main(void)
     
     computeData(&Input, &Hidden, &Output);
 
-    for(i = 0; i < 1000; i++)
+    error = 0;
+    for(i = 0; i < 1; i++)
     {
-	error = 0;
         //TO DO
-	computePattern(&expected, &computed, input1, 4, &Input, &Hidden,
-		       &Output, ETA, ALPHA, &error, results);
-	printf("%Lf\n", Output.Units[0].computedValue); 
+	computeData(&Input, &Hidden, &Output);
+	resultsToTab(&Output, &results);
+	computeError(&expected1, &results, &error, 1);
+	printf("%Lf\n", error);
     }
 
     
@@ -156,7 +143,11 @@ void initializeNeuron(Neural *Neuron, unsigned pNumberWeights)
     }
 }
 
-void freeLayer(Layer *Layer)
+//----------------------------//
+//         TO DO              //
+//----------------------------//
+
+/*void freeLayer(Layer *Layer)
 {
     //TO DO
 }
@@ -164,7 +155,7 @@ void freeNeuron(Neural *Neural)
 {
     //TO DO
 }
-
+*/
 
 void  computeSum(Layer *Layer1, Layer *Layer2)
 {
@@ -191,40 +182,32 @@ void computeData(Layer *Input, Layer *Hidden, Layer *Output)
     computeSum(Hidden, Output);
 }
 
-void computeError(long double ***expected, long double ***computed, 
-		  long double *error,
-		  unsigned nbPatterns, unsigned nbOutputNeurons)
+void computeError(long double **expected, long double **computed, 
+		  long double *error, unsigned nbOutputNeurons)
 {
     // p as pattern and n as (output) neuron 
-    unsigned p, n;    
-    for(p = 0; p < nbPatterns; p++)
-    {	
-	for(n = 0; n < nbOutputNeurons; n++)
-	{
-	    *error += 0.5 * 
-		((*expected)[p][n] - (*computed)[p][n]) * 
-		((*expected)[p][n] - (*computed)[p][n]) ;
-	}
+    unsigned n;    
+    for(n = 0; n < nbOutputNeurons; n++)
+    {
+	*error += 0.5 * 
+	    ((*expected)[n] - (*computed)[n]) * 
+	    ((*expected)[n] - (*computed)[n]) ;
     }
 }
 
-void computeDeltaOutput(long double ***expected, Layer *OutputLayer, 
-			unsigned numberPatterns)
+void computeDeltaOutput(long double **expected, Layer *OutputLayer)
 {
-    //p as patterns, n as (output) neurons
-    unsigned p, n;
-    for(p = 0; p < numberPatterns; p++)
-    {
+    // n as (output) neurons
+    unsigned n;
 	for(n = 0; n < OutputLayer->numberUnits; n++)
 	{
 	    //Compute the delta for each output neuron
 	    //This calculus is actually the derivate of the sigmoid function
 	    OutputLayer->Units[n].delta = 
-		((*expected)[p][n] - OutputLayer->Units[n].computedValue) * 
+		((*expected)[n] - OutputLayer->Units[n].computedValue) * 
 		OutputLayer->Units[n].computedValue *
 		(1.0 - OutputLayer->Units[n].computedValue);
 	}
-    }
 }
  
 
@@ -280,37 +263,9 @@ void computeDeltaWeight(long double eta0, long double alpha,
 
 void resultsToTab(Layer *OutputLayer, long double **results)
 {
-    *results = malloc (sizeof(long double)  * OutputLayer->numberUnits);
     unsigned u;
     for(u = 0; u < OutputLayer->numberUnits; u++)
     {
 	(*results)[u] = OutputLayer->Units[u].computedValue;	
-    }
-}
-
-void learning(long double ***expected, long double ***computed,
-	      long double *error, unsigned nbPatterns,
-	      Layer *Input, Layer *Hidden, Layer *Output,
-	      long double eta0, long double alpha)
-{
-    computeError(expected, computed, error, nbPatterns, Output->numberUnits);
-    computeDeltaOutput(expected, Output, nbPatterns);
-    computeDeltaHidden(Hidden, Output);
-    computeDeltaWeight(eta0, alpha, Input, Hidden);
-    computeDeltaWeight(eta0, alpha, Hidden, Output);
-}
-
-void computePattern(long double ***expected, long double ***computed,
-                    long double *patterns, long double nbPatterns,
-                    Layer *Input, Layer *Hidden, Layer *Output,
-                    long double eta0, long double alpha, long double *error,
-                    long double *results)
-{
-    unsigned u;
-    for(u = 0; u < Input->numberUnits; u++)
-    {
-	Input->Units[u].computedValue = patterns[u];
-	learning(expected, computed, error, nbPatterns, Input, Hidden,
-		 Output, eta0, alpha);
     }
 }
