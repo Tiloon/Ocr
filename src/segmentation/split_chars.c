@@ -9,7 +9,7 @@ struct s_rectangle* splitChars(struct s_binarypic picture,
     struct s_rectangle *chars;
 
     current = 0;
-    chars = malloc(1 * sizeof(struct s_rectangle));
+    chars = NULL;
     char_found = 0;
 
     for(j = line->x; i < line->w; j++)
