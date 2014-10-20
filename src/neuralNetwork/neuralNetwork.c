@@ -21,13 +21,6 @@
 //***********************************//
 // Tests functions                   //
 //**********************************///
-void printt(long double ***tab)
-{
-    unsigned j = 0, i = 0;
-    for(i = 0; i < 4; i++)
-	for(j = 0; j < 2; j++)
-	    printf("%Lf\n\n", (*tab)[i][j]);
-}
 
 int main(void)
 {
@@ -45,10 +38,10 @@ int main(void)
     long double *results;
     results = malloc(sizeof(long double) *1);
     
-    //long double input1[] = {0, 0};
-    //long double input2[] = {1, 0};
-    //long double input3[] = {0, 1};
-    //long double input4[] = {1, 1};
+    long double *input1;
+    input1 = malloc(sizeof(long double) * 2);
+    input1[0] = 0;
+    input1[1] = 0;
     
     long double *expected1;
     expected1 = malloc(sizeof(long double)*1);
@@ -64,29 +57,32 @@ int main(void)
     initializeLayer(&Hidden, 2, 1);
     initializeLayer(&Output, 1, 1);
     
-    Input.Units[0].computedValue = -12;
+    Input.Units[0].computedValue = 0;
     Input.Units[0].weights[0] = 0.5;
     Input.Units[0].weights[1] = 0.2;
    
     
-    Input.Units[1].computedValue = -12;
+    Input.Units[1].computedValue = 0;
     Input.Units[1].weights[0] = 0.5;
     Input.Units[1].weights[1] = 0.3;
    
     Hidden.Units[0].weights[0] = 0.2;
     Hidden.Units[1].weights[0] = 0.1;
     
-    
-    computeData(&Input, &Hidden, &Output);
 
     error = 0;
     for(i = 0; i < 1; i++)
     {
         //TO DO
-	computeData(&Input, &Hidden, &Output);
+	computePattern(input1, &Input, &Hidden, &Output);
+	printf("%Lf <- final output\n", Output.Units[0].computedValue);
 	resultsToTab(&Output, &results);
+	printf("%Lf <- final output in tab\n", results[0]);
 	computeError(&expected1, &results, &error, 1);
-	printf("%Lf\n", error);
+	printf("%Lf <- error expected\n", 
+	       0.5 * (expected1[0] - results[0]) *
+	       (expected1[0] - results[0]));
+	printf("%Lf <- error computed\n", error);
     }
 
     
@@ -268,4 +264,15 @@ void resultsToTab(Layer *OutputLayer, long double **results)
     {
 	(*results)[u] = OutputLayer->Units[u].computedValue;	
     }
+}
+
+void computePattern(long double *patternInput,
+		    Layer *Input, Layer *Hidden, Layer *Output)
+{
+    unsigned n;
+    for(n = 0; n < Input->numberUnits; n++)
+    {
+	Input->Units[n].computedValue = patternInput[n];
+    }
+    computeData(Input, Hidden, Output);
 }

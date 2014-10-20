@@ -62,3 +62,7 @@ void updateWeights(Layer *LayerToUpdate);
 
 //Give all the computed output values in a tab
 void resultsToTab(Layer *OutputLayer, long double **results);
+
+//Give the patternInput in input neurons and start computing
+void computePattern(long double *patternInput,
+                    Layer *Input, Layer *Hidden, Layer *Output);
