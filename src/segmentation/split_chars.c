@@ -10,7 +10,8 @@ unsigned int min(unsigned int a, unsigned int b)
     return a < b ? a : b;
 }
 
-struct s_rectangle* splitChars(struct s_binarypic picture,int *tab)
+struct s_rectangle* splitChars(struct s_binarypic picture, 
+	struct s_rectangle *line)
 {
     unsigned int i, j, is_white, char_found, up, down;
     size_t current;
@@ -20,7 +21,7 @@ struct s_rectangle* splitChars(struct s_binarypic picture,int *tab)
     chars = malloc(1 * sizeof(struct s_rectangle));
     char_found = 0;
 
-    for(j = 0; i < picture->w; j++)
+    for(j = line->x; i < line->w; j++)
     {
         is_white = 1;
 
@@ -28,7 +29,7 @@ struct s_rectangle* splitChars(struct s_binarypic picture,int *tab)
         up = picture->h;
         down = 0;
 
-        for(i = 0; i < picture->h; i++)
+        for(i = line->y; i < line->h; i++)
         {
             // First black pixel we meet
             if(is_white && (picture->pixels[i * picture->w + j] == 0))
