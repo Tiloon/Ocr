@@ -26,19 +26,19 @@ struct s_rectangle* splitChars(struct s_binarypic picture,
         is_white = 1;
 
         // up and down are chars bounds.
-        up = picture->h;
+        up = picture.h;
         down = 0;
 
         for(i = line->y; i < line->h; i++)
         {
             // First black pixel we meet
-            if(is_white && (picture->pixels[i * picture->w + j] == 0))
+            if(is_white && (picture.pixels[i * picture.w + j] == 0))
                 up = i;
 
-            is_white = is_white && picture->pixels[i * picture->w + j];
+            is_white = is_white && picture.pixels[i * picture.w + j];
 
             // Last black pixel we meet
-            if(picture->pixels[i * picture->w + j] == 0)
+            if(picture.pixels[i * picture.w + j] == 0)
                 down = i;
         }
         if(!is_white)
