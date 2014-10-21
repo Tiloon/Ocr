@@ -33,26 +33,81 @@ int main(void)
     Layer Input;
     Layer Hidden;
     Layer Output;
- 
-    long double error = 0;
+    
+    unsigned p;
+    
     long double *results;
     results = malloc(sizeof(long double) *1);
+    long double error = 0;
     
+    long double **patternList;
+    patternList = malloc(sizeof(long double) * 4);
+    for(p = 0; p < 4; p++)
+	patternList[p] = malloc(sizeof(long double) * 1);  
+    long double **expectedResults;
+    expectedResults = malloc(sizeof(long double) * 4);
+    for(p = 0; p < 4; p++)
+	expectedResults[p] = malloc(sizeof(long double) * 1);
+
+    //Declaration of XOR input truth table
+    long double *input0;
+    input0 = malloc(sizeof(long double) * 2);
+    input0[0] = 0;
+    input0[1] = 0;
+   
     long double *input1;
     input1 = malloc(sizeof(long double) * 2);
-    input1[0] = 0;
+    input1[0] = 1;
     input1[1] = 0;
+    
+    long double *input2;
+    input2 = malloc(sizeof(long double) * 2);
+    input2[0] = 0;
+    input2[1] = 1;
+    
+    long double *input3;
+    input3 = malloc(sizeof(long double) * 2);
+    input3[0] = 1;
+    input3[1] = 1;
+    
+    //Gather all pattern in a list
+    patternList[0] = input0;
+    patternList[1] = input1;
+    patternList[2] = input2;
+    patternList[3] = input3;
+    
+    //Declaration of expected result (of XOR truth table)
+    long double *expected0;
+    expected0 = malloc(sizeof(long double)*1);
+    expected0[0] = 0;
     
     long double *expected1;
     expected1 = malloc(sizeof(long double)*1);
-    expected1[0] = 0;
-    
-    long double *expected2 = {1};
-    long double *expected3 = {1};
-    long double *expected4 = {0};
+    expected1[0] = 1;
 
+    long double *expected2;
+    expected2 = malloc(sizeof(long double)*1);
+    expected2[0] = 1;
+    
+    long double *expected3;
+    expected3 = malloc(sizeof(long double)*1);
+    expected3[0] = 0;
+    
+    //Gather all expected results in a list
+    expectedResults[0] = expected0;
+    expectedResults[1] = expected1;
+    expectedResults[2] = expected2;
+    expectedResults[3] = expected3;
+    
+    //Will be used for storing the list of results according to each patterns
+    long double **computedPatternResults;
+    computedPatternResults = malloc(sizeof(long double) * 4);
+    for(p = 0; p < 4; p++)
+	computedPatternResults[p] = malloc(sizeof(long double) * 1);
+    
     unsigned i = 0;
         
+    //Initialising neural network
     initializeLayer(&Input, 2, 2);
     initializeLayer(&Hidden, 2, 1);
     initializeLayer(&Output, 1, 1);
@@ -60,7 +115,6 @@ int main(void)
     Input.Units[0].computedValue = 0;
     Input.Units[0].weights[0] = 0.5;
     Input.Units[0].weights[1] = 0.2;
-   
     
     Input.Units[1].computedValue = 0;
     Input.Units[1].weights[0] = 0.5;
@@ -71,19 +125,23 @@ int main(void)
     
 
     error = 0;
-    for(i = 0; i < 1; i++)
+/*    for(i = 0; i < 1; i++)
     {
-        //TO DO
-	computePattern(input1, &Input, &Hidden, &Output);
+	computePattern(patternList[1], &Input, &Hidden, &Output);
 	printf("%Lf <- final output\n", Output.Units[0].computedValue);
 	resultsToTab(&Output, &results);
 	printf("%Lf <- final output in tab\n", results[0]);
-	computeError(&expected1, &results, &error, 1);
+	computeError(&expected2, &results, &error, 1);
 	printf("%Lf <- error expected\n", 
 	       0.5 * (expected1[0] - results[0]) *
 	       (expected1[0] - results[0]));
 	printf("%Lf <- error computed\n", error);
     }
+*/
+    computeAllPatern(&patternList, 4, &Input, &Hidden, &Output,
+		     &computedPatternResults);
+    
+    printf("%Lf <- error\n", error);
 
     
     return 0;
@@ -262,6 +320,7 @@ void resultsToTab(Layer *OutputLayer, long double **results)
     unsigned u;
     for(u = 0; u < OutputLayer->numberUnits; u++)
     {
+	printf("%u\n", u);
 	(*results)[u] = OutputLayer->Units[u].computedValue;	
     }
 }
@@ -275,4 +334,26 @@ void computePattern(long double *patternInput,
 	Input->Units[n].computedValue = patternInput[n];
     }
     computeData(Input, Hidden, Output);
+}
+
+void computeAllPatern(long double ***patternList, unsigned pNumberPatterns,
+		      Layer *Input, Layer*Hidden, Layer *Output,
+		      long double ***resultsTabPatterns)
+{
+    unsigned p;
+    for(p = 0; p < pNumberPatterns; p++)
+    {
+	computePattern((*patternList)[p], Input, Hidden, Output);
+	resultsToTab(Output, resultsTabPatterns[p]);
+    }
+}
+
+void computeError2(long double ***expected, long double ***computed,
+		   long double *error, unsigned pNumberNeurons)
+{
+    unsigned p;
+    for(p = 0; p < pNumberNeurons; p++)
+    {
+	computeError(expected[p], computed[p], error, pNumberNeurons);
+    }
 }

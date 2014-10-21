@@ -38,7 +38,8 @@ void computeData(Layer *Input, Layer *Hidden, Layer *Output);
 /* Compute the error between what expected and what computed
 ** Will be used for continuing (or not) the learning loop 
 */
-void computeError(long double **expected, long double **computed, long double *error, unsigned nbOutputNeurons);
+void computeError(long double **expected, long double **computed,
+		  long double *error, unsigned nbOutputNeurons);
 
 
 /* Compute the delta for each output neurone
@@ -54,8 +55,8 @@ void computeDeltaHidden(Layer *HiddenLayer, Layer *OutputLayer);
 ** It is used for Weights Input -> Hidden and Hidden -> Output
 ** It is the same calculus
 */
-void computeDeltaWeight(long double eta, long double alpha, Layer *LayerToUpdate,
-			Layer *NextLayer);
+void computeDeltaWeight(long double eta, long double alpha, 
+			Layer *LayerToUpdate, Layer *NextLayer);
 
 //Will use the computeDeltaWeight function to update the value of the weights
 void updateWeights(Layer *LayerToUpdate);
@@ -66,3 +67,12 @@ void resultsToTab(Layer *OutputLayer, long double **results);
 //Give the patternInput in input neurons and start computing
 void computePattern(long double *patternInput,
                     Layer *Input, Layer *Hidden, Layer *Output);
+//Call the compute Pattern function for all the patterns in the list
+//Will store the result list computed in the resultsTabPatterns
+void computeAllPatern(long double ***patternList, unsigned pNumberPatterns,
+		      Layer *Input, Layer *Hidden, Layer *Output,
+		      long double ***resultsTabPatterns);
+//Call the computeError function for all the patterns
+void computeError2(long double ***expected, long double ***computed,
+                   long double *error, unsigned pNumberNeurons);
+
