@@ -58,8 +58,6 @@ void computeDeltaHidden(Layer *HiddenLayer, Layer *OutputLayer);
 void computeDeltaWeight(long double eta, long double alpha, 
 			Layer *LayerToUpdate, Layer *NextLayer);
 
-//Will use the computeDeltaWeight function to update the value of the weights
-void updateWeights(Layer *LayerToUpdate);
 
 //Give all the computed output values in a tab
 void resultsToTab(Layer *OutputLayer, long double **results);

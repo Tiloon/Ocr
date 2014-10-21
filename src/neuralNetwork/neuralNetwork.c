@@ -125,25 +125,24 @@ int main(void)
     
 
     error = 0;
-/*    for(i = 0; i < 1; i++)
+    
+    computePattern(input1, &Input, &Hidden, &Output);
+    printf("La valeur calculée pour (0,0) est : %Lf\n",
+	   Output.Units[0].computedValue);
+    
+    for(i = 0; i < 100000; i++)
     {
-	computePattern(patternList[1], &Input, &Hidden, &Output);
-	printf("%Lf <- final output\n", Output.Units[0].computedValue);
+	computePattern(input1, &Input, &Hidden, &Output);
 	resultsToTab(&Output, &results);
-	printf("%Lf <- final output in tab\n", results[0]);
-	computeError(&expected2, &results, &error, 1);
-	printf("%Lf <- error expected\n", 
-	       0.5 * (expected1[0] - results[0]) *
-	       (expected1[0] - results[0]));
-	printf("%Lf <- error computed\n", error);
+	computeError(&expected1, &results, &error, 1);
+	computeDeltaOutput(&expected1, &Output);
+	computeDeltaHidden(&Hidden, &Output);
+	computeDeltaWeight(ETA, ALPHA, &Input, &Hidden);
+	computeDeltaWeight(ETA, ALPHA, &Hidden, &Output);
     }
-*/
-    computeAllPatern(&patternList, 4, &Input, &Hidden, &Output,
-		     &computedPatternResults);
-    
-    printf("%Lf <- error\n", error);
-
-    
+    printf("La valeur calculée pour (0,1) après %d itérations " 
+	   "d'apprentissage est : %Lf\n",
+	   i, Output.Units[0].computedValue);
     return 0;
 }
 
@@ -153,7 +152,7 @@ void initializeLayer(Layer *Layer, unsigned pNumberUnits,
 {
     Neural Neural;
     unsigned i;
-  
+   
     //Number of Neuron on the Layer
     Layer->numberUnits = pNumberUnits;
   
@@ -202,13 +201,13 @@ void initializeNeuron(Neural *Neuron, unsigned pNumberWeights)
 //----------------------------//
 
 /*void freeLayer(Layer *Layer)
-{
-    //TO DO
-}
-void freeNeuron(Neural *Neural)
-{
-    //TO DO
-}
+  {
+  //TO DO
+  }
+  void freeNeuron(Neural *Neural)
+  {
+  //TO DO
+  }
 */
 
 void  computeSum(Layer *Layer1, Layer *Layer2)
@@ -253,15 +252,15 @@ void computeDeltaOutput(long double **expected, Layer *OutputLayer)
 {
     // n as (output) neurons
     unsigned n;
-	for(n = 0; n < OutputLayer->numberUnits; n++)
-	{
-	    //Compute the delta for each output neuron
-	    //This calculus is actually the derivate of the sigmoid function
-	    OutputLayer->Units[n].delta = 
-		((*expected)[n] - OutputLayer->Units[n].computedValue) * 
-		OutputLayer->Units[n].computedValue *
-		(1.0 - OutputLayer->Units[n].computedValue);
-	}
+    for(n = 0; n < OutputLayer->numberUnits; n++)
+    {
+	//Compute the delta for each output neuron
+	//This calculus is actually the derivate of the sigmoid function
+	OutputLayer->Units[n].delta = 
+	    ((*expected)[n] - OutputLayer->Units[n].computedValue) * 
+	    OutputLayer->Units[n].computedValue *
+	    (1.0 - OutputLayer->Units[n].computedValue);
+    }
 }
  
 
@@ -319,10 +318,7 @@ void resultsToTab(Layer *OutputLayer, long double **results)
 {
     unsigned u;
     for(u = 0; u < OutputLayer->numberUnits; u++)
-    {
-	printf("%u\n", u);
 	(*results)[u] = OutputLayer->Units[u].computedValue;	
-    }
 }
 
 void computePattern(long double *patternInput,
