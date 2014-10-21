@@ -74,3 +74,9 @@ void computeAllPatern(long double ***patternList, unsigned pNumberPatterns,
 void computeError2(long double ***expected, long double ***computed,
                    long double *error, unsigned pNumberNeurons);
 
+//Call all the learning functions for one specific pattern
+void learnOnePattern(Layer *Input, Layer *Hidden, Layer *Output,
+		     long double *pattern, long double **resultsList, 
+		     long double **expectedResults,
+		     long double *error, long double eta, long double alpha,
+		     long double numberIterations);

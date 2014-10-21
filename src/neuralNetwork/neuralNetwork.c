@@ -126,23 +126,16 @@ int main(void)
 
     error = 0;
     
-    computePattern(input1, &Input, &Hidden, &Output);
-    printf("La valeur calculée pour (0,0) est : %Lf\n",
-	   Output.Units[0].computedValue);
+    //Quick example of learning on 1 input
+   
+    int iterations = 1000;
+    learnOnePattern(&Input, &Hidden, &Output, input0, &results,
+		    &expected0, &error, ETA, ALPHA, iterations);
     
-    for(i = 0; i < 100000; i++)
-    {
-	computePattern(input1, &Input, &Hidden, &Output);
-	resultsToTab(&Output, &results);
-	computeError(&expected1, &results, &error, 1);
-	computeDeltaOutput(&expected1, &Output);
-	computeDeltaHidden(&Hidden, &Output);
-	computeDeltaWeight(ETA, ALPHA, &Input, &Hidden);
-	computeDeltaWeight(ETA, ALPHA, &Hidden, &Output);
-    }
     printf("La valeur calculée pour (0,1) après %d itérations " 
 	   "d'apprentissage est : %Lf\n",
-	   i, Output.Units[0].computedValue);
+	   iterations, Output.Units[0].computedValue);
+    
     return 0;
 }
 
@@ -351,5 +344,24 @@ void computeError2(long double ***expected, long double ***computed,
     for(p = 0; p < pNumberNeurons; p++)
     {
 	computeError(expected[p], computed[p], error, pNumberNeurons);
+    }
+}
+
+void learnOnePattern(Layer *Input, Layer *Hidden, Layer *Output,
+                     long double *pattern, long double **resultsList,
+                     long double **expectedResults,
+                     long double *error, long double eta, long double alpha,
+                     long double numberIterations)
+{
+    unsigned i;
+    for(i = 0; i < numberIterations; i++)
+    {
+	computePattern(pattern, Input, Hidden, Output);
+	resultsToTab(Output, resultsList);
+        computeError(expectedResults, resultsList, error, 1);
+	computeDeltaOutput(expectedResults, Output);
+        computeDeltaHidden(Hidden, Output);
+        computeDeltaWeight(eta, alpha, Input, Hidden);
+	computeDeltaWeight(eta, alpha, Hidden, Output);
     }
 }
