@@ -142,8 +142,8 @@ int main(void)
     printf("Results (1,1) : %Lf\n", Output.Units[0].computedValue);
 */
 
-    //learnOnePattern(&Input, &Hidden, &Output, input0, &results, &expected0,
-    //&error, ETA, ALPHA, 1000);
+    learnOnePattern(&Input, &Hidden, &Output, input0, &results, &expected0,
+		    &error, ETA, ALPHA, 1000);
 
 
     computePattern(input0, &Input, &Hidden, &Output);                               
@@ -152,7 +152,37 @@ int main(void)
     computePattern(input1, &Input, &Hidden, &Output);                               
     printf("Results (1,0) : %Lf\n", Output.Units[0].computedValue); 
 
+    printf("%Lf\n", Input.Units[0].weights[0]);
+    printf("%Lf\n", Input.Units[0].weights[1]);
 
+    printf("%Lf\n", Input.Units[1].weights[0]);
+    printf("%Lf\n", Input.Units[1].weights[1]);
+    
+   
+    printf("%Lf\n", Hidden.Units[0].weights[0]);
+    printf("%Lf\n", Hidden.Units[1].weights[0]);
+
+    learnOnePattern(&Input, &Hidden, &Output, input0, &results, &expected0,
+                    &error, ETA, ALPHA, 1000);
+
+    
+    computePattern(input0, &Input, &Hidden, &Output);
+    printf("Results (0,0) : %Lf\n", Output.Units[0].computedValue);
+
+    computePattern(input1, &Input, &Hidden, &Output);
+    printf("Results (1,0) : %Lf\n", Output.Units[0].computedValue);
+
+    printf("%Lf\n", Input.Units[0].weights[0]);
+    printf("%Lf\n", Input.Units[0].weights[1]);
+
+    printf("%Lf\n", Input.Units[1].weights[0]);
+    printf("%Lf\n", Input.Units[1].weights[1]);
+
+
+    printf("%Lf\n", Hidden.Units[0].weights[0]);
+    printf("%Lf\n", Hidden.Units[1].weights[0]);
+
+    
     return 0;
 }
 

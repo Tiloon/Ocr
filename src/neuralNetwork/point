@@ -1,7 +1,1 @@
-voici mon pb: je suis entrain de systématiser le systeme de calcul pour chaque
-pattern. Mes fonctions fonctionnent très bien pour le calcul de la valeur 
-final pour un pattern et je suis entrain de faire une fonction qui va appeler 
-computePattern pour une liste de pattern. Mais je suis entrain de bloquer sur
-resultsToTab qui converti mes résultats sous forme de liste 
-(valeur de chaque neurone de sorti). Mais en gros il me faut une liste de liste :
-pour chaque pattern, je veux la liste des résultats de chaque neurone de sorti.
+Les poids des inputs -> Hidden ne changent pas... ?? A voir
