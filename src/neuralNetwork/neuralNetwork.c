@@ -110,24 +110,22 @@ int main(void)
     initializeLayer(&Hidden, 2, 1);
     initializeLayer(&Output, 1, 1);
     
-    Input.Units[0].computedValue = 0;
-    Input.Units[0].weights[0] = 0.5;
+    Input.Units[0].weights[0] = 0.8;
     Input.Units[0].weights[1] = 0.2;
     
-    Input.Units[1].computedValue = 0;
-    Input.Units[1].weights[0] = 0.5;
-    Input.Units[1].weights[1] = 0.3;
+    Input.Units[1].weights[0] = 0.4;
+    Input.Units[1].weights[1] = 0.6;
    
-    Hidden.Units[0].weights[0] = 0.2;
-    Hidden.Units[1].weights[0] = 0.1;
+    Hidden.Units[0].weights[0] = 0.7;
+    Hidden.Units[1].weights[0] = 0.3;
     
 
     error = 0;
     
     //Quick example of learning on 1 input
    
-    int iterations = 100000;
-    learnListPattern(&Input, &Hidden, &Output, &patternList, 4,
+    int iterations = 100;
+/*    learnListPattern(&Input, &Hidden, &Output, &patternList, 1,
 		     &computedPatternResults, &expectedResults,
 		     &error, ETA, ALPHA, iterations);
     
@@ -142,7 +140,17 @@ int main(void)
 
     computePattern(input3, &Input, &Hidden, &Output);
     printf("Results (1,1) : %Lf\n", Output.Units[0].computedValue);
+*/
 
+    //learnOnePattern(&Input, &Hidden, &Output, input0, &results, &expected0,
+    //&error, ETA, ALPHA, 1000);
+
+
+    computePattern(input0, &Input, &Hidden, &Output);                               
+    printf("Results (0,0) : %Lf\n", Output.Units[0].computedValue);                 
+                                                                                    
+    computePattern(input1, &Input, &Hidden, &Output);                               
+    printf("Results (1,0) : %Lf\n", Output.Units[0].computedValue); 
 
 
     return 0;
@@ -382,8 +390,19 @@ void learnListPattern(Layer *Input, Layer *Hidden, Layer *Output,
 	    learnOnePattern(Input, Hidden, Output, (*pattern)[p], 
 			    &(*resultsList)[p], &(*expectedResults)[p],
 			    error, eta, alpha, 1);
-	    printf("pattern %d, results %Lf\n",
-		   p, Output->Units[0].computedValue);
+	    
+	    /*computePattern((*pattern)[0], Input, Hidden, Output);
+	    printf("Results (0,0) : %Lf\n", Output->Units[0].computedValue);
+
+	    computePattern((*pattern)[1], Input, Hidden, Output);
+	    printf("Results (1,0) : %Lf\n", Output->Units[0].computedValue);
+
+	    computePattern((*pattern)[2], Input, Hidden, Output);
+	    printf("Results (0,1) : %Lf\n", Output->Units[0].computedValue);
+
+	    computePattern((*pattern)[3], Input, Hidden, Output);
+	    printf("Results (1,1) : %Lf\n", Output->Units[0].computedValue);
+	    */
 	}
     }
 }
