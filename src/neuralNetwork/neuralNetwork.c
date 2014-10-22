@@ -104,9 +104,7 @@ int main(void)
     computedPatternResults = malloc(sizeof(long double) * 4);
     for(p = 0; p < 4; p++)
 	computedPatternResults[p] = malloc(sizeof(long double) * 1);
-    
-    unsigned i = 0;
-        
+            
     //Initialising neural network
     initializeLayer(&Input, 2, 2);
     initializeLayer(&Hidden, 2, 1);
@@ -128,14 +126,25 @@ int main(void)
     
     //Quick example of learning on 1 input
    
-    int iterations = 1000;
-    learnOnePattern(&Input, &Hidden, &Output, input0, &results,
-		    &expected0, &error, ETA, ALPHA, iterations);
+    int iterations = 100000;
+    learnListPattern(&Input, &Hidden, &Output, &patternList, 4,
+		     &computedPatternResults, &expectedResults,
+		     &error, ETA, ALPHA, iterations);
     
-    printf("La valeur calculée pour (0,1) après %d itérations " 
-	   "d'apprentissage est : %Lf\n",
-	   iterations, Output.Units[0].computedValue);
-    
+    computePattern(input0, &Input, &Hidden, &Output);
+    printf("Results (0,0) : %Lf\n", Output.Units[0].computedValue);
+        
+    computePattern(input1, &Input, &Hidden, &Output);
+    printf("Results (1,0) : %Lf\n", Output.Units[0].computedValue);
+
+    computePattern(input2, &Input, &Hidden, &Output);
+    printf("Results (0,1) : %Lf\n", Output.Units[0].computedValue);
+
+    computePattern(input3, &Input, &Hidden, &Output);
+    printf("Results (1,1) : %Lf\n", Output.Units[0].computedValue);
+
+
+
     return 0;
 }
 
@@ -325,18 +334,6 @@ void computePattern(long double *patternInput,
     computeData(Input, Hidden, Output);
 }
 
-void computeAllPatern(long double ***patternList, unsigned pNumberPatterns,
-		      Layer *Input, Layer*Hidden, Layer *Output,
-		      long double ***resultsTabPatterns)
-{
-    unsigned p;
-    for(p = 0; p < pNumberPatterns; p++)
-    {
-	computePattern((*patternList)[p], Input, Hidden, Output);
-	resultsToTab(Output, resultsTabPatterns[p]);
-    }
-}
-
 void computeError2(long double ***expected, long double ***computed,
 		   long double *error, unsigned pNumberNeurons)
 {
@@ -363,5 +360,30 @@ void learnOnePattern(Layer *Input, Layer *Hidden, Layer *Output,
         computeDeltaHidden(Hidden, Output);
         computeDeltaWeight(eta, alpha, Input, Hidden);
 	computeDeltaWeight(eta, alpha, Hidden, Output);
+    }
+}
+
+
+void learnListPattern(Layer *Input, Layer *Hidden, Layer *Output,
+                      long double ***pattern, unsigned numberPattern,
+		      long double ***resultsList,
+                      long double ***expectedResults,
+                      long double *error, long double eta, long double alpha,
+                      long double numberIterations)
+{
+    // p counts patterns and i counts iterations
+    unsigned p, i;
+
+    for(i = 0; i < numberIterations; i++)
+    {
+
+	for(p = 0; p < numberPattern; p++)
+	{
+	    learnOnePattern(Input, Hidden, Output, (*pattern)[p], 
+			    &(*resultsList)[p], &(*expectedResults)[p],
+			    error, eta, alpha, 1);
+	    printf("pattern %d, results %Lf\n",
+		   p, Output->Units[0].computedValue);
+	}
     }
 }
