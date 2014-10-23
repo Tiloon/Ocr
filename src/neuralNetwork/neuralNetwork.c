@@ -13,7 +13,7 @@
 //            DEFINE                   //
 //*************************************//
 
-#define FIRST_BIAS 0
+#define FIRST_BIAS 1
 #define ALPHA 0.5 //Used for learning part
 #define ETA 0.1   //Also used for learning part
 
@@ -21,6 +21,28 @@
 //***********************************//
 // Tests functions                   //
 //**********************************///
+
+void printAll(Layer *Layer)
+{
+    unsigned u;
+    unsigned w;
+    for(u = 0; u < Layer->numberUnits; u++)
+    {
+	printf("******************************\n"
+	       "           Neuron %d          \n", u);      
+	printf("Computed value : %Lf\n", Layer->Units[u].computedValue);
+	printf("Sumed value : %Lf\n", Layer->Units[u].sumedValue);
+	printf("delta : %Lf\n", Layer->Units[u].delta);
+	printf("bias : %Lf\n", Layer->bias);
+	printf("delta bias : %Lf\n", Layer->deltaBias);
+	printf("bias weight : %Lf\n", Layer->biasWeight);
+	for(w = 0; w < Layer->Units[u].numberWeights; w++)
+	    printf("Poids %d : %Lf\n", w, Layer->Units[u].weights[w]);
+	for(w = 0; w < Layer->Units[u].numberWeights; w++)
+	    printf("Delta Weights %d : %Lf\n", w, 
+		   Layer->Units[u].deltaWeights[w]);
+    }
+}
 
 int main(void)
 {
@@ -54,7 +76,7 @@ int main(void)
     input0 = malloc(sizeof(long double) * 2);
     input0[0] = 0;
     input0[1] = 0;
-   
+   	
     long double *input1;
     input1 = malloc(sizeof(long double) * 2);
     input1[0] = 1;
@@ -125,63 +147,23 @@ int main(void)
     //Quick example of learning on 1 input
    
     int iterations = 100;
-/*    learnListPattern(&Input, &Hidden, &Output, &patternList, 1,
-		     &computedPatternResults, &expectedResults,
-		     &error, ETA, ALPHA, iterations);
+
+    learnOnePattern(&Input, &Hidden, &Output, input0, &results, &expected0,       
+                    &error, ETA, ALPHA, iterations);
     
-    computePattern(input0, &Input, &Hidden, &Output);
-    printf("Results (0,0) : %Lf\n", Output.Units[0].computedValue);
-        
-    computePattern(input1, &Input, &Hidden, &Output);
-    printf("Results (1,0) : %Lf\n", Output.Units[0].computedValue);
+    printf("\n\nInput\n\n");                                                       
+    printAll(&Input);                                                              
+    printf("Hidden\n\n");                                                          
+    printAll(&Hidden);                                                             
+    printf("Output\n\n");                                                          
+    printAll(&Output);
 
-    computePattern(input2, &Input, &Hidden, &Output);
-    printf("Results (0,1) : %Lf\n", Output.Units[0].computedValue);
-
-    computePattern(input3, &Input, &Hidden, &Output);
-    printf("Results (1,1) : %Lf\n", Output.Units[0].computedValue);
-*/
-
-    learnOnePattern(&Input, &Hidden, &Output, input0, &results, &expected0,
-		    &error, ETA, ALPHA, 1000);
-
-
-    computePattern(input0, &Input, &Hidden, &Output);                               
-    printf("Results (0,0) : %Lf\n", Output.Units[0].computedValue);                 
-                                                                                    
-    computePattern(input1, &Input, &Hidden, &Output);                               
-    printf("Results (1,0) : %Lf\n", Output.Units[0].computedValue); 
-
-    printf("%Lf\n", Input.Units[0].weights[0]);
-    printf("%Lf\n", Input.Units[0].weights[1]);
-
-    printf("%Lf\n", Input.Units[1].weights[0]);
-    printf("%Lf\n", Input.Units[1].weights[1]);
-    
-   
-    printf("%Lf\n", Hidden.Units[0].weights[0]);
-    printf("%Lf\n", Hidden.Units[1].weights[0]);
-
-    learnOnePattern(&Input, &Hidden, &Output, input0, &results, &expected0,
-                    &error, ETA, ALPHA, 1000);
-
-    
-    computePattern(input0, &Input, &Hidden, &Output);
-    printf("Results (0,0) : %Lf\n", Output.Units[0].computedValue);
+    computePattern(input0, &Input, &Hidden, &Output);                              
+    printf("XOR 0 : %Lf <-- \n\n", Output.Units[0].computedValue); 
 
     computePattern(input1, &Input, &Hidden, &Output);
-    printf("Results (1,0) : %Lf\n", Output.Units[0].computedValue);
-
-    printf("%Lf\n", Input.Units[0].weights[0]);
-    printf("%Lf\n", Input.Units[0].weights[1]);
-
-    printf("%Lf\n", Input.Units[1].weights[0]);
-    printf("%Lf\n", Input.Units[1].weights[1]);
-
-
-    printf("%Lf\n", Hidden.Units[0].weights[0]);
-    printf("%Lf\n", Hidden.Units[1].weights[0]);
-
+    printf("XOR 1 : %Lf <-- \n\n", Output.Units[0].computedValue);
+    
     
     return 0;
 }
@@ -193,6 +175,9 @@ void initializeLayer(Layer *Layer, unsigned pNumberUnits,
     Neural Neural;
     unsigned i;
    
+    Layer->bias = FIRST_BIAS;
+    Layer->deltaBias  = 0;
+    Layer->biasWeight = 1;
     //Number of Neuron on the Layer
     Layer->numberUnits = pNumberUnits;
   
@@ -212,8 +197,6 @@ void initializeNeuron(Neural *Neuron, unsigned pNumberWeights)
     //Initialize each variables
     Neuron->computedValue = 0;
     Neuron->sumedValue = 0;
-    Neuron->bias = FIRST_BIAS;
-    Neuron->deltaBias = 0;
     Neuron->numberWeights = pNumberWeights;
     Neuron->delta = 0;
     
@@ -236,26 +219,12 @@ void initializeNeuron(Neural *Neuron, unsigned pNumberWeights)
     }
 }
 
-//----------------------------//
-//         TO DO              //
-//----------------------------//
-
-/*void freeLayer(Layer *Layer)
-  {
-  //TO DO
-  }
-  void freeNeuron(Neural *Neural)
-  {
-  //TO DO
-  }
-*/
-
 void  computeSum(Layer *Layer1, Layer *Layer2)
 {
     unsigned l1, l2;
     for(l2 = 0; l2 < Layer2->numberUnits; l2++)
     {
-	Layer2->Units[l2].sumedValue = Layer2->Units[l2].bias;
+	Layer2->Units[l2].sumedValue = Layer2->bias * Layer2->biasWeight;
 	for(l1 = 0; l1 < Layer1->numberUnits; l1++)
 	{
 	    Layer2->Units[l2].sumedValue += 
@@ -269,6 +238,7 @@ long double sigmoid(long double x)
 {
     return (1 / (1 + exp(-1 * x)));
 }
+
 void computeData(Layer *Input, Layer *Hidden, Layer *Output)
 {
     computeSum(Input, Hidden);
@@ -327,29 +297,26 @@ void computeDeltaHidden(Layer *HiddenLayer, Layer *OutputLayer)
     }
 }
 
-void computeDeltaWeight(long double eta0, long double alpha,
+void computeDeltaWeight(long double eta, long double alpha, 
 			Layer *LayerToUpdate, Layer *NextLayer)
 {
-    //for counting the units of the Layer to update, n for next Layer
-    unsigned u, n;
-    for(u = 0; u < LayerToUpdate->numberUnits; u++)
+    unsigned next, current;
+    for(next = 0; next < NextLayer->numberUnits; next++)
     {
-	//Update deltaBias
-	LayerToUpdate->Units[u].deltaBias = 
-	    (eta0 * LayerToUpdate->Units[u].computedValue)
-	    + (alpha * LayerToUpdate->Units[u].deltaBias); 
-	//Update Bias Weight
-	LayerToUpdate->Units[u].bias += LayerToUpdate->Units[u].deltaBias;
-    
-	for(n = 0; n < NextLayer->numberUnits; n++)
+	NextLayer->deltaBias = 
+	    (eta * NextLayer->Units[next].delta) +
+	    (alpha * NextLayer->deltaBias);
+	NextLayer->biasWeight += NextLayer->deltaBias;
+	for(current = 0; current < LayerToUpdate->numberUnits; current++)
 	{
-	    LayerToUpdate->Units[u].deltaWeights[n] = 
-		(eta0 * LayerToUpdate->Units[u].computedValue  *
-		 NextLayer->Units[n].delta) + 
-		(alpha * LayerToUpdate->Units[u].deltaWeights[n]);
+	    LayerToUpdate->Units[current].deltaWeights[next] =
+		(eta * LayerToUpdate->Units[0].computedValue * 
+		 NextLayer->Units[next].delta)+		
+		(alpha * LayerToUpdate->Units[current].deltaWeights[next]);
 	    
-	    LayerToUpdate->Units[u].weights[n] += 
-		LayerToUpdate->Units[u].deltaWeights[n];
+	    LayerToUpdate->Units[current].weights[next] += 
+		LayerToUpdate->Units[0].deltaWeights[next];	 
+		 
 	}
     }
 }
@@ -401,7 +368,6 @@ void learnOnePattern(Layer *Input, Layer *Hidden, Layer *Output,
     }
 }
 
-
 void learnListPattern(Layer *Input, Layer *Hidden, Layer *Output,
                       long double ***pattern, unsigned numberPattern,
 		      long double ***resultsList,
@@ -414,25 +380,11 @@ void learnListPattern(Layer *Input, Layer *Hidden, Layer *Output,
 
     for(i = 0; i < numberIterations; i++)
     {
-
 	for(p = 0; p < numberPattern; p++)
 	{
 	    learnOnePattern(Input, Hidden, Output, (*pattern)[p], 
 			    &(*resultsList)[p], &(*expectedResults)[p],
 			    error, eta, alpha, 1);
-	    
-	    /*computePattern((*pattern)[0], Input, Hidden, Output);
-	    printf("Results (0,0) : %Lf\n", Output->Units[0].computedValue);
-
-	    computePattern((*pattern)[1], Input, Hidden, Output);
-	    printf("Results (1,0) : %Lf\n", Output->Units[0].computedValue);
-
-	    computePattern((*pattern)[2], Input, Hidden, Output);
-	    printf("Results (0,1) : %Lf\n", Output->Units[0].computedValue);
-
-	    computePattern((*pattern)[3], Input, Hidden, Output);
-	    printf("Results (1,1) : %Lf\n", Output->Units[0].computedValue);
-	    */
 	}
     }
 }

@@ -3,8 +3,6 @@ struct Neural
 {
     long double computedValue;
     long double sumedValue;
-    long double bias;
-    long double deltaBias;
     long double *weights;
     //number of weights to each next neuron
     unsigned numberWeights; 
@@ -16,10 +14,11 @@ struct Neural
 typedef struct Layer Layer;
 struct Layer
 {
+    long double biasWeight;
+    long double bias;
+    long double deltaBias;
     unsigned numberUnits;
-    //* unsigned numberLinks;
     Neural *Units;
-    //* long double **weights;
 };
 
 //Compute the sum of each neuron on Layer1 to each neuron on Layer2
