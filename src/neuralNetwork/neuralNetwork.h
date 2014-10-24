@@ -1,6 +1,7 @@
 #ifndef NEAURAL_NETWORK_H
 #define NEAURAL_NETWORK_H
 
+#include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -40,6 +41,10 @@ struct Layer
     unsigned numberUnits;
     Neural *Units;
 };
+/*
+ * Return a random long double in [-1; 1]
+ */
+long double get_init_rand_ratio(void);
 
 //Compute the sum of each neuron on Layer1 to each neuron on Layer2
 //And also call sigmoid function and update each neuron value

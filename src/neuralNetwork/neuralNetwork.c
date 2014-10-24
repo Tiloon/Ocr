@@ -1,5 +1,14 @@
 #include "neuralNetwork.h"
 
+long double get_init_rand_ratio()
+{
+    static unsigned seed;
+
+    if(!seed)
+        srand(seed = (unsigned)time(NULL));
+    return 1 - ((double)rand()/(((double)RAND_MAX) / 2.0));
+}
+
 void initializeLayer(Layer *Layer, unsigned pNumberUnits,
         unsigned pNumberWeights)
 {
@@ -66,7 +75,8 @@ void  computeSum(Layer *Layer1, Layer *Layer2)
 
 long double sigmoid(long double x)
 {
-    return (1 / (1 + exp(-1 * x)));
+    //return (1 / (1 + exp(-1 * x)));
+    return tanh(x);
 }
 
 void computeData(Layer *Input, Layer *Hidden, Layer *Output)

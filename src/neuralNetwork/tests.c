@@ -57,14 +57,15 @@ int main(void)
     initializeLayer(&Output, 1, 1);
 
     //Set the starting weights
-    Input.Units[0].weights[0] = 1.7;
-    Input.Units[0].weights[1] = -1.2;
+    Input.Units[0].weights[0] = get_init_rand_ratio();
+    Input.Units[0].weights[1] = get_init_rand_ratio();
 
-    Input.Units[1].weights[0] = -2.68;
-    Input.Units[1].weights[1] = 1.3;
+    Input.Units[1].weights[0] = get_init_rand_ratio();
+    Input.Units[1].weights[1] = get_init_rand_ratio();
 
-    Hidden.Units[0].weights[0] = 1.3;
-    Hidden.Units[1].weights[0] = -1.3;
+    Hidden.Units[0].weights[0] = get_init_rand_ratio();
+    Hidden.Units[1].weights[0] = get_init_rand_ratio();
+
 
     //Initializing the inputs
     input0 = malloc(sizeof(long double) * NUMBER_INPUTS);
@@ -107,7 +108,7 @@ int main(void)
     //printf("results for XOR 3 : %Lf\n", Output.Units[0].computedValue);
 
     unsigned i;
-    for(i = 0; i < 5000; i++)
+    for(i = 0; i < 1000; i++)
     {
         computePattern(input0, &Input, &Hidden, &Output);
         resultsToTab(&Output, &results);
@@ -134,6 +135,14 @@ int main(void)
         printf("results for XOR 1 : %Lf\n", Output.Units[0].computedValue);
 */
     }
+
+    printf("\n\nInputs :\n");
+    printAll(&Input);
+    printf("\n\nHidden :\n");
+    printAll(&Hidden);
+    printf("\n\nOutputs :\n");
+    printAll(&Output);
+    printf("\n\n\n");
 
     computePattern(input0, &Input, &Hidden, &Output);
     printf("results for XOR 0 : %Lf\n", Output.Units[0].computedValue);
