@@ -10,8 +10,8 @@ LDLIBS=`pkg-config --libs gtk+-2.0` -lm
 # TODO : "CFLAGS= -Wall -Wextra -Werror -std=c99 -O2"
 #
 
-all: obj/main
-	mv obj/main ./ocrocaml
+all:
+	clang -Wall -Wextra -Wall -std=c99 -O2 neuralNetwork.c tests.c -lm -o tests
 
 obj/main: obj/gui.o obj/loader.o obj/main.o
 

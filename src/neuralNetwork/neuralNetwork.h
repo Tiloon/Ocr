@@ -1,3 +1,21 @@
+#ifndef NEAURAL_NETWORK_H
+#define NEAURAL_NETWORK_H
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+//*************************************//
+//            DEFINE                   //
+//*************************************//
+
+#define FIRST_BIAS 0.5
+#define ALPHA 0.3
+#define ETA 0.01
+#define NUMBER_INPUTS 2
+#define NUMBER_OUTPUTS 1
+#define NUMBER_PATTERN 4
+
 typedef struct Neural Neural;
 struct Neural
 {
@@ -14,8 +32,8 @@ struct Neural
     //neuron bias
     long double bias;
     long double deltaBias;
-
 };
+
 typedef struct Layer Layer;
 struct Layer
 {
@@ -27,13 +45,17 @@ struct Layer
 //And also call sigmoid function and update each neuron value
 void computeSum(Layer *Layer1, Layer *Layer2);
 
-
 long double sigmoid(long double x);
+
 void initializeLayer(Layer *Layer, unsigned numberUnits,
         unsigned numberWeights);
+
 void freeLayer(Layer *Layer);
+
 void initializeNeuron(Neural *Neural, unsigned numberWeights);
+
 void freeNeuron(Neural *Neural);
+
 void computeData(Layer *Input, Layer *Hidden, Layer *Output);
 
 /* Compute the error between what expected and what computed
@@ -67,3 +89,4 @@ void resultsToTab(Layer *OutputLayer, long double **results);
 void computePattern(long double *patternInput,
         Layer *Input, Layer *Hidden, Layer *Output);
 
+#endif
