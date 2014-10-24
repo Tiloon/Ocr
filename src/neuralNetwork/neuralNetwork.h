@@ -10,13 +10,15 @@ struct Neural
     long double delta;
     //Will be used for computing the final variation for updating the weights
     long double *deltaWeights;
+
+    //neuron bias
+    long double bias;
+    long double deltaBias;
+
 };
 typedef struct Layer Layer;
 struct Layer
 {
-    long double biasWeight;
-    long double bias;
-    long double deltaBias;
     unsigned numberUnits;
     Neural *Units;
 };
@@ -37,14 +39,14 @@ void computeData(Layer *Input, Layer *Hidden, Layer *Output);
 /* Compute the error between what expected and what computed
 ** Will be used for continuing (or not) the learning loop 
 */
-void computeError(long double **expected, long double **computed,
+void computeError(long double *expected, long double *computed,
 		  long double *error, unsigned nbOutputNeurons);
 
 
-/* Compute the delta for each output neurone
-** expected is a tab of value of length OuputLayer.Units
-*/
-void  computeDeltaOutput(long double **expected, Layer *OutputLayer);
+// Compute the delta for each output neurone 
+
+void  computeDeltaOutput(Layer *Output, long double *expected, 
+			 long double *computed);
 
 
 // Compute the delta for each hidden neurone
@@ -65,20 +67,3 @@ void resultsToTab(Layer *OutputLayer, long double **results);
 void computePattern(long double *patternInput,
                     Layer *Input, Layer *Hidden, Layer *Output);
 
-//Call the computeError function for all the patterns
-void computeError2(long double ***expected, long double ***computed,
-                   long double *error, unsigned pNumberNeurons);
-
-//Call all the learning functions for one specific pattern
-void learnOnePattern(Layer *Input, Layer *Hidden, Layer *Output,
-		     long double *pattern, long double **resultsList, 
-		     long double **expectedResults,
-		     long double *error, long double eta, long double alpha,
-		     long double numberIterations);
-
-void learnListPattern(Layer *Input, Layer *Hidden, Layer *Output,
-		      long double ***pattern, unsigned numberPattern,
-		      long double ***resultsList,
-		      long double ***expectedResults,
-		      long double *error, long double eta, long double alpha,
-		      long double numberIterations);

@@ -13,11 +13,12 @@
 //            DEFINE                   //
 //*************************************//
 
-#define FIRST_BIAS 1
-#define ALPHA 0.5 //Used for learning part
-#define ETA 0.1   //Also used for learning part
-
-
+#define FIRST_BIAS 0.5
+#define ALPHA 0.3 //Used for learning part
+#define ETA 0.01   //Also used for learning part
+#define NUMBER_INPUTS 2 
+#define NUMBER_OUTPUTS 1
+#define NUMBER_PATTERN 4
 //***********************************//
 // Tests functions                   //
 //**********************************///
@@ -33,9 +34,7 @@ void printAll(Layer *Layer)
 	printf("Computed value : %Lf\n", Layer->Units[u].computedValue);
 	printf("Sumed value : %Lf\n", Layer->Units[u].sumedValue);
 	printf("delta : %Lf\n", Layer->Units[u].delta);
-	printf("bias : %Lf\n", Layer->bias);
-	printf("delta bias : %Lf\n", Layer->deltaBias);
-	printf("bias weight : %Lf\n", Layer->biasWeight);
+	printf("bias : %Lf\n", Layer->Units[u].bias);
 	for(w = 0; w < Layer->Units[u].numberWeights; w++)
 	    printf("Poids %d : %Lf\n", w, Layer->Units[u].weights[w]);
 	for(w = 0; w < Layer->Units[u].numberWeights; w++)
@@ -55,115 +54,111 @@ int main(void)
     Layer Input;
     Layer Hidden;
     Layer Output;
-    
-    unsigned p;
-    
-    long double *results;
-    results = malloc(sizeof(long double) *1);
-    long double error = 0;
-    
-    long double **patternList;
-    patternList = malloc(sizeof(long double) * 4);
-    for(p = 0; p < 4; p++)
-	patternList[p] = malloc(sizeof(long double) * 1);  
-    long double **expectedResults;
-    expectedResults = malloc(sizeof(long double) * 4);
-    for(p = 0; p < 4; p++)
-	expectedResults[p] = malloc(sizeof(long double) * 1);
+ 
+    //double long **input;
+    double long *input0;
+    double long *input1;
+    double long *input2;
+    double long *input3;
 
-    //Declaration of XOR input truth table
-    long double *input0;
-    input0 = malloc(sizeof(long double) * 2);
-    input0[0] = 0;
-    input0[1] = 0;
-   	
-    long double *input1;
-    input1 = malloc(sizeof(long double) * 2);
-    input1[0] = 1;
-    input1[1] = 0;
-    
-    long double *input2;
-    input2 = malloc(sizeof(long double) * 2);
-    input2[0] = 0;
-    input2[1] = 1;
-    
-    long double *input3;
-    input3 = malloc(sizeof(long double) * 2);
-    input3[0] = 1;
-    input3[1] = 1;
-    
-    //Gather all pattern in a list
-    patternList[0] = input0;
-    patternList[1] = input1;
-    patternList[2] = input2;
-    patternList[3] = input3;
-    
-    //Declaration of expected result (of XOR truth table)
-    long double *expected0;
-    expected0 = malloc(sizeof(long double)*1);
-    expected0[0] = 0;
-    
-    long double *expected1;
-    expected1 = malloc(sizeof(long double)*1);
-    expected1[0] = 1;
+    double long *expected0;
+    double long *expected1;
+    double long *expected2;
+    double long *expected3;
 
-    long double *expected2;
-    expected2 = malloc(sizeof(long double)*1);
-    expected2[0] = 1;
+    double long error = 0;
+
+    double long *results;
     
-    long double *expected3;
-    expected3 = malloc(sizeof(long double)*1);
-    expected3[0] = 0;
-    
-    //Gather all expected results in a list
-    expectedResults[0] = expected0;
-    expectedResults[1] = expected1;
-    expectedResults[2] = expected2;
-    expectedResults[3] = expected3;
-    
-    //Will be used for storing the list of results according to each patterns
-    long double **computedPatternResults;
-    computedPatternResults = malloc(sizeof(long double) * 4);
-    for(p = 0; p < 4; p++)
-	computedPatternResults[p] = malloc(sizeof(long double) * 1);
-            
     //Initialising neural network
     initializeLayer(&Input, 2, 2);
     initializeLayer(&Hidden, 2, 1);
     initializeLayer(&Output, 1, 1);
     
-    Input.Units[0].weights[0] = 0.8;
-    Input.Units[0].weights[1] = 0.2;
+    //Set the starting weights
+    Input.Units[0].weights[0] = 1.7;
+    Input.Units[0].weights[1] = -1.2;
     
-    Input.Units[1].weights[0] = 0.4;
-    Input.Units[1].weights[1] = 0.6;
+    Input.Units[1].weights[0] = -2.68;
+    Input.Units[1].weights[1] = 1.3;
    
-    Hidden.Units[0].weights[0] = 0.7;
-    Hidden.Units[1].weights[0] = 0.3;
+    Hidden.Units[0].weights[0] = 1.3;
+    Hidden.Units[1].weights[0] = -1.3;
     
+    //Initializing the inputs
+    input0 = malloc(sizeof(long double) * NUMBER_INPUTS);
+    input0[0] = 0;
+    input0[1] = 0;
+    input1 = malloc(sizeof(long double) * NUMBER_INPUTS);
+    input1[0] = 0;
+    input1[1] = 1;
+    input2 = malloc(sizeof(long double) * NUMBER_INPUTS);
+    input2[0] = 1;
+    input2[1] = 0;
+    input3 = malloc(sizeof(long double) * NUMBER_INPUTS);
+    input3[0] = 1;
+    input3[1] = 1;
 
-    error = 0;
+    //Initializing the expected results
+    expected0 = malloc(sizeof(long double) * NUMBER_OUTPUTS);
+    expected0[0] = 0;
+    expected1 = malloc(sizeof(long double) * NUMBER_OUTPUTS);
+    expected1[0] = 1;
+    expected2 = malloc(sizeof(long double) * NUMBER_OUTPUTS);
+    expected2[0] = 1;
+    expected3 = malloc(sizeof(long double) * NUMBER_OUTPUTS);
+    expected3[0] = 0;
     
-    //Quick example of learning on 1 input
-   
-    int iterations = 100;
-
-    learnOnePattern(&Input, &Hidden, &Output, input0, &results, &expected0,       
-                    &error, ETA, ALPHA, iterations);
+    //Initialising results tab
+    results = malloc(sizeof(long double) * NUMBER_OUTPUTS);
     
-    printf("\n\nInput\n\n");                                                       
-    printAll(&Input);                                                              
-    printf("Hidden\n\n");                                                          
-    printAll(&Hidden);                                                             
-    printf("Output\n\n");                                                          
-    printAll(&Output);
+    /*  Compute all the pattern for the beginning values
+     *  will be used for compare the value after learning
+     */
 
-    computePattern(input0, &Input, &Hidden, &Output);                              
-    printf("XOR 0 : %Lf <-- \n\n", Output.Units[0].computedValue); 
-
+    computePattern(input0, &Input, &Hidden, &Output);
+    printf("results for XOR 0 : %Lf\n", Output.Units[0].computedValue);
     computePattern(input1, &Input, &Hidden, &Output);
-    printf("XOR 1 : %Lf <-- \n\n", Output.Units[0].computedValue);
-    
+    printf("results for XOR 1 : %Lf\n", Output.Units[0].computedValue);
+    // computePattern(input2, &Input, &Hidden, &Output);
+    //printf("results for XOR 2 : %Lf\n", Output.Units[0].computedValue);
+    // computePattern(input3, &Input, &Hidden, &Output);
+    //printf("results for XOR 3 : %Lf\n", Output.Units[0].computedValue);
+  
+    unsigned i;
+    for(i = 0; i < 5; i++)
+    {
+	computePattern(input0, &Input, &Hidden, &Output);
+	resultsToTab(&Output, &results);
+	computeError(expected0, results, &error, 1);
+	computeDeltaOutput(&Output, expected0, results);
+	computeDeltaHidden(&Hidden, &Output);
+	computeDeltaWeight(ETA, ALPHA, &Input, &Hidden);
+	computeDeltaWeight(ETA, ALPHA, &Hidden, &Output);
+	
+
+	computePattern(input1, &Input, &Hidden, &Output);
+        resultsToTab(&Output, &results);
+        computeError(expected1, results, &error, 1);
+        computeDeltaOutput(&Output, expected1, results);
+        computeDeltaHidden(&Hidden, &Output);
+        computeDeltaWeight(ETA, ALPHA, &Input, &Hidden);
+        computeDeltaWeight(ETA, ALPHA, &Hidden, &Output);
+	error = 0;
+	
+
+	computePattern(input0, &Input, &Hidden, &Output);
+	printf("results for XOR 0 : %Lf\n", Output.Units[0].computedValue);
+	computePattern(input1, &Input, &Hidden, &Output);
+	printf("results for XOR 1 : %Lf\n", Output.Units[0].computedValue);
+
+    }
+
+    computePattern(input0, &Input, &Hidden, &Output);
+    printf("results for XOR 0 : %Lf\n", Output.Units[0].computedValue);
+    computePattern(input1, &Input, &Hidden, &Output);
+    printf("results for XOR 1 : %Lf\n", Output.Units[0].computedValue);
+
     
     return 0;
 }
@@ -175,9 +170,6 @@ void initializeLayer(Layer *Layer, unsigned pNumberUnits,
     Neural Neural;
     unsigned i;
    
-    Layer->bias = FIRST_BIAS;
-    Layer->deltaBias  = 0;
-    Layer->biasWeight = 1;
     //Number of Neuron on the Layer
     Layer->numberUnits = pNumberUnits;
   
@@ -199,7 +191,9 @@ void initializeNeuron(Neural *Neuron, unsigned pNumberWeights)
     Neuron->sumedValue = 0;
     Neuron->numberWeights = pNumberWeights;
     Neuron->delta = 0;
-    
+    Neuron->bias = FIRST_BIAS;
+    Neuron->deltaBias = 0;
+	
     //Malloc the weights tab
     Neuron->weights = malloc(sizeof(long double) * pNumberWeights);
     
@@ -224,7 +218,7 @@ void  computeSum(Layer *Layer1, Layer *Layer2)
     unsigned l1, l2;
     for(l2 = 0; l2 < Layer2->numberUnits; l2++)
     {
-	Layer2->Units[l2].sumedValue = Layer2->bias * Layer2->biasWeight;
+	Layer2->Units[l2].sumedValue = Layer2->Units[l2].bias;
 	for(l1 = 0; l1 < Layer1->numberUnits; l1++)
 	{
 	    Layer2->Units[l2].sumedValue += 
@@ -245,7 +239,7 @@ void computeData(Layer *Input, Layer *Hidden, Layer *Output)
     computeSum(Hidden, Output);
 }
 
-void computeError(long double **expected, long double **computed, 
+void computeError(long double *expected, long double *computed, 
 		  long double *error, unsigned nbOutputNeurons)
 {
     // p as pattern and n as (output) neuron 
@@ -253,71 +247,8 @@ void computeError(long double **expected, long double **computed,
     for(n = 0; n < nbOutputNeurons; n++)
     {
 	*error += 0.5 * 
-	    ((*expected)[n] - (*computed)[n]) * 
-	    ((*expected)[n] - (*computed)[n]) ;
-    }
-}
-
-void computeDeltaOutput(long double **expected, Layer *OutputLayer)
-{
-    // n as (output) neurons
-    unsigned n;
-    for(n = 0; n < OutputLayer->numberUnits; n++)
-    {
-	//Compute the delta for each output neuron
-	//This calculus is actually the derivate of the sigmoid function
-	OutputLayer->Units[n].delta = 
-	    ((*expected)[n] - OutputLayer->Units[n].computedValue) * 
-	    OutputLayer->Units[n].computedValue *
-	    (1.0 - OutputLayer->Units[n].computedValue);
-    }
-}
- 
-
-void computeDeltaHidden(Layer *HiddenLayer, Layer *OutputLayer)
-{
-    long double deltaH;
-    //h for Hidden neurons and O for Output neurons 
-    unsigned h;
-    unsigned o;
-  
-    for(h = 0; h < HiddenLayer->numberUnits; h++)
-    {
-	deltaH = 0;
-	for(o = 0; o < OutputLayer->numberUnits; o++)
-	{
-	    //Compute the delta for each hidden neuron
-	    deltaH +=  
-		(HiddenLayer->Units[h].weights[o] *
-		 OutputLayer->Units[o].delta);
-	}
-	deltaH = deltaH * HiddenLayer->Units[h].computedValue
-	    * (1.0 - HiddenLayer->Units[h].computedValue);
-	HiddenLayer->Units[h].delta = deltaH;
-    }
-}
-
-void computeDeltaWeight(long double eta, long double alpha, 
-			Layer *LayerToUpdate, Layer *NextLayer)
-{
-    unsigned next, current;
-    for(next = 0; next < NextLayer->numberUnits; next++)
-    {
-	NextLayer->deltaBias = 
-	    (eta * NextLayer->Units[next].delta) +
-	    (alpha * NextLayer->deltaBias);
-	NextLayer->biasWeight += NextLayer->deltaBias;
-	for(current = 0; current < LayerToUpdate->numberUnits; current++)
-	{
-	    LayerToUpdate->Units[current].deltaWeights[next] =
-		(eta * LayerToUpdate->Units[0].computedValue * 
-		 NextLayer->Units[next].delta)+		
-		(alpha * LayerToUpdate->Units[current].deltaWeights[next]);
-	    
-	    LayerToUpdate->Units[current].weights[next] += 
-		LayerToUpdate->Units[0].deltaWeights[next];	 
-		 
-	}
+	    (expected[n] - computed[n]) * 
+	    (expected[n] - computed[n]) ;
     }
 }
 
@@ -339,52 +270,54 @@ void computePattern(long double *patternInput,
     computeData(Input, Hidden, Output);
 }
 
-void computeError2(long double ***expected, long double ***computed,
-		   long double *error, unsigned pNumberNeurons)
+void computeDeltaOutput(Layer *Output, long double *expected,
+			long double *computed)
 {
-    unsigned p;
-    for(p = 0; p < pNumberNeurons; p++)
+    unsigned u;
+    for(u = 0; u < Output->numberUnits; u++)
     {
-	computeError(expected[p], computed[p], error, pNumberNeurons);
+	Output->Units[u].delta = (expected[u] - computed[u]) * 
+	    computed[u] * (1.0 - computed[u]);
     }
 }
 
-void learnOnePattern(Layer *Input, Layer *Hidden, Layer *Output,
-                     long double *pattern, long double **resultsList,
-                     long double **expectedResults,
-                     long double *error, long double eta, long double alpha,
-                     long double numberIterations)
+void computeDeltaHidden(Layer *Hidden, Layer *Output)
 {
-    unsigned i;
-    for(i = 0; i < numberIterations; i++)
+    unsigned h, o;
+    long double error;
+    for(h = 0; h < Hidden->numberUnits; h++)
     {
-	computePattern(pattern, Input, Hidden, Output);
-	resultsToTab(Output, resultsList);
-        computeError(expectedResults, resultsList, error, 1);
-	computeDeltaOutput(expectedResults, Output);
-        computeDeltaHidden(Hidden, Output);
-        computeDeltaWeight(eta, alpha, Input, Hidden);
-	computeDeltaWeight(eta, alpha, Hidden, Output);
-    }
-}
-
-void learnListPattern(Layer *Input, Layer *Hidden, Layer *Output,
-                      long double ***pattern, unsigned numberPattern,
-		      long double ***resultsList,
-                      long double ***expectedResults,
-                      long double *error, long double eta, long double alpha,
-                      long double numberIterations)
-{
-    // p counts patterns and i counts iterations
-    unsigned p, i;
-
-    for(i = 0; i < numberIterations; i++)
-    {
-	for(p = 0; p < numberPattern; p++)
+	error = 0;
+	for(o = 0; o < Output->numberUnits; o++)
 	{
-	    learnOnePattern(Input, Hidden, Output, (*pattern)[p], 
-			    &(*resultsList)[p], &(*expectedResults)[p],
-			    error, eta, alpha, 1);
+	    error += (Hidden->Units[h].weights[o] * Output->Units[o].delta);
+	}
+	Hidden->Units[h].delta = Hidden->Units[h].computedValue *
+	    (1.0 - Hidden->Units[h].computedValue) * error;
+    }
+}
+
+void computeDeltaWeight(long double eta, long double alpha, 
+			Layer *ToUpdate, Layer *Next)
+{
+    unsigned next, current;
+    for(next = 0; next < Next->numberUnits; next++)
+    {
+    //First : update the bias next Layer
+	Next->Units[next].deltaBias = (eta * Next->Units[next].delta) + 
+	    (alpha * Next->Units[next].deltaBias);
+	
+	Next->Units[next].bias += Next->Units[next].deltaBias;
+	for(current = 0; current < ToUpdate->numberUnits; current++)
+	{
+	    //Then : update the weights from ToUpdate to Next
+	    ToUpdate->Units[current].deltaWeights[next] = 
+		(eta * ToUpdate->Units[current].weights[next] 
+		 * Next->Units[next].delta)
+		+ (alpha * ToUpdate->Units[current].deltaWeights[next]);
+	    
+	    ToUpdate->Units[current].weights[next] += 
+	ToUpdate->Units[current].deltaWeights[next];
 	}
     }
 }
