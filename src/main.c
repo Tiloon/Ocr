@@ -42,7 +42,8 @@ int main(int argc, char *argv[])
         gdk_to_binary(picture_get_image(), pic);
         struct s_rectangle *lines = splitLines(pic);
         struct s_rectangle *chars, *base_chars;
-        while(lines->x)
+            printf("x : %u, y : %u, w : %u, h : %u\n", lines->x, lines->y, lines->w, lines->h);
+        while(lines->h || lines->w )
         {
             draw_rectangle(picture_get_image(), *lines, 0, 0, ~0);
             printf("\nline : \n");
