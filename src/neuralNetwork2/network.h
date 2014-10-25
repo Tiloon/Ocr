@@ -37,9 +37,9 @@ long double randomValues();
 void computeValues(Layer *L1, Layer *L2);
 long double sigmoid(long double x);
 
-//***************************************************//                            
-//               NETWORK METHODS                     //                            
-//***************************************************// 
+//***************************************************//
+//               NETWORK METHODS                     //
+//***************************************************//
 void initializeNetwork(Network *Network, 
 		       Layer *Input, Layer *Hidden, Layer *Output);
 void freeNetwork(Network *Network);
@@ -48,7 +48,7 @@ void printOutput(Network Network);
 void feedForward(Network *Network);
 //Give inputs pattern to the neural network
 void setInputs(Network *Network, long double *inputs);
-
+void outputsToList(Network *Network, long double **storeResults);
 //**********************************************//                                 
 //               LEARNING METHODS               //                                 
 //**********************************************// 
@@ -56,8 +56,22 @@ void setInputs(Network *Network, long double *inputs);
 void computeDeltaO(Network *Network, 
 		     long double *target, long double *computed);
 void computeDeltaH(Network *network);
-//TO DO
-void computeDeltaWeights()
-{
+ 
+/* Compute the delta weights for the previous Layer from the next
+** Will be called by update Weights methods
+** Compute also the new delta
+*/
+void computeDeltaWeights(Layer *Previous, Layer *Next,
+			 long double eta, long double alpha);
+//Compute the delta weights fot the entire network
+void updateWeights(Network *Network,
+		   long double *target, long double *computed,
+		   long double eta, long double alpha);
 
-}
+//Call all the learning functions
+void learning(Network *Network, int nbPatterns, int nbIterations, 
+	      long double ***inputs, long double ***targets, 
+	      long double ***computed, long double *error, 
+	      long double eta, long double alpha);
+void computeError(long double ***targets, long double ***outputs,
+		  int nbPatterns, long double *error);

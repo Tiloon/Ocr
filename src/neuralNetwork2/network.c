@@ -5,33 +5,148 @@
 
 #include "network.h"
 
+//**********************************************//
+//                 CHECK FUNCTIONS              //
+//**********************************************//
+void printMatrix (long double ***matrix, int x, int y)
+{
+    int x1, y1;
+    for(x1 = 0; x1 < x; x1++)
+    {
+	for(y1 = 0; y1 < y; y1++)
+	{
+	    printf("Matrix[%d][%d] = (%Lf)\n", x1, y1, 
+		   (*matrix)[x1][y1]); 
+	}
+    }
+}
+
+
 int main(void)
 {
     srand(time(NULL));
-
+    
+    //*******************************************//
+    //             VARIABLES DECLARATIONS        //
+    //*******************************************//
+    
     Layer Input;
     Layer Hidden;
     Layer Output;
     Network Network;
+
+    long double **inputs = malloc(sizeof(long double) * 4); 
+    long double **targets = malloc(sizeof(long double) * 4);
+    long double **results = malloc(sizeof(long double) * 4);
+    long double *inputs00 = malloc(sizeof(long double) * 2);
+    long double *inputs10 = malloc(sizeof(long double) * 2);
+    long double *inputs01 = malloc(sizeof(long double) * 2);
+    long double *inputs11 = malloc(sizeof(long double) * 2);    
+    long double *target00 = malloc(sizeof(long double) * 1);
+    long double *target10 = malloc(sizeof(long double) * 1);
+    long double *target01 = malloc(sizeof(long double) * 1);
+    long double  *target11 = malloc(sizeof(long double) * 1);
     
-    double long *inputs00 = malloc(sizeof(long double) * 2);
+    long double error;
+    int iterations, i;
+    
+    //*******************************************//
+    //          VARIABLES AFFECTATIONS           //                               
+    //*******************************************//
+
+    //Malloc all the matrix
+    for(i = 0; i < 4; i++)
+    {
+	inputs[i] = malloc(sizeof(long double) * 2);
+	targets[i] = malloc(sizeof(long double) * 1);
+	results[i] = malloc(sizeof(long double) * 1);
+    }
+    
+    iterations = 1000;
+    error = 0;
+    //Set the inputs
     inputs00[0] = 0;
     inputs00[1] = 0;
-    double long *inputs10 = malloc(sizeof(long double) * 2);
     inputs10[0] = 1;
     inputs10[1] = 0;
+    inputs01[0] = 0;
+    inputs01[1] = 1;
+    inputs11[0] = 1;
+    inputs11[1] = 1;
+       
+    inputs[0] = inputs00;
+    inputs[1] = inputs01;
+    inputs[2] = inputs10;
+    inputs[3] = inputs11;
+
+    //Set the targets
+    target00[0] = 0;
+    target10[0] = 1;
+    target01[0] = 1;
+    target11[0] = 0;
+    
+    targets[0] = target00;
+    targets[1] = target10;
+    targets[2] = target01;
+    targets[3] = target11;
+
 
     
+
+            
     initializeLayer(&Input, 2, 2, 0.5);
     initializeLayer(&Hidden, 2, 1, 0.5);
     initializeLayer(&Output, 1, 0, 0.5);
 
     initializeNetwork(&Network, &Input, &Hidden, &Output);
     
+
+/* WORKING TRAINING    
+    for(i = 0; i < iterations; i++)
+    { 
+	setInputs(&Network, inputs00);
+	feedForward(&Network);
+	outputsToList(&Network, &results);
+	updateWeights(&Network, target00, results, 0.5, 0.1);
+	printOutput(Network);
+
+	
+	setInputs(&Network, inputs10);
+	feedForward(&Network);
+        outputsToList(&Network, &results);
+        updateWeights(&Network, target10, results, 0.5, 0.1);
+	printOutput(Network);
+    }
+*/
+/*
+    learning(&Network, 4, 0, &inputs, &targets, &results, 0.5, 0.1);
+    
+    setInputs(&Network, inputs00);                                             
+    feedForward(&Network);                                                     
+    printOutput(Network);
+
+    setInputs(&Network, inputs10);
     feedForward(&Network);
-    printLayer(Input, "Input\0");
-    printLayer(Hidden, "Hidden\0");
-    printLayer(Output, "Output\0");
+    printOutput(Network);
+
+    setInputs(&Network, inputs01);
+    feedForward(&Network);
+    printOutput(Network);
+
+    setInputs(&Network, inputs11);
+    feedForward(&Network);
+    printOutput(Network);
+*/
+
+    learning(&Network, 4, 2, &inputs, &targets, &results,&error,
+	     0.5, 0.1);
+    printf("input\n");
+    printMatrix(&inputs, 4, 2);
+    printf("targets \n");
+    printMatrix(&targets, 4, 1);
+    printf("computed\n");
+    printMatrix(&results, 4, 1);
+    
     return 0;
 }
 
@@ -190,6 +305,14 @@ void setInputs(Network *Network, long double *inputs)
     Network->Input->outputs[1] = inputs[1];
 }
 
+void outputsToList(Network *Network, long double **storeData)
+{
+    int u;
+    for(u = 0; u < Network->Output->nbUnits; u++)
+    {
+	(*storeData)[u] = Network->Output->outputs[u];
+    }
+}
 
 //**********************************************//
 //               LEARNING METHODS               //
@@ -219,4 +342,69 @@ void computeDeltaH(Network *Network)
 	Network->Hidden->delta[u] = sum * 
 	    Network->Hidden->outputs[u] * (1.0 - Network->Hidden->outputs[u]);
     }
+}
+
+void computeDeltaWeights(Layer *Previous, Layer *Next,
+			 long double eta, long double alpha)
+{
+    int u,  w;
+    for(w = 0; w < Next->nbUnits; w++)
+    {
+	//Update Bias
+	Next->deltaBias[w] = (eta * Next->delta[w]) +
+	    (alpha * Next->deltaBias[w]); 
+	for(u = 0; u < Previous->nbUnits; u++)
+	{
+	    //Update the delta weights
+	    Previous->deltaWeights[u][w] = 
+		(eta * Previous->outputs[u] * Next->delta[w]) +
+		(alpha * Previous->deltaWeights[u][w]);
+	    Previous->weights[u][w] += Previous->deltaWeights[u][w];
+	}
+    }
+}
+
+void updateWeights(Network *Network,
+		   long double *target, long double *computed,
+		   long double eta, long double alpha)
+{
+    computeDeltaO(Network, target, computed);
+    computeDeltaH(Network);
+    computeDeltaWeights(Network->Input, Network->Hidden, eta, alpha);
+    computeDeltaWeights(Network->Hidden, Network->Output, eta, alpha);
+}
+
+void learning(Network *Network, int nbPatterns, int nbIterations,
+	      long double ***inputs, long double ***targets, 
+	      long double ***computed, long double *error,
+	      long double eta, long double alpha)
+{
+    int p, i;
+
+    for(i = 0; i < nbIterations; i++)
+    {
+	for(p = 0; p < nbPatterns; p++)
+	{
+	    setInputs(Network, (*inputs)[p]);
+	    feedForward(Network);
+	    outputsToList(Network, &(*computed)[p]);
+	    updateWeights(Network, (*targets)[p], (*computed)[p], eta, alpha);
+	    computeError(targets, computed, 4, error);
+	    printf("error %Lf\n", *error);
+	}
+    }
+}
+
+void computeError(long double ***targets, long double ***outputs,
+		  int nbPatterns, long double *error)
+{
+    int p;
+    for(p = 0; p < nbPatterns; p++)
+    {
+	printf("target[%d] : %Lf\n", p, (*targets)[p]);
+	printf("output[%d] : %Lf\n", p, (*outputs)[p]);
+	
+	*error += 0.5 * ((*targets)[p] - (*outputs)[p]) * 
+	    ((*targets)[p] - (*outputs)[p]);
+    } 
 }
