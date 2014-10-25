@@ -5,7 +5,6 @@
 #include "network.h"
 
 
-
 /*
  * layer methods
  */
@@ -188,24 +187,30 @@ void updateWeights(struct s_network *network,
     computeDeltaWeights(network->hidden, network->output, eta, alpha);
 }
 
-void learning(struct s_network *network, int nbPatterns, int nbIterations,
+void learning(struct s_network *network, int nbPatterns, int *nbIterations,
         long double ***inputs, long double ***targets,
         long double ***computed, long double *error,
-        long double eta, long double alpha)
+	      long double eta, long double alpha, long double errorThreshold)
 {
-    int p, i;
+    int p;
+    p = 0;
 
-    for(i = 0; i < nbIterations; i++)
+    static unsigned seed;
+
+    if(!seed)
+        srand(seed = (unsigned)time(NULL));
+
+    while(*error > errorThreshold)
     {
-        for(p = 0; p < nbPatterns; p++)
-        {
-            setInputs(network, (*inputs)[p]);
-            feedForward(network);
-            outputsToList(network, &(*computed)[p]);
-            updateWeights(network, (*targets)[p], (*computed)[p], eta, alpha);
-            computeError(targets, computed, 4, error);
-        }
+	p =  (int) rand() % nbPatterns;
+	setInputs(network, (*inputs)[p]);
+	feedForward(network);
+	outputsToList(network, &(*computed)[p]);
+	updateWeights(network, (*targets)[p], (*computed)[p], eta, alpha);
+	computeError(targets, computed, 4, error);
+	(*nbIterations)++;
     }
+    printf("Number iterations : %d\n\n", *nbIterations);
 }
 
 void computeError(long double ***targets, long double ***outputs,

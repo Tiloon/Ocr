@@ -3,9 +3,9 @@
 
 #include <stdio.h>
 
-#define ETA 0.5
-#define ALPHA 0.6
-#define BIAS 0.5
+#define ETA 0.8
+#define ALPHA 0.4
+#define BIAS 0
 
 struct s_layer
 {
@@ -74,10 +74,10 @@ void updateWeights(struct s_network *network,
         long double eta, long double alpha);
 
 //Call all the learning functions
-void learning(struct s_network *network, int nbPatterns, int nbIterations,
+void learning(struct s_network *network, int nbPatterns, int *nbIterations,
         long double ***inputs, long double ***targets,
         long double ***computed, long double *error,
-        long double eta, long double alpha);
+	      long double eta, long double alpha, long double errorThreshold);
 void computeError(long double ***targets, long double ***outputs,
         int nbPatterns, long double *error);
 

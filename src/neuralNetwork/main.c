@@ -3,9 +3,11 @@
 
 #include "network.h"
 
-//**********************************************//
-//                 CHECK FUNCTIONS              //
-//**********************************************//
+/*
+ * CHECKING FUNCTIONS
+ */
+
+
 void printMatrix (long double ***matrix, int x, int y)
 {
     int x1, y1;
@@ -63,8 +65,10 @@ int main(void)
         results[i] = malloc(sizeof(long double) * 1);
     }
 
-    iterations = 2000;
-    error = 0;
+    iterations = 0;
+    error = 100;
+
+
     //Set the inputs
     inputs00[0] = 0;
     inputs00[1] = 0;
@@ -95,11 +99,14 @@ int main(void)
 
 
 
-    initializeLayer(&input, 2, 3, BIAS);
-    initializeLayer(&hidden, 3, 1, BIAS);
+    initializeLayer(&input, 2, 4, BIAS);
+    initializeLayer(&hidden, 4, 1, BIAS);
     initializeLayer(&output, 1, 0, BIAS);
 
     initializeNetwork(&network, &input, &hidden, &output);
+
+    printf("****************\n");
+    printf("Starting results\n");
 
     setInputs(&network, inputs00);
     feedForward(&network);
@@ -117,11 +124,28 @@ int main(void)
     feedForward(&network);
     printOutput(&network);
 
-    learning(&network, 4, iterations, &inputs, &targets, &results,&error,
-            ETA, ALPHA);
-    printf("computed\n");
-    printMatrix(&results, 4, 1);
+    learning(&network, 4, &iterations, &inputs, &targets, &results,&error,
+	     ETA, ALPHA, 0.001);
 
+    printf("******************\n");
+    printf("AFTER LEARNING\n\n");
+
+    setInputs(&network, inputs00);
+    feedForward(&network);
+    printOutput(&network);
+
+    setInputs(&network, inputs10);
+    feedForward(&network);
+    printOutput(&network);
+
+    setInputs(&network, inputs01);
+    feedForward(&network);
+    printOutput(&network);
+
+    setInputs(&network, inputs11);
+    feedForward(&network);
+    printOutput(&network);
+    printf("Error : %Lf\n", error);
     return 0;
 }
 

@@ -10,8 +10,8 @@ LDLIBS=-lm
 # TODO : "CFLAGS= -Wall -Wextra -Werror -std=c99 -O2"
 #
 
-all: main.o network.o
-	clang -Wall -Wextra -Wall -std=c99 -O2 neuralNetwork.c tests.c -lm -o tests
+all:
+	clang -Wall -Wextra -Wall -std=c99 -O2 network.c main.c -lm -o main
 
 
 clean:
