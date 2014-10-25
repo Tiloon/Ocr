@@ -69,27 +69,27 @@ int main(void)
 
     //Initializing the inputs
     input0 = malloc(sizeof(long double) * NUMBER_INPUTS);
-    input0[0] = 0;
-    input0[1] = 0;
+    input0[0] = -1;
+    input0[1] = -1;
     input1 = malloc(sizeof(long double) * NUMBER_INPUTS);
-    input1[0] = 0;
+    input1[0] = -1;
     input1[1] = 1;
     input2 = malloc(sizeof(long double) * NUMBER_INPUTS);
     input2[0] = 1;
-    input2[1] = 0;
+    input2[1] = -1;
     input3 = malloc(sizeof(long double) * NUMBER_INPUTS);
     input3[0] = 1;
     input3[1] = 1;
 
     //Initializing the expected results
     expected0 = malloc(sizeof(long double) * NUMBER_OUTPUTS);
-    expected0[0] = 0;
+    expected0[0] = -1;
     expected1 = malloc(sizeof(long double) * NUMBER_OUTPUTS);
     expected1[0] = 1;
     expected2 = malloc(sizeof(long double) * NUMBER_OUTPUTS);
     expected2[0] = 1;
     expected3 = malloc(sizeof(long double) * NUMBER_OUTPUTS);
-    expected3[0] = 0;
+    expected3[0] = -1;
 
     //Initialising results tab
     results = malloc(sizeof(long double) * NUMBER_OUTPUTS);
@@ -98,21 +98,21 @@ int main(void)
      *  will be used for compare the value after learning
      */
 
-    computePattern(input0, &Input, &Hidden, &Output);
-    printf("results for XOR 0 : %Lf\n", Output.Units[0].computedValue);
-    computePattern(input1, &Input, &Hidden, &Output);
-    printf("results for XOR 1 : %Lf\n", Output.Units[0].computedValue);
+    //computePattern(input0, &Input, &Hidden, &Output);
+    //printf("results for XOR 0 : %Lf\n", Output.Units[0].computedValue);
+    //computePattern(input1, &Input, &Hidden, &Output);
+    //printf("results for XOR 1 : %Lf\n", Output.Units[0].computedValue);
     // computePattern(input2, &Input, &Hidden, &Output);
     //printf("results for XOR 2 : %Lf\n", Output.Units[0].computedValue);
     // computePattern(input3, &Input, &Hidden, &Output);
     //printf("results for XOR 3 : %Lf\n", Output.Units[0].computedValue);
 
     unsigned i;
-    for(i = 0; i < 1000; i++)
+    for(i = 0; i < 10000; i++)
     {
         computePattern(input0, &Input, &Hidden, &Output);
         resultsToTab(&Output, &results);
-        computeError(expected0, results, &error, 1);
+        computeError(expected0, results, &error, 2);
         computeDeltaOutput(&Output, expected0, results);
         computeDeltaHidden(&Hidden, &Output);
         computeDeltaWeight(ETA, ALPHA, &Input, &Hidden);
@@ -121,12 +121,19 @@ int main(void)
 
         computePattern(input1, &Input, &Hidden, &Output);
         resultsToTab(&Output, &results);
-        computeError(expected1, results, &error, 1);
+        computeError(expected1, results, &error, 2);
         computeDeltaOutput(&Output, expected1, results);
         computeDeltaHidden(&Hidden, &Output);
         computeDeltaWeight(ETA, ALPHA, &Input, &Hidden);
         computeDeltaWeight(ETA, ALPHA, &Hidden, &Output);
         error = 0;
+
+        //printf("%i - Bias : %Lf\n", i, Output.Units[0].bias);
+        if(Output.Units[0].bias > 8.0)
+        {
+            printf("\n\n - STOPPED AT %i \n\n", i);
+            break;
+        }
 
 /*
         computePattern(input0, &Input, &Hidden, &Output);
@@ -135,11 +142,12 @@ int main(void)
         printf("results for XOR 1 : %Lf\n", Output.Units[0].computedValue);
 */
     }
-
+/*
     printf("\n\nInputs :\n");
     printAll(&Input);
     printf("\n\nHidden :\n");
     printAll(&Hidden);
+ */
     printf("\n\nOutputs :\n");
     printAll(&Output);
     printf("\n\n\n");

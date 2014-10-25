@@ -120,26 +120,29 @@ void computeDeltaOutput(Layer *Output, long double *expected,
         long double *computed)
 {
     unsigned u;
+    long double derivate;
     for(u = 0; u < Output->numberUnits; u++)
     {
-        Output->Units[u].delta = (expected[u] - computed[u]) *
-            computed[u] * (1.0 - computed[u]);
+        derivate = tanh(computed[u]);
+        derivate = 1 - derivate * derivate;
+        Output->Units[u].delta = (expected[u] - computed[u]) * derivate;
     }
 }
 
 void computeDeltaHidden(Layer *Hidden, Layer *Output)
 {
     unsigned h, o;
-    long double error;
+    long double error, derivate;
     for(h = 0; h < Hidden->numberUnits; h++)
     {
+        derivate = tanh(Hidden->Units[h].computedValue);
+        derivate = 1 - derivate * derivate;
         error = 0;
         for(o = 0; o < Output->numberUnits; o++)
         {
             error += (Hidden->Units[h].weights[o] * Output->Units[o].delta);
         }
-        Hidden->Units[h].delta = Hidden->Units[h].computedValue *
-            (1.0 - Hidden->Units[h].computedValue) * error;
+        Hidden->Units[h].delta = derivate * error;
     }
 }
 
