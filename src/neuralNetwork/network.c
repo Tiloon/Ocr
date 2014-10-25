@@ -1,225 +1,67 @@
 #include <stdlib.h>
-#include <stdio.h>
 #include <math.h>
 #include <time.h>
 
 #include "network.h"
 
-#define ETA 0.5
-#define ALPHA 0.6
-#define BIAS 0.5
-//**********************************************//
-//                 CHECK FUNCTIONS              //
-//**********************************************//
-void printMatrix (long double ***matrix, int x, int y)
-{
-    int x1, y1;
-    for(x1 = 0; x1 < x; x1++)
-    {
-        for(y1 = 0; y1 < y; y1++)
-        {
-            printf("Matrix[%d][%d] = (%Lf)\n", x1, y1,
-                    (*matrix)[x1][y1]);
-        }
-    }
-}
 
 
-int main(void)
-{
-    srand(time(NULL));
+/*
+ * layer methods
+ */
 
-    //*******************************************//
-    //             VARIABLES DECLARATIONS        //
-    //*******************************************//
-
-    Layer Input;
-    Layer Hidden;
-    Layer Output;
-    Network Network;
-
-    long double **inputs = malloc(sizeof(long double) * 4);
-    long double **targets = malloc(sizeof(long double) * 4);
-    long double **results = malloc(sizeof(long double) * 4);
-    long double *inputs00 = malloc(sizeof(long double) * 2);
-    long double *inputs10 = malloc(sizeof(long double) * 2);
-    long double *inputs01 = malloc(sizeof(long double) * 2);
-    long double *inputs11 = malloc(sizeof(long double) * 2);
-    long double *target00 = malloc(sizeof(long double) * 1);
-    long double *target10 = malloc(sizeof(long double) * 1);
-    long double *target01 = malloc(sizeof(long double) * 1);
-    long double  *target11 = malloc(sizeof(long double) * 1);
-
-    long double error;
-    int iterations, i;
-
-    //*******************************************//
-    //          VARIABLES AFFECTATIONS           //
-    //*******************************************//
-
-    //Malloc all the matrix
-    for(i = 0; i < 4; i++)
-    {
-        inputs[i] = malloc(sizeof(long double) * 2);
-        targets[i] = malloc(sizeof(long double) * 1);
-        results[i] = malloc(sizeof(long double) * 1);
-    }
-
-    iterations = 2000;
-    error = 0;
-    //Set the inputs
-    inputs00[0] = 0;
-    inputs00[1] = 0;
-    inputs10[0] = 1;
-    inputs10[1] = 0;
-    inputs01[0] = 0;
-    inputs01[1] = 1;
-    inputs11[0] = 1;
-    inputs11[1] = 1;
-
-    inputs[0] = inputs00;
-    inputs[1] = inputs01;
-    inputs[2] = inputs10;
-    inputs[3] = inputs11;
-
-    //Set the targets
-    target00[0] = 0;
-    target10[0] = 1;
-    target01[0] = 1;
-    target11[0] = 0;
-
-    targets[0] = target00;
-    targets[1] = target10;
-    targets[2] = target01;
-    targets[3] = target11;
-
-
-
-
-
-    initializeLayer(&Input, 2, 3, BIAS);
-    initializeLayer(&Hidden, 3, 1, BIAS);
-    initializeLayer(&Output, 1, 0, BIAS);
-
-    initializeNetwork(&Network, &Input, &Hidden, &Output);
-
-    setInputs(&Network, inputs00);
-    feedForward(&Network);
-    printOutput(Network);
-
-    setInputs(&Network, inputs10);
-    feedForward(&Network);
-    printOutput(Network);
-
-    setInputs(&Network, inputs01);
-    feedForward(&Network);
-    printOutput(Network);
-
-    setInputs(&Network, inputs11);
-    feedForward(&Network);
-    printOutput(Network);
-
-    learning(&Network, 4, iterations, &inputs, &targets, &results,&error,
-            ETA, ALPHA);
-    printf("computed\n");
-    printMatrix(&results, 4, 1);
-
-    return 0;
-}
-
-
-//***************************************************//
-//               LAYER METHODS                       //
-//***************************************************//
-
-void initializeLayer(Layer *Layer, int nbUnits, int nbWeights,
+void initializeLayer(struct s_layer *layer, int nbUnits, int nbWeights,
         long double bias)
 {
     int u, w;
-    Layer->nbUnits = nbUnits;
-    Layer->nbWeights = nbWeights;
+    layer->nbUnits = nbUnits;
+    layer->nbWeights = nbWeights;
 
     //Malloc weights
-    Layer->weights = malloc(sizeof(long double) * nbUnits);
-    for(u = 0; u < Layer->nbUnits; u++)
+    layer->weights = malloc(sizeof(long double) * nbUnits);
+    for(u = 0; u < layer->nbUnits; u++)
     {
-        Layer->weights[u] = malloc(sizeof(long double) * nbWeights);
+        layer->weights[u] = malloc(sizeof(long double) * nbWeights);
     }
-    for(u = 0; u < Layer->nbUnits; u++)
+    for(u = 0; u < layer->nbUnits; u++)
     {
-        for(w = 0; w < Layer->nbWeights; w++)
+        for(w = 0; w < layer->nbWeights; w++)
         {
-            Layer->weights[u][w] = randomValues();
+            layer->weights[u][w] = randomValues();
         }
     }
 
     //Malloc deltaWeights
-    Layer->deltaWeights = malloc(sizeof(long double) * nbUnits);
-    for(u = 0; u < Layer->nbUnits; u++)
+    layer->deltaWeights = malloc(sizeof(long double) * nbUnits);
+    for(u = 0; u < layer->nbUnits; u++)
     {
-        Layer->deltaWeights[u] = malloc(sizeof(long double) * nbWeights);
+        layer->deltaWeights[u] = malloc(sizeof(long double) * nbWeights);
     }
-    for(u = 0; u < Layer->nbUnits; u++)
+    for(u = 0; u < layer->nbUnits; u++)
     {
-        for(w = 0; w < Layer->nbWeights; w++)
+        for(w = 0; w < layer->nbWeights; w++)
         {
-            Layer->deltaWeights[u][w] = 0;
+            layer->deltaWeights[u][w] = 0;
         }
     }
 
     //Malloc output
-    Layer->outputs = malloc(sizeof(long double) * nbUnits);
+    layer->outputs = malloc(sizeof(long double) * nbUnits);
 
     //Malloc bias
-    Layer->bias = malloc(sizeof(long double) * nbUnits);
-    for(u = 0; u < Layer->nbUnits; u++)
-        Layer->bias[u] = bias;
+    layer->bias = malloc(sizeof(long double) * nbUnits);
+    for(u = 0; u < layer->nbUnits; u++)
+        layer->bias[u] = bias;
 
     //Malloc deltaBias
-    Layer->deltaBias = malloc(sizeof(long double) * nbUnits);
-    for(u = 0; u < Layer->nbUnits; u++)
-        Layer->deltaBias[u] = 0;
+    layer->deltaBias = malloc(sizeof(long double) * nbUnits);
+    for(u = 0; u < layer->nbUnits; u++)
+        layer->deltaBias[u] = 0;
 
     //Malloc delta
-    Layer->delta = malloc(sizeof(long double) * nbUnits);
-    for(u = 0; u < Layer->nbUnits; u++)
-        Layer->delta[u] = 0;
-
-}
-
-void printLayer(Layer Layer, char *str)
-{
-    int u, w;
-
-    printf("\n***************\n");
-    printf("layer %s\n\n", str);
-    printf("nb units %d \n", Layer.nbUnits);
-    printf("nb weights %d\n\n", Layer.nbWeights);
-
-    for(u = 0; u < Layer.nbUnits; u++)
-    {
-        printf("neuron : %d\n", u);
-        printf("bias : %Lf\n", Layer.bias[u]);
-        printf("delta bias : %Lf\n", Layer.deltaBias[u]);
-        printf("output : %Lf\n", Layer.outputs[u]);
-        printf("delta : %Lf\n\n", Layer.delta[u]);
-    }
-
-    for(u = 0; u < Layer.nbUnits; u++)
-    {
-        for(w = 0; w < Layer.nbUnits; w++)
-        {
-            printf("weights[%d][%d] : %Lf\n", u, w, Layer.weights[u][w]);
-        }
-    }
-    for(u = 0; u < Layer.nbUnits; u++)
-    {
-        for(w = 0; w < Layer.nbUnits; w++)
-        {
-            printf("delta weights[%d][%d] : %Lf\n", u, w,
-                    Layer.deltaWeights[u][w]);
-        }
-    }
+    layer->delta = malloc(sizeof(long double) * nbUnits);
+    for(u = 0; u < layer->nbUnits; u++)
+        layer->delta[u] = 0;
 
 }
 
@@ -232,19 +74,19 @@ long double randomValues()
     return 1 - ((long double)rand()/(((long double)RAND_MAX) / 2.0));
 }
 
-void computeValues(Layer *L1, Layer *L2)
+void computeValues(struct s_layer *l1, struct s_layer *l2)
 {
     long double sum;
     int prev, curr;
-    for(curr = 0; curr < L2->nbUnits; curr++)
+    for(curr = 0; curr < l2->nbUnits; curr++)
     {
         //Bias
-        sum = L2->bias[curr];
-        for(prev = 0; prev < L1->nbUnits; prev++)
+        sum = l2->bias[curr];
+        for(prev = 0; prev < l1->nbUnits; prev++)
         {
-            sum += L1->outputs[prev] * L1->weights[prev][curr];
+            sum += l1->outputs[prev] * l1->weights[prev][curr];
         }
-        L2->outputs[curr] = sigmoid(sum);
+        l2->outputs[curr] = sigmoid(sum);
     }
 }
 
@@ -253,105 +95,100 @@ long double sigmoid(long double x)
     return (1 / (1 + exp(-x)));
 }
 
-//***************************************************//
-//               NETWORK METHODS                     //
-//***************************************************//
+/*
+ * Network methods
+ */
 
-void initializeNetwork(Network *Network,
-        Layer *Input, Layer *Hidden, Layer *Output)
+void initializeNetwork(struct s_network *network, struct s_layer *input,
+        struct s_layer *hidden, struct s_layer *output)
 {
-    Network->Input = Input;
-    Network->Hidden = Hidden;
-    Network->Output = Output;
+    network->input = input;
+    network->hidden = hidden;
+    network->output = output;
 }
 
-void printOutput(Network Network)
+void feedForward(struct s_network *network)
 {
-    printf("Output value : %Lf\n", Network.Output->outputs[0]);
+    computeValues(network->input, network->hidden);
+    computeValues(network->hidden, network->output);
 }
 
-void feedForward(Network *Network)
+void setInputs(struct s_network *network, long double *inputs)
 {
-    computeValues(Network->Input, Network->Hidden);
-    computeValues(Network->Hidden, Network->Output);
+    network->input->outputs[0] = inputs[0];
+    network->input->outputs[1] = inputs[1];
 }
 
-void setInputs(Network *Network, long double *inputs)
-{
-    Network->Input->outputs[0] = inputs[0];
-    Network->Input->outputs[1] = inputs[1];
-}
-
-void outputsToList(Network *Network, long double **storeData)
+void outputsToList(struct s_network *network, long double **storeData)
 {
     int u;
-    for(u = 0; u < Network->Output->nbUnits; u++)
+    for(u = 0; u < network->output->nbUnits; u++)
     {
-        (*storeData)[u] = Network->Output->outputs[u];
+        (*storeData)[u] = network->output->outputs[u];
     }
 }
 
-//**********************************************//
-//               LEARNING METHODS               //
-//**********************************************//
+/*
+ * Learning methods
+ */
 
-void computeDeltaO(Network *Network,
+void computeDeltaO(struct s_network *network,
         long double *target, long double *computed)
 {
     int u;
-    for(u = 0; u < Network->Output->nbUnits; u++)
-        Network->Output->delta[u] =
+    for(u = 0; u < network->output->nbUnits; u++)
+        network->output->delta[u] =
             (target[u] - computed[u]) * computed[u] * (1.0 - computed[u]);
 }
 
-void computeDeltaH(Network *Network)
+void computeDeltaH(struct s_network *network)
 {
     int u, out;
     long double sum;
-    for(u = 0; u < Network->Hidden->nbUnits; u++)
+    for(u = 0; u < network->hidden->nbUnits; u++)
     {
         sum = 0;
-        for(out = 0; out < Network->Output->nbUnits; out++)
+        for(out = 0; out < network->output->nbUnits; out++)
         {
-            sum +=  Network->Hidden->weights[u][out] *
-                Network->Output->delta[out];
+            sum +=  network->hidden->weights[u][out] *
+                network->output->delta[out];
         }
-        Network->Hidden->delta[u] = sum *
-            Network->Hidden->outputs[u] * (1.0 - Network->Hidden->outputs[u]);
+        network->hidden->delta[u] = sum *
+            network->hidden->outputs[u] * (1.0 - network->hidden->outputs[u]);
     }
 }
 
-void computeDeltaWeights(Layer *Previous, Layer *Next,
+void computeDeltaWeights(struct s_layer *previous, struct s_layer *next,
         long double eta, long double alpha)
 {
     int u,  w;
-    for(w = 0; w < Next->nbUnits; w++)
+    for(w = 0; w < next->nbUnits; w++)
     {
         //Update Bias
-        Next->deltaBias[w] = (eta * Next->delta[w]) +
-            (alpha * Next->deltaBias[w]);
-        for(u = 0; u < Previous->nbUnits; u++)
+        next->deltaBias[w] = (eta * next->delta[w]) +
+            (alpha * next->deltaBias[w]);
+        for(u = 0; u < previous->nbUnits; u++)
         {
             //Update the delta weights
-            Previous->deltaWeights[u][w] =
-                (eta * Previous->outputs[u] * Next->delta[w]) +
-                (alpha * Previous->deltaWeights[u][w]);
-            Previous->weights[u][w] += Previous->deltaWeights[u][w];
+            previous->deltaWeights[u][w] =
+                (eta * previous->outputs[u] * next->delta[w]) +
+                (alpha * previous->deltaWeights[u][w]);
+            previous->weights[u][w] += previous->deltaWeights[u][w];
         }
     }
 }
 
-void updateWeights(Network *Network,
+void updateWeights(struct s_network *network,
         long double *target, long double *computed,
         long double eta, long double alpha)
 {
-    computeDeltaO(Network, target, computed);
-    computeDeltaH(Network);
-    computeDeltaWeights(Network->Input, Network->Hidden, eta, alpha);
-    computeDeltaWeights(Network->Hidden, Network->Output, eta, alpha);
+    computeDeltaO(network, target, computed);
+    computeDeltaH(network);
+    computeDeltaWeights(network->input, network->hidden, eta, alpha);
+    computeDeltaWeights(network->hidden, network->output, eta, alpha);
 }
 
-void learning(Network *Network, int nbPatterns, int nbIterations,
+void learning(struct s_network *network, int nbPatterns, int nbIterations,
         long double ***inputs, long double ***targets,
         long double ***computed, long double *error,
         long double eta, long double alpha)
@@ -362,13 +199,11 @@ void learning(Network *Network, int nbPatterns, int nbIterations,
     {
         for(p = 0; p < nbPatterns; p++)
         {
-            setInputs(Network, (*inputs)[p]);
-            feedForward(Network);
-            outputsToList(Network, &(*computed)[p]);
-            updateWeights(Network, (*targets)[p], (*computed)[p], eta, alpha);
+            setInputs(network, (*inputs)[p]);
+            feedForward(network);
+            outputsToList(network, &(*computed)[p]);
+            updateWeights(network, (*targets)[p], (*computed)[p], eta, alpha);
             computeError(targets, computed, 4, error);
-            if(p % 10 == 0)
-                printf("error %Lf\n", *error);
         }
     }
 }
