@@ -64,8 +64,8 @@ int main(void)
 	targets[i] = malloc(sizeof(long double) * 1);
 	results[i] = malloc(sizeof(long double) * 1);
     }
-    
-    iterations = 1000;
+      
+    iterations = 2000;      
     error = 0;
     //Set the inputs
     inputs00[0] = 0;
@@ -103,27 +103,6 @@ int main(void)
 
     initializeNetwork(&Network, &Input, &Hidden, &Output);
     
-
-/* WORKING TRAINING    
-    for(i = 0; i < iterations; i++)
-    { 
-	setInputs(&Network, inputs00);
-	feedForward(&Network);
-	outputsToList(&Network, &results);
-	updateWeights(&Network, target00, results, 0.5, 0.1);
-	printOutput(Network);
-
-	
-	setInputs(&Network, inputs10);
-	feedForward(&Network);
-        outputsToList(&Network, &results);
-        updateWeights(&Network, target10, results, 0.5, 0.1);
-	printOutput(Network);
-    }
-*/
-/*
-    learning(&Network, 4, 0, &inputs, &targets, &results, 0.5, 0.1);
-    
     setInputs(&Network, inputs00);                                             
     feedForward(&Network);                                                     
     printOutput(Network);
@@ -139,9 +118,8 @@ int main(void)
     setInputs(&Network, inputs11);
     feedForward(&Network);
     printOutput(Network);
-*/
 
-    learning(&Network, 4, 500000, &inputs, &targets, &results,&error,
+    learning(&Network, 4, iterations, &inputs, &targets, &results,&error,
 	     ETA, ALPHA);
     printf("computed\n");
     printMatrix(&results, 4, 1);
