@@ -11,11 +11,11 @@ LDLIBS=-lm
 #
 
 all:
-	clang -Wall -Wextra -Wall -std=c99 -O2 network.c main.c -lm -o main
+	clang -Wall -Wextra -Wall -std=c99 -O2 network.c layer.c learning.c main.c -lm -o main
 
 
 clean:
-	rm -rf *~ *.o obj/* ./ocrocaml obj/
+	rm -rf *~ *.o ./main
 
 
 # END

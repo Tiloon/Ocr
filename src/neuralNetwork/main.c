@@ -99,51 +99,51 @@ int main(void)
 
 
 
-    initializeLayer(&input, 2, 4, BIAS);
-    initializeLayer(&hidden, 4, 1, BIAS);
-    initializeLayer(&output, 1, 0, BIAS);
+    initialize_layer(&input, 2, 4, BIAS);
+    initialize_layer(&hidden, 4, 1, BIAS);
+    initialize_layer(&output, 1, 0, BIAS);
 
-    initializeNetwork(&network, &input, &hidden, &output);
+    initialize_network(&network, &input, &hidden, &output);
 
     printf("****************\n");
     printf("Starting results\n");
 
-    setInputs(&network, inputs00);
-    feedForward(&network);
+    set_inputs(&network, inputs00);
+    feedforward(&network);
     printOutput(&network);
 
-    setInputs(&network, inputs10);
-    feedForward(&network);
+    set_inputs(&network, inputs10);
+    feedforward(&network);
     printOutput(&network);
 
-    setInputs(&network, inputs01);
-    feedForward(&network);
+    set_inputs(&network, inputs01);
+    feedforward(&network);
     printOutput(&network);
 
-    setInputs(&network, inputs11);
-    feedForward(&network);
+    set_inputs(&network, inputs11);
+    feedforward(&network);
     printOutput(&network);
 
     learning(&network, 4, &iterations, &inputs, &targets, &results,&error,
-	     ETA, ALPHA, 0.001);
+            ETA, ALPHA, 0.001);
 
     printf("******************\n");
     printf("AFTER LEARNING\n\n");
 
-    setInputs(&network, inputs00);
-    feedForward(&network);
+    set_inputs(&network, inputs00);
+    feedforward(&network);
     printOutput(&network);
 
-    setInputs(&network, inputs10);
-    feedForward(&network);
+    set_inputs(&network, inputs10);
+    feedforward(&network);
     printOutput(&network);
 
-    setInputs(&network, inputs01);
-    feedForward(&network);
+    set_inputs(&network, inputs01);
+    feedforward(&network);
     printOutput(&network);
 
-    setInputs(&network, inputs11);
-    feedForward(&network);
+    set_inputs(&network, inputs11);
+    feedforward(&network);
     printOutput(&network);
     printf("Error : %Lf\n", error);
     return 0;

@@ -2,83 +2,28 @@
 #define NETWORK_H
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <time.h>
+
+#include "structure.h"
+#include "layer.h"
+#include "learning.h"
 
 #define ETA 0.8
 #define ALPHA 0.4
 #define BIAS 0
 
-struct s_layer
-{
-    //Weights between two layers
-    long double **weights;
-    long double **deltaWeights;
-    //List of output values of each neuron
-    long double *outputs;
-    //List of bias, one bias for each neuron
-    long double *bias;
-    long double *deltaBias;
-    long double *delta;
-    //Number units on the layer
-    int nbUnits;
-    //Number of weights
-    int nbWeights;
-};
+long double random_values(void);
 
-struct s_network
-{
-    struct s_layer *input;
-    struct s_layer *hidden;
-    struct s_layer *output;
-};
-
-
-/*
- * Layer methods
- */
-void initializeLayer(struct s_layer *layer, int nbUnits, int nbWeights,
-        long double startingBias);
-void freeLayer(struct s_layer *layer);
-long double randomValues();
-//Update the output of the layer2 from the Layer1 output
-void computeValues(struct s_layer *l1, struct s_layer *l2);
-long double sigmoid(long double x);
-
-/*
- * Network methods
- */
-void initializeNetwork(struct s_network *network,
+void initialize_network(struct s_network *network,
         struct s_layer *input, struct s_layer *hidden, struct s_layer *output);
-void freeNetwork(struct s_network *network);
+void free_network(struct s_network *network);
 //Compute the pattern (call setInputs to set a pattern)
-void feedForward(struct s_network *network);
+void feedforward(struct s_network *network);
 //Give inputs pattern to the neural network
-void setInputs(struct s_network *network, long double *inputs);
-void outputsToList(struct s_network *network, long double **storeResults);
+void set_inputs(struct s_network *network, long double *inputs);
+void outputs_to_list(struct s_network *network, long double **store_data);
 
-/*
- * Learning methods
- */
-void computeDeltaO(struct s_network *network,
-        long double *target, long double *computed);
-void computeDeltaH(struct s_network *network);
-
-/* Compute the delta weights for the previous Layer from the next
- ** Will be called by update Weights methods
- ** Compute also the new delta
- */
-void computeDeltaWeights(struct s_layer *previous, struct s_layer *next,
-        long double eta, long double alpha);
-//Compute the delta weights fot the entire network
-void updateWeights(struct s_network *network,
-        long double *target, long double *computed,
-        long double eta, long double alpha);
-
-//Call all the learning functions
-void learning(struct s_network *network, int nbPatterns, int *nbIterations,
-        long double ***inputs, long double ***targets,
-        long double ***computed, long double *error,
-	      long double eta, long double alpha, long double errorThreshold);
-void computeError(long double ***targets, long double ***outputs,
-        int nbPatterns, long double *error);
 
 #endif
