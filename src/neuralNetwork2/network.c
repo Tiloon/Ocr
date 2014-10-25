@@ -5,6 +5,9 @@
 
 #include "network.h"
 
+#define ETA 0.5
+#define ALPHA 0.6
+#define BIAS 0.5
 //**********************************************//
 //                 CHECK FUNCTIONS              //
 //**********************************************//
@@ -94,9 +97,9 @@ int main(void)
     
 
             
-    initializeLayer(&Input, 2, 2, 0.5);
-    initializeLayer(&Hidden, 2, 1, 0.5);
-    initializeLayer(&Output, 1, 0, 0.5);
+    initializeLayer(&Input, 2, 3, BIAS);
+    initializeLayer(&Hidden, 3, 1, BIAS);
+    initializeLayer(&Output, 1, 0, BIAS);
 
     initializeNetwork(&Network, &Input, &Hidden, &Output);
     
@@ -138,12 +141,8 @@ int main(void)
     printOutput(Network);
 */
 
-    learning(&Network, 4, 2, &inputs, &targets, &results,&error,
-	     0.5, 0.1);
-    printf("input\n");
-    printMatrix(&inputs, 4, 2);
-    printf("targets \n");
-    printMatrix(&targets, 4, 1);
+    learning(&Network, 4, 500000, &inputs, &targets, &results,&error,
+	     ETA, ALPHA);
     printf("computed\n");
     printMatrix(&results, 4, 1);
     
@@ -390,7 +389,8 @@ void learning(Network *Network, int nbPatterns, int nbIterations,
 	    outputsToList(Network, &(*computed)[p]);
 	    updateWeights(Network, (*targets)[p], (*computed)[p], eta, alpha);
 	    computeError(targets, computed, 4, error);
-	    printf("error %Lf\n", *error);
+	    if(p % 10 == 0)
+		printf("error %Lf\n", *error);
 	}
     }
 }
@@ -399,12 +399,10 @@ void computeError(long double ***targets, long double ***outputs,
 		  int nbPatterns, long double *error)
 {
     int p;
+    *error = 0;
     for(p = 0; p < nbPatterns; p++)
     {
-	printf("target[%d] : %Lf\n", p, (*targets)[p]);
-	printf("output[%d] : %Lf\n", p, (*outputs)[p]);
-	
-	*error += 0.5 * ((*targets)[p] - (*outputs)[p]) * 
-	    ((*targets)[p] - (*outputs)[p]);
+	*error += 0.5 * ((*targets)[p][0] - (*outputs)[p][0]) * 
+	    ((*targets)[p][0] - (*outputs)[p][0]);
     } 
 }
