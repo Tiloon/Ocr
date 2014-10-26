@@ -5,6 +5,7 @@
 #include "../picture/binarypic.h"
 #include "rectangle.h"
 
-struct s_rectangle* splitLines(struct s_binarypic *picture);
+struct s_rectangle* split_lines(struct s_binarypic *picture,
+        struct s_rectangle *bloc);
 
 #endif

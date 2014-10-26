@@ -7,9 +7,7 @@
 #include "../picture/binarypic.h"
 #include "rectangle.h"
 
-
-//extern int *splitLines(GdkPixbuf *picture);
-struct s_rectangle *splitBlocs(struct s_binarypic *picture);
+struct s_rectangle *split_blocs(struct s_binarypic *picture);
 
 #endif
 

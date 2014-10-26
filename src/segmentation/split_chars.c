@@ -1,6 +1,6 @@
 #include "split_chars.h"
 
-struct s_rectangle* splitChars(struct s_binarypic *picture,
+struct s_rectangle* split_chars(struct s_binarypic *picture,
         struct s_rectangle *line)
 {
     unsigned int i, j, is_white, char_found, up, down;

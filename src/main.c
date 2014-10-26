@@ -3,6 +3,7 @@
 void show_help(void);
 int get_flags(int argc, char *argv[], struct s_flags *flags);
 int print_flag_error(char *flag, int error);
+GdkPixbuf* segmentation_demo(GdkPixbuf *origin);
 
 int main(int argc, char *argv[])
 {
@@ -35,53 +36,62 @@ int main(int argc, char *argv[])
                 return 1;
         }
         // Debug
-        struct s_binarypic *pic;
-        GdkPixbuf *pixbuf;
-        pic = calloc(1, sizeof(struct s_binarypic));
-        pixbuf = NULL;
-        gdk_to_binary(picture_get_image(), pic);
-        struct s_rectangle *lines = splitLines(pic);
-        struct s_rectangle *chars, *base_chars;
-        struct s_binarypic *piceroded = copy_binarypic(pic);
-        morph_erode(piceroded->pixels, piceroded->w, piceroded->h, 12,12);
-        struct s_rectangle *blocs = splitBlocs(piceroded);
-        while(blocs->h || blocs->w)
-        {
-        printf("blocs: x : %u, y : %u, w : %u, h : %u\n", blocs->x, blocs->y, blocs->w, blocs->h);
-        draw_rectangle(picture_get_image(), *blocs, ~0, 0, 0);
-        blocs++; 
-        }
-        //printf("x : %u, y : %u, w : %u, h : %u\n", lines->x, lines->y, lines->w, lines->h);
-        while(lines->h || lines->w )
-        {
-            //draw_rectangle(picture_get_image(), *lines, 0, 0, ~0);
-            //printf("\nline : \n");
-            //printf("x : %u, y : %u, w : %u, h : %u\n", lines->x, lines->y, lines->w, lines->h);
-            base_chars = chars= splitChars(pic, lines);
-            //printf("\nchars : \n");
-            while(chars && chars->y)
-            {
-                //draw_rectangle(picture_get_image(), *chars, ~0, 0, 0);
-                //printf("x : %u, y : %u, w : %u, h : %u\n", chars->x, chars->y, chars->w, chars->h);
-                chars++;
-            }
-            free(base_chars);
-            lines++;
-        }
-        picture_save_to_file("./teste.png");
-        morph_erode(pic->pixels, pic->w, pic->h, 2, 2);
-        binary_to_gdk(piceroded, &pixbuf);
-        draw_rectangle(pixbuf, *blocs, ~0, 0, 0);
-        picture_save_pixbuf(pixbuf, "./piceroded.png");
-        //binary_to_gdk(pic, &pixbuf);
-        //picture_save_pixbuf(pixbuf, "./truc.png");
+        picture_save_pixbuf(segmentation_demo(picture_get_image()),
+                "./segmentation_demo.png");
     }
-
     if(flags.gui)
         gui_main(argc, argv);
-
-
     return 0;
+}
+
+GdkPixbuf* segmentation_demo(GdkPixbuf *origin)
+{
+    GdkPixbuf *pixbuf;
+    struct s_binarypic *pic, *mask;
+    struct s_rectangle *chars, *lines, *blocs;
+    size_t itr_chars, itr_lines, itr_blocs;
+
+    pic = calloc(1, sizeof(struct s_binarypic));
+    pixbuf = NULL;
+
+    gdk_to_binary(origin, pic);
+    binary_to_gdk(pic, &pixbuf);
+    mask = copy_binarypic(pic);
+    morph_erode(mask->pixels, mask->w, mask->h, 12, 12);
+
+    blocs = split_blocs(mask);
+
+    if(!blocs)
+        return pixbuf;
+
+    for(itr_blocs = 0; blocs[itr_blocs].h || blocs[itr_blocs].w; itr_blocs++)
+    {
+        lines = split_lines(pic, blocs + itr_blocs);
+        if(lines)
+        {
+            for(itr_lines = 0; lines[itr_lines].h || lines[itr_lines].w;
+                    itr_lines++)
+            {
+                chars = split_chars(pic, lines + itr_lines);
+                if(chars)
+                {
+                    for(itr_chars = 0; chars[itr_chars].h || chars[itr_chars].w;
+                            itr_chars++)
+                    {
+                        draw_rectangle(pixbuf, chars[itr_chars], ~0, 0, 0);
+                    }
+                }
+                free(chars);
+                draw_rectangle(pixbuf, lines[itr_lines], 0, 0, ~0);
+            }
+        }
+        free(lines);
+        draw_rectangle(pixbuf, blocs[itr_blocs], 0, ~0, 0);
+    }
+    free(blocs);
+    free(pic);
+
+    return pixbuf;
 }
 
 
