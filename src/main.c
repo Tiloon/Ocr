@@ -42,18 +42,21 @@ int main(int argc, char *argv[])
         gdk_to_binary(picture_get_image(), pic);
         struct s_rectangle *lines = splitLines(pic);
         struct s_rectangle *chars, *base_chars;
-            printf("x : %u, y : %u, w : %u, h : %u\n", lines->x, lines->y, lines->w, lines->h);
+        struct s_rectangle *blocs = splitBlocs(pic);
+        printf("blocs: x : %u, y : %u, w : %u, h : %u\n", blocs->x, blocs->y, blocs->w, blocs->h);
+        draw_rectangle(picture_get_image(), *blocs, ~0, 0, 0);
+        //printf("x : %u, y : %u, w : %u, h : %u\n", lines->x, lines->y, lines->w, lines->h);
         while(lines->h || lines->w )
         {
-            draw_rectangle(picture_get_image(), *lines, 0, 0, ~0);
-            printf("\nline : \n");
-            printf("x : %u, y : %u, w : %u, h : %u\n", lines->x, lines->y, lines->w, lines->h);
+            //draw_rectangle(picture_get_image(), *lines, 0, 0, ~0);
+            //printf("\nline : \n");
+            //printf("x : %u, y : %u, w : %u, h : %u\n", lines->x, lines->y, lines->w, lines->h);
             base_chars = chars= splitChars(pic, lines);
-            printf("\nchars : \n");
+            //printf("\nchars : \n");
             while(chars && chars->y)
             {
-                draw_rectangle(picture_get_image(), *chars, ~0, 0, 0);
-                printf("x : %u, y : %u, w : %u, h : %u\n", chars->x, chars->y, chars->w, chars->h);
+                //draw_rectangle(picture_get_image(), *chars, ~0, 0, 0);
+                //printf("x : %u, y : %u, w : %u, h : %u\n", chars->x, chars->y, chars->w, chars->h);
                 chars++;
             }
             free(base_chars);
@@ -76,18 +79,18 @@ int main(int argc, char *argv[])
 void show_help()
 {
     printf(
-        "OCAML : Optical Character Analysis and Machine Learning\n"
-        "(Compiled : " __DATE__ " " __TIME__")\n"
-        "usage : ocrocaml [arguments] -i file    Process file\n"
-        "   or : ocrocaml -gui                   Graphical Interface\n"
-        "   or : ocrocaml -help \"keyword\"        Get help about keywod"
-        "\n\n"
-        "Arguments : \n"
-        "    -f \"filter\"[,opt]      apply filter with options\n"
-        "    -i \"file\"              load picture \"file\"\n"
-        "    -ofilters \"file\"       save file after applying filters\n"
-        "\n\n"
-        "More about this software : http://ocrocaml.ovh/\n");
+            "OCAML : Optical Character Analysis and Machine Learning\n"
+            "(Compiled : " __DATE__ " " __TIME__")\n"
+            "usage : ocrocaml [arguments] -i file    Process file\n"
+            "   or : ocrocaml -gui                   Graphical Interface\n"
+            "   or : ocrocaml -help \"keyword\"        Get help about keywod"
+            "\n\n"
+            "Arguments : \n"
+            "    -f \"filter\"[,opt]      apply filter with options\n"
+            "    -i \"file\"              load picture \"file\"\n"
+            "    -ofilters \"file\"       save file after applying filters\n"
+            "\n\n"
+            "More about this software : http://ocrocaml.ovh/\n");
 }
 
 int get_flags(int argc, char *argv[], struct s_flags *flags)
