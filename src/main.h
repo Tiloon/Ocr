@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "picture/copy_binarized.h"
 #include "picture/binarypic.h"
 #include "picture/loader.h"
 #include "filters/filters.h"
