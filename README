@@ -2,3 +2,26 @@
 
 OCAML is a new OCR (Optical Character Recognition) made as second year project
 at EPITA. It have to be made in C and have to be done in less than 10 weeks.
+
+## Website
+
+For this project we had to make a website, so it is hoste at this adress :
+http://ocrocaml.ovh
+
+## Installation
+
+In order to install this program, you need gtk developpement libraries and build
+with :
+    make
+
+In order to build the neural network, go in ./src/neuralNetwork and type
+    make
+
+## Usage
+
+In order to try OCAML, you should write in your terminal
+
+    ./ocrocaml -i "picfile" -f sample_filter
+
+where "picfile" is the path to the picture you would like to  picture to
+process.
