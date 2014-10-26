@@ -1,4 +1,8 @@
 #include "learning.h"
+#include "network.h"
+#include "structure.h"
+#include "main.h"
+#include "layer.h"
 
 void compute_delta_output(struct s_network *network,
         long double *target, long double *computed)
@@ -59,12 +63,44 @@ void update_weights(struct s_network *network,
 void learning(struct s_network *network, int nbPatterns, int *nbIterations,
         long double ***inputs, long double ***targets,
         long double ***computed, long double *error,
-        long double eta, long double alpha, long double errorThreshold)
+        long double eta, long double alpha,
+	long double errorThreshold)
 {
     int p;
     p = 0;
 
+    static unsigned seed;
+
+    if(!seed)
+        srand(seed = (unsigned)time(NULL));
+
     while(*error > errorThreshold)
+    {
+	p =  (int) rand() % nbPatterns;
+	set_inputs(network, (*inputs)[p]);
+	feedforward(network);
+	outputs_to_list(network, &(*computed)[p]);
+	update_weights(network, (*targets)[p], (*computed)[p], eta, alpha);
+	compute_error(targets, computed, 4, error);
+	(*nbIterations)++;
+    }
+    printf("Number iterations : %d\n\n", *nbIterations);
+}
+
+void learning2(struct s_network *network, int nbPatterns, int nbIterations,
+	       long double ***inputs, long double ***targets,
+	       long double ***computed, long double *error,
+	       long double eta, long double alpha)
+{
+    int p, it;
+    p = 0;
+
+    static unsigned seed;
+
+    if(!seed)
+        srand(seed = (unsigned)time(NULL));
+    it = 0;
+    while(it < nbIterations )
     {
         p =  (int) rand() % nbPatterns;
         set_inputs(network, (*inputs)[p]);
@@ -72,9 +108,9 @@ void learning(struct s_network *network, int nbPatterns, int *nbIterations,
         outputs_to_list(network, &(*computed)[p]);
         update_weights(network, (*targets)[p], (*computed)[p], eta, alpha);
         compute_error(targets, computed, 4, error);
-        (*nbIterations)++;
+        it++;
     }
-    printf("Number iterations : %d\n\n", *nbIterations);
+    printf("Number iterations : %d\n\n", nbIterations);
 }
 
 void compute_error(long double ***targets, long double ***outputs,
