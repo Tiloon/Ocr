@@ -12,7 +12,9 @@ void find_bloc_rec(struct s_binarypic *picture, struct s_rectangle *rect,
             rect->y = min(i, rect->y);
             rect->w = max(j, rect->w);
             rect->h = max(i, rect->h);
+            if(i>0)
                 find_bloc_rec(picture, rect, i - 1, j, tab);
+            if(j>0)
                 find_bloc_rec(picture, rect, i, j - 1, tab);
             if(i+1<=picture->h)
                 find_bloc_rec(picture, rect, i + 1, j, tab);
@@ -38,12 +40,22 @@ struct s_rectangle find_bloc(struct s_binarypic *picture,
                 rect->y = i;
             if(i>rect->y+rect->h)
                 rect->h = i - rect->y;
+
+            if(i>0)
                 find_bloc_rec(picture, rect, i - 1, j, tab);
+            if(j>0)
                 find_bloc_rec(picture, rect, i, j - 1, tab);
             if(i+1<=picture->h)
                 find_bloc_rec(picture, rect, i + 1, j, tab);
             if(j+1<=picture->w)
                 find_bloc_rec(picture, rect, i, j + 1, tab);
+
+            /*find_bloc_rec(picture, rect, i - 1, j, tab);
+              find_bloc_rec(picture, rect, i, j - 1, tab);
+              if(i+1<=picture->h)
+              find_bloc_rec(picture, rect, i + 1, j, tab);
+              if(j+1<=picture->w)
+              find_bloc_rec(picture, rect, i, j + 1, tab);*/
             rect->w -= rect->x;
             rect->h -= rect->y;
         }
@@ -59,9 +71,9 @@ int bloc_found(unsigned int i, unsigned int j,
     for(itr = 0; itr < nb_bloc; itr++)
     {
         if(i >= blocs[itr].y
-            && i <= (blocs[itr].y + blocs[itr].h)
-            && j >= blocs[itr].x
-            && j <= (blocs[itr].x + blocs[itr].w))
+                && i <= (blocs[itr].y + blocs[itr].h)
+                && j >= blocs[itr].x
+                && j <= (blocs[itr].x + blocs[itr].w))
             return 1;
     }
     return 0;
@@ -82,7 +94,7 @@ struct s_rectangle* split_blocs(struct s_binarypic *picture)
         for(j = 0; j < picture->w; j++)
         {
             if(picture->pixels[i * picture->w + j] == 0
-                && !bloc_found(i, j, blocs, nb_bloc))
+                    && !bloc_found(i, j, blocs, nb_bloc))
             {
                 blocs = realloc(blocs, (nb_bloc + 2) *
                         sizeof(struct s_rectangle));
