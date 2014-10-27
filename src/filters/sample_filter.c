@@ -10,6 +10,8 @@ int sample_filter(GdkPixbuf *picture, char *parameters)
     unsigned int grayscale;
     guchar *pixel;
 
+    printf("Filter parameters : \"%s\"", parameters);
+
     if(gdk_pixbuf_get_bits_per_sample(picture)!=8)
         return 1;
     //look at 3 bytes per pixel.

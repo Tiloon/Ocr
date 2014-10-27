@@ -3,10 +3,9 @@
 int draw_rectangle(GdkPixbuf *picture, struct s_rectangle rect, guchar r,
         guchar g, guchar b)
 {
-    int i, j, wt, ht;
+    unsigned int i, wt, ht;
     int rowstride;
     int bpp;
-    unsigned int grayscale;
     guchar *pixel;
 
     if((gdk_pixbuf_get_bits_per_sample(picture)!=8) &&
