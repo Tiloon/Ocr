@@ -18,7 +18,7 @@ void find_bloc_rec(struct s_binarypic *picture, struct s_rectangle *rect,
                 find_bloc_rec(picture, rect, i, j - 1, tab);
             if(i+1<=picture->h)
                 find_bloc_rec(picture, rect, i + 1, j, tab);
-            if(j+1>=picture->w)
+            if(j+1<=picture->w)
                 find_bloc_rec(picture, rect, i, j + 1, tab);
         }
     }
@@ -46,7 +46,7 @@ struct s_rectangle find_bloc(struct s_binarypic *picture,
                 find_bloc_rec(picture, rect, i, j - 1, tab);
             if(i+1<=picture->h)
                 find_bloc_rec(picture, rect, i + 1, j, tab);
-            if(j+1>=picture->w)
+            if(j+1<=picture->w)
                 find_bloc_rec(picture, rect, i, j + 1, tab);
             rect->w -= rect->x;
             rect->h -= rect->y;
