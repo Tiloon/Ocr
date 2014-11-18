@@ -11,15 +11,16 @@ GTKLIBS=`pkg-config --libs gtk+-2.0` -lm
 # TODO : "CFLAGS= -Wall -Wextra -Werror -std=c99 -O2"
 #
 
-SRC= ${wildcard ./src/*.c} ${wildcard ./src/*/*.c}
+SRC= ${wildcard ./src/*.c ./src/*/*.c}
 OBJ= ${addprefix obj/,$(notdir $(SRC:.c=.o))}
-VPATH = ${dir ${SRC}}
+VPATH= ${dir ${SRC}}
+BUILDNAME= ocrocaml
 
-all: obj/ocrocaml
-	mv obj/ocrocaml ./ocrocaml
+all: obj/${BUILDNAME}
+	mv obj/${BUILDNAME} ./${BUILDNAME}
 
-obj/ocrocaml: ${OBJ}
-	$(CC) $(CFLAGS) $(GTKLIBS) -o obj/ocrocaml obj/*.o
+obj/${BUILDNAME}: ${OBJ}
+	$(CC) $(CFLAGS) $(GTKLIBS) -o obj/${BUILDNAME} obj/*.o
 
 obj:
 	mkdir obj
@@ -28,6 +29,6 @@ obj/%.o: %.c obj
 	$(CC) $(CFLAGS) -c $< -o $@ $(LDFLAGS) $(LDLIBS)
 
 clean:
-	rm -rf *~ *.o obj/* ./ocrocaml obj/
+	rm -rf *~ *.o obj/* ./${BUILDNAME} obj/
 
 # END
