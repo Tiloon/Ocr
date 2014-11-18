@@ -2,9 +2,7 @@ CC=clang
 CFLAGS= -g -Wall -Wextra -Werror -std=c99 -O2
 LDFLAGS=`pkg-config --cflags gtk+-2.0`
 LDLIBS=
-#LDLIBS=`pkg-config --libs gtk+-2.0`
-GTKLIBS=`pkg-config --libs gtk+-2.0`
-
+GTKLIBS=`pkg-config --libs gtk+-2.0` -lm
 
 #
 # OCAML Makefile
@@ -13,10 +11,13 @@ GTKLIBS=`pkg-config --libs gtk+-2.0`
 # TODO : "CFLAGS= -Wall -Wextra -Werror -std=c99 -O2"
 #
 
+SRC= ${wildcard ./src/*.c} ${wildcard ./src/*/*.c}
+OBJ= ${addprefix obj/,$(notdir $(SRC:.c=.o))}
+
 all: obj/ocrocaml
 	mv obj/ocrocaml ./ocrocaml
 
-obj/ocrocaml: obj/copy_binarized.o obj/draw_rectangle.o obj/split_chars.o obj/split_lines.o obj/split_blocs.o obj/morphology.o obj/convert_pic.o obj/filters.o obj/sample_filter.o obj/gui.o obj/loader.o obj/main.o
+obj/ocrocaml: ${OBJ}
 	$(CC) $(CFLAGS) $(GTKLIBS) -o obj/ocrocaml obj/*.o
 
 obj:
