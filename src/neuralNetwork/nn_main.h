@@ -1,3 +1,5 @@
+#ifdef _NN_TEST
+
 #ifndef MAIN_H
 #define MAIN_H
 
@@ -15,4 +17,5 @@ struct s_flags
     int iterations;
 };
 
+#endif
 #endif

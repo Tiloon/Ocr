@@ -4,7 +4,7 @@
 #include "structure.h"
 #include "network.h"
 #include "layer.h"
-#include "main.h"
+#include "nn_main.h"
 
 void compute_delta_output(struct s_network *network,
         long double *target, long double *computed);

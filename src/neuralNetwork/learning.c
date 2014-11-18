@@ -1,7 +1,7 @@
 #include "learning.h"
 #include "network.h"
 #include "structure.h"
-#include "main.h"
+#include "nn_main.h"
 #include "layer.h"
 
 void compute_delta_output(struct s_network *network,

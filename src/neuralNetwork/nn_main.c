@@ -1,9 +1,11 @@
+#ifdef _NN_TEST
+
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "network.h"
 #include "layer.h"
-#include "main.h"
+#include "nn_main.h"
 #include "structure.h"
 #include "learning.h"
 /*
@@ -243,3 +245,5 @@ void printHelp()
             "iterations :\n"
             "--> .\\main -inputs:01 -learning -iterations 2500\n\n");
 }
+
+#endif

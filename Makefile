@@ -13,6 +13,7 @@ GTKLIBS=`pkg-config --libs gtk+-2.0` -lm
 
 SRC= ${wildcard ./src/*.c} ${wildcard ./src/*/*.c}
 OBJ= ${addprefix obj/,$(notdir $(SRC:.c=.o))}
+VPATH = ${dir ${SRC}}
 
 all: obj/ocrocaml
 	mv obj/ocrocaml ./ocrocaml
@@ -23,15 +24,10 @@ obj/ocrocaml: ${OBJ}
 obj:
 	mkdir obj
 
-obj/%.o: src/%.c obj
-	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@ $(LDFLAGS) $(LDLIBS)
-
-# TODO : there should be a way to do "obj/`path`_%.o: src/`path`/%.c
-obj/%.o: src/*/%.c obj
+obj/%.o: %.c obj
 	$(CC) $(CFLAGS) -c $< -o $@ $(LDFLAGS) $(LDLIBS)
 
 clean:
 	rm -rf *~ *.o obj/* ./ocrocaml obj/
-
 
 # END
