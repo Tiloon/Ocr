@@ -13,7 +13,7 @@ static char sample_filter_help_msg[] =
     "Authors :\n"
     "  - Pimzero\n";
 
-extern int sample_filter(GdkPixbuf *picture, char *parameters);
+extern int sample_filter(GdkPixbuf *picture, size_t nb_params, char **params);
 
 
 #endif

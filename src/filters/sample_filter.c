@@ -1,7 +1,8 @@
 #include "filters.h"
 #include "sample_filter.h"
+#include "../main.h"
 
-int sample_filter(GdkPixbuf *picture, char *parameters)
+int sample_filter(GdkPixbuf *picture, size_t nb_params, char **params)
 {
     int ht, wt;
     int i, j;
@@ -10,8 +11,10 @@ int sample_filter(GdkPixbuf *picture, char *parameters)
     unsigned int grayscale;
     guchar *pixel;
 
-    printf("Filter parameters : \"%s\"", parameters);
+    if(FLAGS->verbosity && nb_params >= 1)
+        printf("Filter parameters : \"%s\"\n", params[0]);
 
+    printf("%zu\n", nb_params);
     if(gdk_pixbuf_get_bits_per_sample(picture)!=8)
         return 1;
     //look at 3 bytes per pixel.

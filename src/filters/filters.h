@@ -2,6 +2,7 @@
 #define FILTERS_H
 
 #include <gdk-pixbuf/gdk-pixbuf.h>
+#include "../main.h"
 
 #include "sample_filter.h"
 // Every other filter
@@ -12,7 +13,7 @@
  *
  * parameter is a string of the format 'parm1=0,parm1="fze"'
  */
-typedef int (t_filter)(GdkPixbuf*, char*);
+typedef int (t_filter)(GdkPixbuf*, size_t, char**);
 
 struct s_filter_entry
 {

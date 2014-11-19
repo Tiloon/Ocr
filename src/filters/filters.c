@@ -11,7 +11,14 @@ const struct s_filter_entry filter_list[] = {
     // Other filters...
 };
 
-static char **filter_stack = NULL;
+struct s_filter_rule
+{
+    size_t param_count;
+    char *name;
+    char **params;
+};
+
+struct s_filter_rule **filter_stack = NULL;
 
 
 int filter_get_id(const char *name)
@@ -27,27 +34,29 @@ int filter_get_id(const char *name)
     return -1;
 }
 
-char* filter_get_name(char *rule, char **params)
+struct s_filter_rule* filter_get_rule(char *rule)
 {
-    unsigned int i;
-    char *filtername;
-
-    for(i = 0; rule[i] && (rule[i] != ','); i++)
-        ;
-
-    // no params => *params = "\0"
-    // else params is set after the first comma.
-    if(params)
-        *params = rule + i + (!rule[i]);
+    size_t i;
+    struct s_filter_rule *filter = calloc(1, sizeof(struct s_filter_rule));
+    filter->name = rule;
+    for(i = 0; rule[i]; i++)
+    {
+        if(rule[i] == ',')
+        {
+            filter->params = realloc(filter->params,
+                    (1 + filter->param_count) * sizeof(char*));
+            rule[i] = 0;
+            filter->params[filter->param_count] = rule + i + 1;
+            (filter->param_count)++;
+            i++;
+        }
+        //rule[i] = 0;
+    }
 
     if(!rule[i])
-        return rule;
+        return filter;
 
-    filtername = malloc(sizeof(char) * i);
-    strncpy(filtername, rule, i - 1);
-    filtername[i - 1] = 0;
-
-    return filtername;
+    return filter;
 }
 
 int get_filter_about(unsigned int id, char **name, char **help)
@@ -74,57 +83,48 @@ int filters_apply_all(GdkPixbuf *picture)
 {
     unsigned int i;
     int id;
-    char *params;
+    struct s_filter_rule* filter;
 
     if(filter_stack == NULL)
         return 0;
 
     for(i = 0; filter_stack[i] != NULL; i++)
     {
-        id = filter_get_id(filter_get_name(filter_stack[i], &params));
-        if(filter_list[id].filter_func(picture, params))
+        filter = filter_stack[i];
+        if(FLAGS->verbosity)
+            printf("Applying \"" CYAN "%s" RESET "\"\n", filter->name);
+        id = filter_get_id(filter->name);
+        if(filter_list[id].filter_func(picture, filter->param_count,
+                    filter->params))
             return 1;
     }
 
     return 0;
 }
 
+// Filter : filter_name:param1,param2
 int filter_add(char *rule)
 {
     static int filter_stack_count;
-    char **tmp;
-    unsigned int i;
-    char* filtername;
+    struct s_filter_rule* filter;
 
-    filtername = filter_get_name(rule, NULL);
-    if(filter_get_id(filtername) < 0)
+    filter = filter_get_rule(rule);
+    if(filter_get_id(filter->name) < 0)
     {
-        print_filter_error("Filter doesn't exists.\n", filtername);
+        print_filter_error("Filter doesn't exists.\n", filter->name);
         return 1;
     }
 
-    if(filter_stack == NULL)
-    {
-        filter_stack = malloc(2*sizeof(char**));
-        filter_stack[0] = rule;
-        filter_stack[1] = NULL;
-        filter_stack_count = 1;
-        return 0;
-    }
-
-    tmp = filter_stack;
-    filter_stack_count++;
-    filter_stack = malloc((filter_stack_count + 1) * sizeof(char*));
+    filter_stack = realloc(filter_stack, (filter_stack_count + 2) *
+            sizeof(struct s_filter_rule));
     if(filter_stack == NULL)
     {
         fprintf(stderr, "malloc error : %d@%s", __LINE__, __FILE__);
         return 1;
     }
-    for(i = 0; tmp[i] != NULL; i++)
-        filter_stack[i] = tmp[i];
-    filter_stack[filter_stack_count] = rule;
-    filter_stack[filter_stack_count] = NULL;
-    free(tmp);
+    filter_stack[filter_stack_count] = filter;
+    filter_stack[filter_stack_count + 1] = NULL;
+    filter_stack_count++;
 
     return 0;
 }

@@ -3,15 +3,15 @@
 void show_help(void);
 int get_flags(int argc, char *argv[], struct s_flags *flags);
 int print_flag_error(char *flag, int error);
-GdkPixbuf* segmentation_demo(GdkPixbuf *origin);
+GdkPixbuf* segmentation_full(GdkPixbuf *origin);
+
 
 int main(int argc, char *argv[])
 {
-    struct s_flags flags;
-
-    flags.gui = 0;
-    flags.filename = NULL;
-    flags.filteroutput = NULL;
+    FLAGS->gui = 0;
+    FLAGS->verbosity = 0;
+    FLAGS->filename = NULL;
+    FLAGS->filteroutput = NULL;
 
     if(argc <= 1)
     {
@@ -19,32 +19,46 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    if(get_flags(argc, argv, &flags))
+    if(get_flags(argc, argv, FLAGS))
     {
         show_help();
         return 1;
     }
 
-    if(flags.filename)
+    if(FLAGS->filename)
     {
+        if(FLAGS->verbosity)
+            printf(BOLDCYAN "\nFilters\n" RESET);
         if(filters_apply_all(picture_get_image()))
-            return 1;
-
-        if(flags.filteroutput)
         {
-            if(picture_save_to_file(flags.filteroutput))
+            if(FLAGS->verbosity)
+                printf(BOLDRED "FAIL : " RESET "can't apply all filters\n");
+            return 1;
+        }
+
+        if(FLAGS->filteroutput)
+        {
+            if(FLAGS->verbosity)
+                printf(BOLDCYAN "\nFilter" RESET "output saved to %s\n",
+                        FLAGS->filteroutput);
+            if(picture_save_to_file(FLAGS->filteroutput))
+            {
+                if(FLAGS->verbosity)
+                    printf(BOLDRED "FAIL : " RESET "can't save filter"
+                            "output\n");
                 return 1;
+            }
         }
         // Debug
-        picture_save_pixbuf(segmentation_demo(picture_get_image()),
-                "./segmentation_demo.png");
+        //picture_save_pixbuf(segmentation_full(picture_get_image()),
+        //        "./segmentation_demo.png");
     }
-    if(flags.gui)
+    if(FLAGS->gui)
         gui_main(argc, argv);
     return 0;
 }
 
-GdkPixbuf* segmentation_demo(GdkPixbuf *origin)
+GdkPixbuf* segmentation_full(GdkPixbuf *origin)
 {
     GdkPixbuf *pixbuf;
     struct s_binarypic *pic, *mask;
@@ -108,6 +122,7 @@ void show_help()
             "    -f \"filter\"[,opt]      apply filter with options\n"
             "    -i \"file\"              load picture \"file\"\n"
             "    -ofilters \"file\"       save file after applying filters\n"
+            "    -v                       verbose\n"
             "\n\n"
             "More about this software : http://ocrocaml.ovh/\n");
 }
@@ -117,13 +132,20 @@ int get_flags(int argc, char *argv[], struct s_flags *flags)
     int i;
     for (i = 1; i < argc; i++)
     {
-        if(strcmp(argv[i], "-gui") == 0)
+        if(!strcmp(argv[i], "-gui"))
         {
             if(flags->gui)
                 return print_flag_error(argv[i], FLAG_ALREADY_SET);
             flags->gui = 1;
         }
-        else if(strcmp(argv[i], "-i") == 0)
+        else if(!strcmp(argv[i], "-v"))
+        {
+            if(flags->verbosity)
+                return print_flag_error(argv[i], FLAG_ALREADY_SET);
+            flags->verbosity = 1;
+            printf(BOLDCYAN "Flags\n" RESET "Verbosity is set\n");
+        }
+        else if(!strcmp(argv[i], "-i"))
         {
             if(flags->filename)
                 return print_flag_error(argv[i], FLAG_ALREADY_SET);
@@ -133,18 +155,20 @@ int get_flags(int argc, char *argv[], struct s_flags *flags)
             flags->filename = argv[i];
             if(picture_load_from_file(argv[i]))
                 return print_flag_error(argv[i], FLAG_INVALID_ARG);
-            printf("Image loaded (%s)\n", argv[i]);
+            if(flags->verbosity)
+                printf("Image loaded (%s)\n", argv[i]);
         }
-        else if(strcmp(argv[i], "-f") == 0)
+        else if(!strcmp(argv[i], "-f"))
         {
             i++;
             if(i >= argc)
                 return print_flag_error(argv[i - 1], FLAG_MISSING_ARG);
             if(filter_add(argv[i]))
                 return print_flag_error(argv[i], FLAG_INVALID_ARG);
-            printf("Filter added : %s\n", argv[i]);
+            if(flags->verbosity)
+                printf("Filter added : %s\n", argv[i]);
         }
-        else if(strcmp(argv[i], "-ofilters") == 0)
+        else if(!strcmp(argv[i], "-ofilters"))
         {
             if(flags->filteroutput)
                 return print_flag_error(argv[i], FLAG_ALREADY_SET);
@@ -173,4 +197,12 @@ int print_flag_error(char *flag, int error)
 
     printf("type \"ocrocaml -h\" for help\n\n");
     return 1;
+}
+
+struct s_flags *flags(void)
+{
+    static struct s_flags *ptr;
+    if(!ptr)
+        ptr = calloc(1, sizeof(struct s_flags));
+    return ptr;
 }
