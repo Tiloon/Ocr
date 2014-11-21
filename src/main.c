@@ -39,15 +39,15 @@ int main(int argc, char *argv[])
         if(FLAGS->filteroutput)
         {
             if(FLAGS->verbosity)
-                printf(BOLDCYAN "\nFilter" RESET "output saved to %s\n",
-                        FLAGS->filteroutput);
+                printf(BOLDCYAN "\nPreporcess output\n" RESET);
             if(picture_save_to_file(FLAGS->filteroutput))
             {
                 if(FLAGS->verbosity)
-                    printf(BOLDRED "FAIL : " RESET "can't save filter"
-                            "output\n");
+                    printf(BOLDRED "FAIL : " RESET "can't save to %s\n",
+                            FLAGS->filteroutput);
                 return 1;
-            }
+            } else
+                printf("saved to %s\n", FLAGS->filteroutput);
         }
         // Debug
         //picture_save_pixbuf(segmentation_full(picture_get_image()),
