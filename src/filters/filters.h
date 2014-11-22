@@ -5,6 +5,7 @@
 #include "../main.h"
 
 #include "sample_filter.h"
+#include "gaussian_filter.h"
 // Every other filter
 
 /*

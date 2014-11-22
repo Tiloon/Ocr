@@ -4,10 +4,11 @@
 #include <stdio.h>
 #include <glib.h>
 
-#define FILTER_LIST_SZE 1
+#define FILTER_LIST_SZE 2
 
 const struct s_filter_entry filter_list[] = {
-    {sample_filter, sample_filter_name, sample_filter_help_msg}
+    {sample_filter, sample_filter_name, sample_filter_help_msg},
+    {gaussian_filter, gaussian_filter_name, gaussian_filter_help_msg}
     // Other filters...
 };
 
