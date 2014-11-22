@@ -30,7 +30,7 @@ int horizontal_box_blur(unsigned int *in, unsigned int *out, size_t height,
 int vertical_box_blur(unsigned int *in, unsigned int *out, size_t height,
         size_t width, size_t bpp, size_t size)
 {
-    // FIXME
+    printf("%zu\n", bpp); // REMOVE THIS. only here for no compile fail
     size_t i, j;
     size_t k;
     for(i = 0; i < height; i++)
@@ -40,12 +40,12 @@ int vertical_box_blur(unsigned int *in, unsigned int *out, size_t height,
             out[i * width + j] += in[i * width + j];
             for(k = 1; k < size * bpp; k += bpp)
                 out[i * width + j] +=
-                    (((j >= k) ? in[i * width + j - k] : 0) +
-                    ((j + k < height) ? in[i * width + j + k] : 0));
+                    (((/*j*/i >= k) ? in[i * width + j - k] : 0) +
+                    ((/*j*/i + k < height) ? in[i * width + j + k] : 0));
             out[i * width + j] /= 1 +
                 ((j > k ? k : j) / bpp) +
                 ((j + k < width ? k : width - j) / bpp);
-            // out[i * width + j] /= 1 + k * 2;
+            //out[i * width + j] /= 1 + k * 2;
             if(out[i * width + j] > 0xFF)
                 out[i * width + j] = 0xFF;
         }
@@ -61,8 +61,9 @@ int box_blur(unsigned int *in, unsigned int *out, int height, int width,
     for(i = 0; i < sze; i++)
         out[i] = 0;
     horizontal_box_blur(in, out, height, width, size);
-    printf("%i\n", bpp); // REMOVE THIS. only here for no compile fail
-    //vertical_box_blur(in, out, height, width, bpp, size);
+    horizontal_box_blur(in, out, height, width, size);
+    printf("%i%zu\n", bpp, size); // REMOVE THIS. only here for no compile fail
+    vertical_box_blur(in, out, height, width, bpp, size);
     return 0;
 }
 
