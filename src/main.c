@@ -50,8 +50,8 @@ int main(int argc, char *argv[])
                 printf("saved to %s\n", FLAGS->filteroutput);
         }
         // Debug
-        //picture_save_pixbuf(segmentation_full(picture_get_image()),
-        //        "./segmentation_demo.png");
+        picture_save_pixbuf(segmentation_full(picture_get_image()),
+                "./segmentation_demo.png");
     }
     if(FLAGS->gui)
         gui_main(argc, argv);
