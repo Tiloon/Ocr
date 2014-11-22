@@ -52,6 +52,9 @@ int main(int argc, char *argv[])
         // Debug
         //picture_save_pixbuf(segmentation_full(picture_get_image()),
         //        "./segmentation_demo.png");
+
+        
+
     }
     if(FLAGS->gui)
         gui_main(argc, argv);
