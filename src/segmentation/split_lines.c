@@ -54,6 +54,9 @@ struct s_rectangle* split_lines(struct s_binarypic *picture,
         line_found = !is_white;
     }
 
+    if(lines == NULL)
+        return lines;
+
     lines[current].x = 0;
     lines[current].y = 0;
     lines[current].w = 0;

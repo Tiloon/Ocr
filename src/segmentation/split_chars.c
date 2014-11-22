@@ -60,7 +60,7 @@ struct s_rectangle* split_chars(struct s_binarypic *picture,
             chars[current - 1].y;
     }
     //chars = realloc(chars, (current + 1) * sizeof(struct s_rectangle));
-    if(current == 0)
+    if((current == 0) || (chars == NULL))
         return NULL;
     chars[current].w = 0;
     chars[current].x = 0;
