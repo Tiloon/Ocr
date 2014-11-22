@@ -5,6 +5,6 @@
 #include "../picture/binarypic.h"
 #include "rectangle.h"
 
-struct s_rectangle to16(struct s_rectangle *orig); 
+char* to16(struct s_binarypic *picture, struct s_rectangle *orig); 
 
 #endif
