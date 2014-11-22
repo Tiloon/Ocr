@@ -1,7 +1,7 @@
 #include "resize.h"
 
 struct s_rectangle to16(struct s_rectangle *orig) {
-    struct s_rectangle car = calloc(16*16, sizeof(char));
+    char *car = calloc(16*16, sizeof(char));
     unsigned int i;
     unsigned int j;
 
