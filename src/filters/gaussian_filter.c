@@ -57,11 +57,15 @@ int box_blur(unsigned int *in, unsigned int *out, int height, int width,
         int bpp, size_t size)
 {
     long i, sze;
+    unsigned int *swap;
     sze = ((long) height) * ((long) width);
     for(i = 0; i < sze; i++)
         out[i] = 0;
+    //horizontal_box_blur(in, out, height, width, size);
     horizontal_box_blur(in, out, height, width, size);
-    horizontal_box_blur(in, out, height, width, size);
+    swap = in;
+    in = out;
+    out = swap;
     printf("%i%zu\n", bpp, size); // REMOVE THIS. only here for no compile fail
     vertical_box_blur(in, out, height, width, bpp, size);
     return 0;
@@ -97,15 +101,15 @@ int gaussian_filter(GdkPixbuf *picture, size_t nb_params, char **params)
         temp[i] = pixel[i];
     if((ht < 1) || (rowstride < 1) || (bpp < 1))
         return 1;
-    //for(i = 0; i < 3; i++)
-    //{
+    for(i = 0; i < 3; i++)
+    {
         box_blur(temp, temp_out, ht, rowstride, bpp, 2);
 
         // We swap buffer
         swap = temp_out;
         temp_out = temp;
         temp = swap;
-    //}
+    }
     for(i = 0; i < ht * rowstride; i++)
         pixel[i] = temp[i];
     return 0;

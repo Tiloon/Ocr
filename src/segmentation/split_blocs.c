@@ -1,208 +1,82 @@
 #include "split_blocs.h"
 
-/*void find_bloc_rec(struct s_binarypic *picture, struct s_rectangle *rect,
-  unsigned int i, unsigned int j, char *tab)
-  {
-//printf("i = %i\n", i);
-//printf("j = %i\n", j);
-//if(picture->pixels[i * picture->w + j] == 0)
+struct s_point
 {
-if(!tab[i * picture->w + j])
-{
-//tab[i * picture->w + j] = 1;
-rect->x = min(j, rect->x);
-rect->y = min(i, rect->y);
-rect->w = max(j, rect->w);
-rect->h = max(i, rect->h);
-if(i>0 && picture->pixels[(i-1) * picture->w + j] == 0)
-{
-tab[(i-1) * picture->w + j] = 1;
-find_bloc_rec(picture, rect, i - 1, j, tab);
-}
-if(j>0 && picture->pixels[i * picture->w + j-1] == 0)
-{
-tab[i * picture->w + j-1] = 1;
-find_bloc_rec(picture, rect, i, j - 1, tab);
-}
-if(i+1<=picture->h && picture->pixels[(i+1) * picture->w + j] == 0)
-{
-tab[(i+1) * picture->w + j] = 1;
-find_bloc_rec(picture, rect, i + 1, j, tab);
-}
-if(j+1<=picture->w && picture->pixels[i * picture->w + j+1] == 0)
-{
-tab[i * picture->w + j+1] = 1;
-find_bloc_rec(picture, rect, i, j + 1, tab);
-}
-}
-}
-}
+    unsigned int x, y;
+};
 
-struct s_rectangle find_bloc(struct s_binarypic *picture,
-struct s_rectangle *rect, unsigned int i, unsigned int j, char *tab)
-{
-//if(picture->pixels[i * picture->w + j] == 0)
-{
-//if(!tab[i * picture->w + j])
-{
-tab[i*picture->w+j] = 1;
-if(j<rect->x)
-rect->x = j;
-if(j>rect->x+rect->w)
-rect->w = j - rect->x;
-if(i<rect->y)
-rect->y = i;
-if(i>rect->y+rect->h)
-rect->h = i - rect->y;
-
-if(i>0 && picture->pixels[(i-1) * picture->w + j] == 0)
-{
-tab[(i-1) * picture->w + j] = 1;
-find_bloc_rec(picture, rect, i - 1, j, tab);
-}
-if(j>0 && picture->pixels[i * picture->w + j-1] == 0)
-{
-tab[i * picture->w + j-1] = 1;
-find_bloc_rec(picture, rect, i, j - 1, tab);
-}
-if(i+1<=picture->h && picture->pixels[(i+1) * picture->w + j] == 0)
-{
-tab[(i+1) * picture->w + j] = 1;
-find_bloc_rec(picture, rect, i + 1, j, tab);
-}
-if(j+1<=picture->w && picture->pixels[i * picture->w + j+1] == 0)
-{
-    tab[i * picture->w + j+1] = 1;
-    find_bloc_rec(picture, rect, i, j + 1, tab);
-}*/
-
-/*if(i>0)
-  find_bloc_rec(picture, rect, i - 1, j, tab);
-  if(j>0)
-  find_bloc_rec(picture, rect, i, j - 1, tab);
-  if(i+1<=picture->h)
-  find_bloc_rec(picture, rect, i + 1, j, tab);
-  if(j+1<=picture->w)
-  find_bloc_rec(picture, rect, i, j + 1, tab);*/
-
-/*find_bloc_rec(picture, rect, i - 1, j, tab);
-  find_bloc_rec(picture, rect, i, j - 1, tab);
-  if(i+1<=picture->h)
-  find_bloc_rec(picture, rect, i + 1, j, tab);
-  if(j+1<=picture->w)
-  find_bloc_rec(picture, rect, i, j + 1, tab);*/
-/*rect->w -= rect->x;
-  rect->h -= rect->y;
-  }
-  }
-  return *rect;
-  }*/
-
-struct s_rectangle find_bloc(struct s_binarypic *picture,
+/*
+ * detecte le bloc associé au pixel (i, j) et le stock dans le rectangle
+ * rect.
+ *
+ */
+int find_bloc(struct s_binarypic *picture,
         struct s_rectangle *rect, unsigned int i, unsigned int j, char *tab)
 {
-    struct pile *p = calloc(2, sizeof(struct pile));
-    struct duet *sub;
-    struct duet *duet = calloc(1, sizeof(struct duet));
+    struct s_point *points;
+    size_t top;
 
-    duet->i = i;
-    duet->j = j;
-    //printf("i du premier duet:%i\n", duet->i);
+    // On quitte si on est déjà passé par là ou que c'est pas un pixel noir
+    if((!picture->pixels[i * picture->w + j]) &&
+            (tab[i * picture->w + j]))
+        return 0;
 
-    //pile_init(p);
-    //p->duet = NULL;
-    //p->next = NULL;
+    top = 1;
+    points = malloc(sizeof(struct s_point));
 
-    //add(duet, p);
-    struct pile *sub2 = calloc(1, sizeof(struct pile));;
-    sub2->duet = duet;
-    sub2->next = p;
-    p = sub2;
+    points[0] = (struct s_point) {i, j};
 
-    //printf("i du premier duet:%i\n", (*p->duet).i);
-    tab[i*picture->w+j] = 1;
-    while(!isempty(p))
+    // Tant que notre stack est pas vide :
+    while(top > 0)
     {
-        printf("length = %i\n", length(p)); //-o
-        //printf("i du premier duet:%i\n", p->duet->i);
-        //sub = rmv(p);
-        struct duet *sub3;
-        sub3 = p->duet;
-        p = p->next;
-        sub = sub3;
+        // Dépile
+        top--;
+        i = points[top].x;
+        j = points[top].y;
+        tab[i * picture->w + j] = 1;
+        rect->x = min(j, rect->x);
+        rect->y = min(i, rect->y);
+        rect->w = max(j, rect->w);
+        rect->h = max(i, rect->h);
 
-        printf("length = %i\n", length(p));
-        i = sub->i;
-        j = sub->j;
-        printf("i = %i\n", i);
-        //printf("j = %i\n", j);
-        if(i>0 && j>0)
+        // empile
+        if((i > 0) &&
+                !tab[(i - 1) * picture->w + j] &&
+                picture->pixels[(i - 1) * picture->w + j])
         {
-            if(j<rect->x)
-                rect->x = j;
-            if(j>rect->x+rect->w)
-                rect->w = j - rect->x;
-            if(i<rect->y)
-                rect->y = i;
-            if(i>rect->y+rect->h)
-                rect->h = i - rect->y;
-
-
-            if(i > 0 && picture->pixels[(i-1) * picture->w + j] == 0 
-                    && !tab[(i-1)*picture->w + j])
-            {
-                tab[(i-1) * picture->w + j] = 1;
-                duet->i = i-1;
-                //add(duet, p);
-                struct pile *sub2 = calloc(1, sizeof(struct pile));;
-                sub2->duet = duet;
-                sub2->next = p;
-                p = sub2;
-                duet->i = i+1;
-            }
-            if(j > 0 && picture->pixels[(i) * picture->w + j-1] == 0 
-                    && !tab[i*picture->w + j-1])
-            {
-                tab[(i) * picture->w + j-1] = 1;
-                duet->i = j-1;
-                //add(duet, p);
-                struct pile *sub2 = calloc(1, sizeof(struct pile));;
-                sub2->duet = duet;
-                sub2->next = p;
-                p = sub2;
-                duet->i = j+1;
-            }
-            if(i+1<=picture->h && picture->pixels[(i+1) * picture->w + j] == 0 
-                    && !tab[(i+1)*picture->w + j])
-            {
-                tab[(i+1) * picture->w + j] = 1;
-                duet->i = i+1;
-                //add(duet, p);
-                struct pile *sub2 = calloc(1, sizeof(struct pile));;
-                sub2->duet = duet;
-                sub2->next = p;
-                p = sub2;
-                duet->i = i-1;
-            }
-            if(j+1<=picture->w && picture->pixels[(i) * picture->w + j+1] == 0 
-                    && !tab[i*picture->w + j+1])
-            {
-                tab[(i) * picture->w + j+1] = 1;
-                duet->i = j+1;
-                //add(duet, p);
-                struct pile *sub2 = calloc(1, sizeof(struct pile));;
-                sub2->duet = duet;
-                sub2->next = p;
-                p = sub2;
-                duet->i = j-1;
-            }
+            points = realloc(points, sizeof(struct s_point) * (top + 1));
+            points[top] = (struct s_point) {i - 1, j};
+            top++;
         }
-
+        if((j > 0) &&
+                !tab[i * picture->w + j - 1] &&
+                picture->pixels[i * picture->w + j - 1])
+        {
+            points = realloc(points, sizeof(struct s_point) * (top + 1));
+            points[top] = (struct s_point) {i, j - 1};
+            top++;
+        }
+        if((i < picture->h) &&
+                !tab[(i + 1) * picture->w + j] &&
+                picture->pixels[(i + 1) * picture->w + j])
+        {
+            points = realloc(points, sizeof(struct s_point) * (top + 1));
+            points[top] = (struct s_point) {i + 1, j};
+            top++;
+        }
+        if((j < picture->w) &&
+                !tab[i * picture->w + j + 1] &&
+                picture->pixels[i * picture->w + j + 1])
+        {
+            points = realloc(points, sizeof(struct s_point) * (top + 1));
+            points[top] = (struct s_point) {i, j + 1};
+            top++;
+        }
     }
-    free(duet);
-    free(p);
-    return *rect;
 
+    free(points);
+
+    return 1;
 }
 
 int bloc_found(unsigned int i, unsigned int j,
@@ -225,36 +99,50 @@ int bloc_found(unsigned int i, unsigned int j,
 struct s_rectangle* split_blocs(struct s_binarypic *picture)
 {
     unsigned int i, j, nb_bloc;
-    struct s_rectangle *blocs, rect;
+    struct s_rectangle *blocs;
     char *tab;
 
     nb_bloc = 0;
     blocs = NULL;
 
+    if(!(tab = calloc((picture->w + 1) * (picture->h + 1), sizeof(char))))
+    {
+        fprintf(stderr, "Malloc error %s:%i\n", __FILE__,
+                __LINE__);
+        return 0;
+    }
+
     for(i = 0; i < picture->h; i++)
     {
         for(j = 0; j < picture->w; j++)
         {
-            if(picture->pixels[i * picture->w + j] == 0
+            if((picture->pixels[i * picture->w + j] == 0)
                     && !bloc_found(i, j, blocs, nb_bloc))
             {
-                blocs = realloc(blocs, (nb_bloc + 2) *
-                        sizeof(struct s_rectangle));
-                tab = calloc(picture->w * picture->h, sizeof(char));//char
+                if(!(blocs = realloc(blocs, (nb_bloc + 2) *
+                                sizeof(struct s_rectangle))))
+                {
+                    fprintf(stderr, "Malloc error %s:%i\n", __FILE__,
+                            __LINE__);
+                    return 0;
+                }
 
-                rect.x = j;
-                rect.y = i;
-                rect.w = 0;
-                rect.h = 0;
+                blocs[nb_bloc].x = j;
+                blocs[nb_bloc].y = i;
+                blocs[nb_bloc].w = 0;
+                blocs[nb_bloc].h = 0;
 
-                blocs[nb_bloc] = find_bloc(picture, &rect, i, j, tab);
-
-                free(tab);
+                find_bloc(picture, blocs + nb_bloc, i, j, tab);
 
                 nb_bloc++;
             }
         }
     }
+    free(tab);
+    tab = NULL;
+
+    if(blocs == NULL)
+        return NULL;
     blocs[nb_bloc].x = 0;
     blocs[nb_bloc].y = 0;
     blocs[nb_bloc].w = 0;
