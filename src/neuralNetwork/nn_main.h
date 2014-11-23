@@ -2,7 +2,8 @@
 
 #ifndef MAIN_H
 #define MAIN_H
-
+#define PIXELS 256
+#define PTTS 3
 #include <stdlib.h>
 #include <stdio.h>
 #include "network.h"
@@ -10,8 +11,7 @@
 
 struct s_flags
 {
-    long double input0;
-    long double input1;
+    long double *inputsFlag;
     int inputsSet;
     int learning;
     int iterations;

@@ -81,7 +81,7 @@ void learning(struct s_network *network, int nbPatterns, int *nbIterations,
 	feedforward(network);
 	outputs_to_list(network, &(*computed)[p]);
 	update_weights(network, (*targets)[p], (*computed)[p], eta, alpha);
-	compute_error(targets, computed, 4, error);
+	compute_error(targets, computed, nbPatterns, error);
 	(*nbIterations)++;
     }
     printf("Number iterations : %d\n\n", *nbIterations);
@@ -107,7 +107,7 @@ void learning2(struct s_network *network, int nbPatterns, int nbIterations,
         feedforward(network);
         outputs_to_list(network, &(*computed)[p]);
         update_weights(network, (*targets)[p], (*computed)[p], eta, alpha);
-        compute_error(targets, computed, 4, error);
+        compute_error(targets, computed, nbPatterns, error);
         it++;
     }
     printf("Number iterations : %d\n\n", nbIterations);

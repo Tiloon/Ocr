@@ -9,6 +9,7 @@
 #include "nn_main.h"
 #include "structure.h"
 #include "learning.h"
+
 /*
  * CHECKING FUNCTIONS
  */
@@ -31,7 +32,18 @@ void printVector(long double *vector, size_t size)
 {
     size_t u;
     for(u = 0; u < size; u++)
-	printf("%Lf", vector[u]);
+	printf(" |%Lf", vector[u]);
+}
+
+void printInputVector(long double *vector, size_t size)
+{
+    size_t u;
+    for(u = 0; u < size; u++)
+    {
+	if(u != 0 && u % 16 == 0)
+	    printf("\n");
+	printf("%d", (int)vector[u]);
+    }
 }
 
 void printOutput(struct s_network *network)
@@ -64,8 +76,16 @@ int main(int argc, char *argv[])
     struct s_network network;
     struct s_flags flags;
 
-    int NUMBER_PATTERNS = 10;
+    int NUMBER_PATTERNS = 3;
     int NUMBER_PIXELS_CHARACTER = 256;
+    int NUMBER_INPUT_NEURONS = NUMBER_PIXELS_CHARACTER;
+    int NUMBER_HIDDEN_NEURONS = 5 * NUMBER_INPUT_NEURONS;
+    int NUMBER_OUTPUT_NEURONS = NUMBER_PATTERNS;
+    int iterations, i;
+
+
+    flags.inputsFlag = calloc(NUMBER_PIXELS_CHARACTER,
+			      sizeof(long double));
 
     //inputsUser is used so as to debug/check the NN
     long double *inputsUser = calloc(NUMBER_PIXELS_CHARACTER,
@@ -107,9 +127,33 @@ int main(int argc, char *argv[])
                                    sizeof(long double));
     long double *inputsC = calloc(NUMBER_PIXELS_CHARACTER,
                                    sizeof(long double));
-
     long double error;
-    int iterations, i;
+
+    /*
+     * calloc all the matrix (malloc are for weak people parait-il)
+     * **inputs && targets && results
+     */
+
+    for(i = 0; i < NUMBER_PATTERNS; i++)
+    {
+        inputs[i] = calloc(NUMBER_PIXELS_CHARACTER,
+                           sizeof(long double));
+        targets[i] = calloc(NUMBER_PATTERNS,
+                            sizeof(long double));
+        results[i] = calloc(NUMBER_PATTERNS,
+                            sizeof(long double));
+    }
+
+
+    //Set the inputs
+    stat_to_dyn(CHAR_A, NUMBER_PIXELS_CHARACTER, inputsA);
+    stat_to_dyn(CHAR_B, NUMBER_PIXELS_CHARACTER, inputsB);
+    stat_to_dyn(CHAR_C, NUMBER_PIXELS_CHARACTER, inputsC);
+
+    inputs[0] = inputsA;
+    inputs[1] = inputsB;
+    inputs[2] = inputsC;
+
 
     //*******************************************//
     //          VARIABLES AFFECTATIONS           //
@@ -120,28 +164,8 @@ int main(int argc, char *argv[])
     flags.learning = 0;
     flags.iterations = -1;
 
-    /*
-     * calloc all the matrix (malloc are for weak people parait-il)
-     * **inputs && targets && results
-     */
-
-    for(i = 0; i < NUMBER_PATTERNS; i++)
-    {
-        inputs[i] = calloc(NUMBER_PIXELS_CHARACTER,
-			   sizeof(long double));
-        targets[i] = calloc(NUMBER_PATTERNS,
-			    sizeof(long double));
-        results[i] = calloc(NUMBER_PATTERNS,
-                            sizeof(long double));
-    }
-
     iterations = 0;
     error = 100;
-
-    //Set the inputs
-    stat_to_dyn(CHAR_A, NUMBER_PIXELS_CHARACTER, inputsA);
-    stat_to_dyn(CHAR_B, NUMBER_PIXELS_CHARACTER, inputsB);
-    stat_to_dyn(CHAR_C, NUMBER_PIXELS_CHARACTER, inputsC);
 
     //Set the targets
     for(i = 0; i < NUMBER_PATTERNS; i++)
@@ -156,32 +180,34 @@ int main(int argc, char *argv[])
             return 1;
         else
         {
-            initialize_layer(&input, 2, 4, BIAS);
-            initialize_layer(&hidden, 4, 1, BIAS);
-            initialize_layer(&output, 1, 0, BIAS);
+            initialize_layer(&input, NUMBER_INPUT_NEURONS,
+			     NUMBER_HIDDEN_NEURONS, BIAS);
+            initialize_layer(&hidden, NUMBER_HIDDEN_NEURONS,
+			     NUMBER_OUTPUT_NEURONS, BIAS);
+            initialize_layer(&output, NUMBER_OUTPUT_NEURONS,
+			     0, BIAS);
 
             initialize_network(&network, &input, &hidden, &output);
 
-            inputsUser[0] = flags.input0;
-            inputsUser[1] = flags.input1;
-            if(flags.learning == 0)
+	    if(flags.learning == 0)
             {
+		inputsUser = flags.inputsFlag;
+		printInputVector(inputsUser, 256);
                 set_inputs(&network, inputsUser);
-                feedforward(&network);
+		feedforward(&network);
                 printOutput(&network);
             }
             else
             {
                 if(flags.iterations == -1)
-                    learning(&network, 4, &iterations,
-                            &inputs, &targets, &results, &error,
-                            ETA, ALPHA, 0.001);
-                else
+		    learning(&network, NUMBER_PATTERNS, &iterations,
+			     &inputs, &targets, &results, &error,
+			     ETA, ALPHA, 0.001);
+		else
                 {
-                    //TODO
-                    learning2(&network, 4, flags.iterations,
-                            &inputs, &targets, &results, &error,
-                            ETA, ALPHA);
+                    learning2(&network, NUMBER_PATTERNS, flags.iterations,
+			      &inputs, &targets, &results, &error,
+			      ETA, ALPHA);
                 }
                 set_inputs(&network, inputsUser);
                 feedforward(&network);
@@ -219,37 +245,26 @@ int checkFlags(int argc, char *argv[], struct s_flags *flags)
                 flags->iterations = atoi(argv[i]);
             }
         }
-        else if(strcmp(argv[i], "-inputs:00") == 0)
+        else if(strcmp(argv[i], "-inputs:A") == 0)
         {
             if(flags->inputsSet)
                 return print_flag_error();
-            flags->input0 = 0;
-            flags->input1 = 0;
             flags->inputsSet = 1;
+	    stat_to_dyn(CHAR_A, PIXELS, flags->inputsFlag);
+	}
+        else if(strcmp(argv[i], "-inputs:B") == 0)
+        {
+            if(flags->inputsSet)
+                return print_flag_error();
+            flags->inputsSet = 1;
+	    stat_to_dyn(CHAR_B, PIXELS, flags->inputsFlag);
         }
-        else if(strcmp(argv[i], "-inputs:01") == 0)
+        else if(strcmp(argv[i], "-inputs:C") == 0)
         {
             if(flags->inputsSet)
                 return print_flag_error();
-            flags->input0 = 0;
-            flags->input1 = 1;
             flags->inputsSet = 1;
-        }
-        else if(strcmp(argv[i], "-inputs:10") == 0)
-        {
-            if(flags->inputsSet)
-                return print_flag_error();
-            flags->input0 = 1;
-            flags->input1 = 0;
-            flags->inputsSet = 1;
-        }
-        else if(strcmp(argv[i], "-inputs:11") == 0)
-        {
-            if(flags->inputsSet)
-                return print_flag_error();
-            flags->input0 = 1;
-            flags->input1 = 1;
-            flags->inputsSet = 1;
+	    stat_to_dyn(CHAR_C, PIXELS, flags->inputsFlag);
         }
         else
             return print_flag_error();
