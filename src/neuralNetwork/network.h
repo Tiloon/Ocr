@@ -24,4 +24,5 @@ void feedforward(struct s_network *network);
 //Give inputs pattern to the neural network
 void set_inputs(struct s_network *network, long double *inputs);
 void outputs_to_list(struct s_network *network, long double **store_data);
+void stat_to_dyn(long double stat[], size_t size, long double *vector);
 #endif

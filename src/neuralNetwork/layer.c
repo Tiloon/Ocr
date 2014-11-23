@@ -78,4 +78,3 @@ long double sigmoid(long double x)
 {
     return (1 / (1 + exp(-x)));
 }
-

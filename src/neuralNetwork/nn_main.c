@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "char.h"
 #include "network.h"
 #include "layer.h"
 #include "nn_main.h"
@@ -26,10 +27,21 @@ void printMatrix (long double ***matrix, int x, int y)
     }
 }
 
+void printVector(long double *vector, size_t size)
+{
+    size_t u;
+    for(u = 0; u < size; u++)
+	printf("%Lf", vector[u]);
+}
 
 void printOutput(struct s_network *network)
 {
-    printf("Output value : %Lf\n", network->output->outputs[0]);
+    int u;
+    for(u = 0; u < network->output->nbUnits; u++)
+    {
+	printf("\n %Lf", network->output->outputs[u]);
+    }
+    printf("\n");
 }
 
 /*
@@ -52,19 +64,62 @@ int main(int argc, char *argv[])
     struct s_network network;
     struct s_flags flags;
 
+    unsigned NUMBER_PATTERNS = 10;
+    unsigned NUMBER_PIXELS_CHARACTER = 256;
 
-    long double *inputsUser = malloc(sizeof(long double) * 2);
-    long double **inputs = malloc(sizeof(long double) * 4);
-    long double **targets = malloc(sizeof(long double) * 4);
-    long double **results = malloc(sizeof(long double) * 4);
-    long double *inputs00 = malloc(sizeof(long double) * 2);
-    long double *inputs10 = malloc(sizeof(long double) * 2);
-    long double *inputs01 = malloc(sizeof(long double) * 2);
-    long double *inputs11 = malloc(sizeof(long double) * 2);
-    long double *target00 = malloc(sizeof(long double) * 1);
-    long double *target10 = malloc(sizeof(long double) * 1);
-    long double *target01 = malloc(sizeof(long double) * 1);
-    long double *target11 = malloc(sizeof(long double) * 1);
+    //inputsUser is used so as to debug/check the NN
+    long double *inputsUser = calloc(NUMBER_PIXELS_CHARACTER,
+				     sizeof(long double));
+    /*
+    * *inputs is a matrix with NB_PATTERNS vector
+    * contains all the inputs of the NN i-e
+    * all the vector of each character recognizable
+    * vectors are size of NUMBER_PIXELS_CHARACTER as size
+    */
+
+    long double **inputs = calloc(NUMBER_PATTERNS,
+				  sizeof(long double));
+
+    /*
+     * targets is a matrix of NUM_PATTERNS vector
+     * contains all the expected results for each patterns
+     * size of vector of each expected results NUM_PATTERN
+     */
+    long double **targets = calloc(NUMBER_PATTERNS,
+				   sizeof(long double));
+    /*
+     * results is a matrix of NUM_PATTERNS vector
+     * contains the results of each patterns
+     * Will be compared to targets
+     * each vector are size of NUM_PATTERNS
+     */
+    long double **results = calloc(NUMBER_PATTERNS,
+                                   sizeof(long double));
+
+    /*
+     * Here are all the vector for each PATTERNS (= nb characters)
+     * Will fill the **inputs matrix
+     * Vectors are size of NUM_PIXELS_CHARACTERS (=256)
+     */
+    long double *inputsA = calloc(NUMBER_PIXELS_CHARACTER,
+                                   sizeof(long double));
+    long double *inputsB = calloc(NUMBER_PIXELS_CHARACTER,
+                                   sizeof(long double));
+    long double *inputsC = calloc(NUMBER_PIXELS_CHARACTER,
+                                   sizeof(long double));
+
+    /*
+     * Here are all the vector for each PATTERNS (= nb characters)
+     * Will fill the **targets matrix
+     * Vectors are size of NB_PATTERNS (=256)
+     */
+
+    long double *targetA = calloc(NUMBER_PATTERNS,
+                                   sizeof(long double));
+    long double *targetB = calloc(NUMBER_PATTERNS,
+                                   sizeof(long double));
+    long double *targetC = calloc(NUMBER_PATTERNS,
+                                   sizeof(long double));
 
     long double error;
     int iterations, i;
@@ -90,30 +145,11 @@ int main(int argc, char *argv[])
     error = 100;
 
     //Set the inputs
-    inputs00[0] = 0;
-    inputs00[1] = 0;
-    inputs10[0] = 1;
-    inputs10[1] = 0;
-    inputs01[0] = 0;
-    inputs01[1] = 1;
-    inputs11[0] = 1;
-    inputs11[1] = 1;
 
-    inputs[0] = inputs00;
-    inputs[1] = inputs01;
-    inputs[2] = inputs10;
-    inputs[3] = inputs11;
+    /* TO DO */
 
     //Set the targets
-    target00[0] = 0;
-    target10[0] = 1;
-    target01[0] = 1;
-    target11[0] = 0;
-
-    targets[0] = target00;
-    targets[1] = target10;
-    targets[2] = target01;
-    targets[3] = target11;
+    /* TO DO */
 
     if(checkFlags(argc, argv, &flags))
         return 1;

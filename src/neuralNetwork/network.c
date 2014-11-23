@@ -25,8 +25,9 @@ void feedforward(struct s_network *network)
 
 void set_inputs(struct s_network *network, long double *inputs)
 {
-    network->input->outputs[0] = inputs[0];
-    network->input->outputs[1] = inputs[1];
+    int u;
+    for(u = 0; u < network->input->nbUnits; u++)
+	network->input->outputs[u] = inputs[u];
 }
 
 void outputs_to_list(struct s_network *network, long double **store_data)
@@ -35,4 +36,11 @@ void outputs_to_list(struct s_network *network, long double **store_data)
     for(u = 0; u < network->output->nbUnits; u++)
         (*store_data)[u] = network->output->outputs[u];
 }
-
+void stat_to_dyn(long double stat[], size_t size, long double *vector)
+{
+    size_t i;
+    for(i = 0; i < size; i++)
+    {
+	vector[i] = stat[i];
+    }
+}
