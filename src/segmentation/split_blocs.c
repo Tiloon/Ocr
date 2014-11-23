@@ -38,36 +38,40 @@ int find_bloc(struct s_binarypic *picture,
         rect->y = min(i, rect->y);
         rect->w = max(j, rect->w);
         rect->h = max(i, rect->h);
-
+        
         // empile
         if((i > 0) &&
                 !tab[(i - 1) * picture->w + j] &&
-                picture->pixels[(i - 1) * picture->w + j])
+                !picture->pixels[(i - 1) * picture->w + j])
         {
+        tab[(i-1) * picture->w + j] = 1;
             points = realloc(points, sizeof(struct s_point) * (top + 1));
             points[top] = (struct s_point) {i - 1, j};
             top++;
         }
         if((j > 0) &&
                 !tab[i * picture->w + j - 1] &&
-                picture->pixels[i * picture->w + j - 1])
+                !picture->pixels[i * picture->w + j - 1])
         {
+        tab[i * picture->w + j-1] = 1;
             points = realloc(points, sizeof(struct s_point) * (top + 1));
             points[top] = (struct s_point) {i, j - 1};
             top++;
         }
         if((i < picture->h) &&
                 !tab[(i + 1) * picture->w + j] &&
-                picture->pixels[(i + 1) * picture->w + j])
+                !picture->pixels[(i + 1) * picture->w + j])
         {
+        tab[(i+1) * picture->w + j] = 1;
             points = realloc(points, sizeof(struct s_point) * (top + 1));
             points[top] = (struct s_point) {i + 1, j};
             top++;
         }
         if((j < picture->w) &&
                 !tab[i * picture->w + j + 1] &&
-                picture->pixels[i * picture->w + j + 1])
+                !picture->pixels[i * picture->w + j + 1])
         {
+        tab[i * picture->w + j+1] = 1;
             points = realloc(points, sizeof(struct s_point) * (top + 1));
             points[top] = (struct s_point) {i, j + 1};
             top++;
@@ -75,6 +79,8 @@ int find_bloc(struct s_binarypic *picture,
     }
 
     free(points);
+    rect->w -= rect->x;
+    rect->h -= rect->y;
 
     return 1;
 }
