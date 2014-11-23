@@ -16,6 +16,8 @@
 #include "segmentation/draw_rectangle.h"
 #include "segmentation/morphology.h"
 
+#include "segmentation/resize.h"
+
 #ifndef NOGUI
 #include "gui/gui.h"
 #endif

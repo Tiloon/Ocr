@@ -102,6 +102,7 @@ GdkPixbuf* segmentation_full(GdkPixbuf *origin)
                     for(itr_chars = 0; chars[itr_chars].h || chars[itr_chars].w;
                             itr_chars++)
                     {
+                        //free(vectorize_char(pic, chars + itr_chars));
                         draw_rectangle(pixbuf, chars + itr_chars, ~0, 0, 0);
                     }
                 }
