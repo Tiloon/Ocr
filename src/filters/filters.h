@@ -2,7 +2,9 @@
 #define FILTERS_H
 
 #include <gdk-pixbuf/gdk-pixbuf.h>
+
 #include "../main.h"
+#include "../redef.h"
 
 #include "sample_filter.h"
 #include "gaussian_filter.h"

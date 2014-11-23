@@ -81,7 +81,11 @@ int text_image_segmentation(char *pic, uint w, uint h, char **mask)
 
     // Hole filling morpho logical operation
 
-    seed = malloc((w + 1) * (h + 1) * sizeof(char));
+    if(!(seed = calloc((w + 1) * (h + 1), sizeof(char))))
+    {
+        LOG_ALLOC_ERR();
+        return 1;
+    }
     memcpy(seed, *mask, (w + 1) * (h + 1));
 
 

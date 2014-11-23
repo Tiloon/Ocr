@@ -5,16 +5,19 @@ struct s_binarypic *copy_binarypic(struct s_binarypic *origin)
     size_t i;
     struct s_binarypic *new;
 
-    new = calloc(1, sizeof(struct s_binarypic));
-
-    if(new == NULL)
+    if(!(new = calloc(1, sizeof(struct s_binarypic))))
     {
-        fprintf(stderr, "Not enough memory to copy binarized picture\n");
-        return NULL;
+        LOG_ALLOC_ERR();
+        return 0;
     }
+
     new->w = origin->w;
     new->h = origin->h;
-    new->pixels = calloc((new->w + 1) * (new->h + 1), sizeof(char));
+    if(!(new->pixels = calloc((new->w + 1) * (new->h + 1), sizeof(char)))) {
+        LOG_ALLOC_ERR();
+        FREE(new);
+        return 0;
+    }
     for(i = 0; i < (new->h * new->w); i++)
         new->pixels[i] = origin->pixels[i];
 

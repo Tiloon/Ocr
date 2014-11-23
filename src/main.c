@@ -66,7 +66,11 @@ GdkPixbuf* segmentation_full(GdkPixbuf *origin)
     size_t itr_chars, itr_lines, itr_blocs;
 
     mask = NULL;
-    pic = calloc(1, sizeof(struct s_binarypic));
+    if(!(pic = calloc(1, sizeof(struct s_binarypic))))
+    {
+        LOG_ALLOC_ERR();
+        return 0;
+    }
     pixbuf = NULL;
     blocs = NULL;
     lines = NULL;
@@ -96,8 +100,7 @@ GdkPixbuf* segmentation_full(GdkPixbuf *origin)
                     for(itr_chars = 0; chars[itr_chars].h || chars[itr_chars].w;
                             itr_chars++)
                     {
-                        //free(vectorize_char(pic, chars + itr_chars));
-                        
+                        free(vectorize_char(pic, chars + itr_chars));
                         draw_rectangle(pixbuf, chars + itr_chars, ~0, 0, 0);
                     }
                 }
@@ -209,6 +212,12 @@ struct s_flags *flags(void)
 {
     static struct s_flags *ptr;
     if(!ptr)
-        ptr = calloc(1, sizeof(struct s_flags));
+    {
+        if(!(ptr = calloc(1, sizeof(struct s_flags))))
+        {
+            LOG_ALLOC_ERR();
+            return 0;
+        }
+    }
     return ptr;
 }

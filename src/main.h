@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "redef.h"
+
 #include "picture/copy_binarized.h"
 #include "picture/binarypic.h"
 #include "picture/loader.h"

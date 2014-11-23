@@ -19,9 +19,12 @@ int horizontal_box_blur(unsigned int *in, unsigned int *out, size_t height,
                 out[i * width + j] +=
                     ((i >= k) ? in[(i - k) * width + j] : 0) +
                     ((i + k < height) ? in[(i + k) * width + j] : 0);
-            out[i * width + j] /= 1 +
-                (i > k ? k : i) +
-                (i + k < height ? k : height - i);
+
+            out[i * width + j] /= (i > k ? k : i) +
+                (i + k < height ? k : height - i) - 1;
+
+            if(out[i * width + j] > 0xFF)
+                out[i * width + j] = 0xFF;
         }
     }
     return 0;
@@ -30,7 +33,6 @@ int horizontal_box_blur(unsigned int *in, unsigned int *out, size_t height,
 int vertical_box_blur(unsigned int *in, unsigned int *out, size_t height,
         size_t width, size_t bpp, size_t size)
 {
-    printf("%zu\n", bpp); // REMOVE THIS. only here for no compile fail
     size_t i, j;
     size_t k;
     for(i = 0; i < height; i++)
@@ -42,9 +44,11 @@ int vertical_box_blur(unsigned int *in, unsigned int *out, size_t height,
                 out[i * width + j] +=
                     (((/*j*/i >= k) ? in[i * width + j - k] : 0) +
                     ((/*j*/i + k < height) ? in[i * width + j + k] : 0));
+
             out[i * width + j] /= 1 +
                 ((j > k ? k : j) / bpp) +
                 ((j + k < width ? k : width - j) / bpp);
+
             //out[i * width + j] /= 1 + k * 2;
             if(out[i * width + j] > 0xFF)
                 out[i * width + j] = 0xFF;
@@ -95,15 +99,20 @@ int gaussian_filter(GdkPixbuf *picture, size_t nb_params, char **params)
     pixel = gdk_pixbuf_get_pixels(picture);
     bpp = 3;
     rowstride = wt * bpp;
-    temp = malloc(wt * bpp * ht * sizeof(unsigned int));
-    temp_out = malloc(wt * bpp * ht * sizeof(unsigned int));
+    if(!((temp = calloc(wt * bpp * ht, sizeof(unsigned int))) &&
+        (temp_out = calloc(wt * bpp * ht, sizeof(unsigned int)))))
+    {
+        FREE(temp);
+        LOG_ALLOC_ERR();
+        return 1;
+    }
     for(i = 0; i < ht * rowstride; i++)
         temp[i] = pixel[i];
     if((ht < 1) || (rowstride < 1) || (bpp < 1))
         return 1;
     for(i = 0; i < 3; i++)
     {
-        box_blur(temp, temp_out, ht, rowstride, bpp, 2);
+        box_blur(temp, temp_out, ht, rowstride, bpp, 1);
 
         // We swap buffer
         swap = temp_out;
@@ -112,5 +121,9 @@ int gaussian_filter(GdkPixbuf *picture, size_t nb_params, char **params)
     }
     for(i = 0; i < ht * rowstride; i++)
         pixel[i] = temp[i];
+
+    FREE(temp);
+    FREE(temp_out);
+
     return 0;
 }

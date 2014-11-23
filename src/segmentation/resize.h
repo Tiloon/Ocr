@@ -2,6 +2,8 @@
 #define RESIZE_H
 
 #include <stdlib.h>
+
+#include "../redef.h"
 #include "../picture/binarypic.h"
 #include "rectangle.h"
 

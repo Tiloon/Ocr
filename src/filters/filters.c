@@ -38,7 +38,12 @@ int filter_get_id(const char *name)
 struct s_filter_rule* filter_get_rule(char *rule)
 {
     size_t i;
-    struct s_filter_rule *filter = calloc(1, sizeof(struct s_filter_rule));
+    struct s_filter_rule *filter;
+    if(!(filter = calloc(1, sizeof(struct s_filter_rule))))
+    {
+        LOG_ALLOC_ERR();
+        return 0;
+    }
     filter->name = rule;
     for(i = 0; rule[i]; i++)
     {
@@ -120,7 +125,7 @@ int filter_add(char *rule)
             sizeof(struct s_filter_rule));
     if(filter_stack == NULL)
     {
-        fprintf(stderr, "malloc error : %d@%s", __LINE__, __FILE__);
+        fprintf(stderr, "alloc error : %d@%s", __LINE__, __FILE__);
         return 1;
     }
     filter_stack[filter_stack_count] = filter;

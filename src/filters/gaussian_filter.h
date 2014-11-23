@@ -2,6 +2,8 @@
 #define GAUSSIAN_FILTER_H
 
 #include "filters.h"
+#include "../redef.h"
+
 
 static char gaussian_filter_name[] = "gaussian_filter";
 static char gaussian_filter_help_msg[] =

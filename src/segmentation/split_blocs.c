@@ -22,7 +22,11 @@ int find_bloc(struct s_binarypic *picture,
         return 0;
 
     top = 1;
-    points = malloc(sizeof(struct s_point));
+    if(!(points = calloc(1, sizeof(struct s_point))))
+    {
+        LOG_ALLOC_ERR();
+        return 0;
+    }
 
     points[0] = (struct s_point) {i, j};
 
@@ -38,7 +42,7 @@ int find_bloc(struct s_binarypic *picture,
         rect->y = min(i, rect->y);
         rect->w = max(j, rect->w);
         rect->h = max(i, rect->h);
-        
+
         // empile
         if((i > 0) &&
                 !tab[(i - 1) * picture->w + j] &&
@@ -113,8 +117,7 @@ struct s_rectangle* split_blocs(struct s_binarypic *picture)
 
     if(!(tab = calloc((picture->w + 1) * (picture->h + 1), sizeof(char))))
     {
-        fprintf(stderr, "Malloc error %s:%i\n", __FILE__,
-                __LINE__);
+        LOG_ALLOC_ERR();
         return 0;
     }
 

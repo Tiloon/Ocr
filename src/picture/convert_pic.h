@@ -3,6 +3,8 @@
 
 #include <stdlib.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
+
+#include "../redef.h"
 #include "binarypic.h"
 
 extern int gdk_to_binary(GdkPixbuf *picture, struct s_binarypic *binarypic);
