@@ -15,7 +15,7 @@ all:
 
 
 clean:
-	rm -rf *~ *.o ./main
+	rm -rf *~ *.o *# ./main
 
 
 # END

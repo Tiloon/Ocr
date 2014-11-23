@@ -10,9 +10,9 @@
 #include "layer.h"
 #include "learning.h"
 
-#define ETA 0.8
-#define ALPHA 0.4
-#define BIAS 0
+#define ETA 0.1
+#define ALPHA 0.1
+#define BIAS 0.5
 
 long double random_values(void);
 
@@ -24,4 +24,5 @@ void feedforward(struct s_network *network);
 //Give inputs pattern to the neural network
 void set_inputs(struct s_network *network, long double *inputs);
 void outputs_to_list(struct s_network *network, long double **store_data);
+void stat_to_dyn(long double stat[], size_t size, long double *vector);
 #endif

@@ -3,11 +3,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "char5.h"
 #include "network.h"
 #include "layer.h"
 #include "nn_main.h"
 #include "structure.h"
 #include "learning.h"
+
 /*
  * CHECKING FUNCTIONS
  */
@@ -26,10 +28,32 @@ void printMatrix (long double ***matrix, int x, int y)
     }
 }
 
+void printVector(long double *vector, size_t size)
+{
+    size_t u;
+    for(u = 0; u < size; u++)
+	printf(" |%Lf", vector[u]);
+}
+
+void printInputVector(long double *vector, size_t size)
+{
+    size_t u;
+    for(u = 0; u < size; u++)
+    {
+	if(u != 0 && u % 16 == 0)
+	    printf("\n");
+	printf("%Lf", vector[u]);
+    }
+}
 
 void printOutput(struct s_network *network)
 {
-    printf("Output value : %Lf\n", network->output->outputs[0]);
+    int u;
+    for(u = 0; u < network->output->nbUnits; u++)
+    {
+	printf("\n %Lf", network->output->outputs[u]);
+    }
+    printf("\n");
 }
 
 /*
@@ -52,22 +76,83 @@ int main(int argc, char *argv[])
     struct s_network network;
     struct s_flags flags;
 
-
-    long double *inputsUser = malloc(sizeof(long double) * 2);
-    long double **inputs = malloc(sizeof(long double) * 4);
-    long double **targets = malloc(sizeof(long double) * 4);
-    long double **results = malloc(sizeof(long double) * 4);
-    long double *inputs00 = malloc(sizeof(long double) * 2);
-    long double *inputs10 = malloc(sizeof(long double) * 2);
-    long double *inputs01 = malloc(sizeof(long double) * 2);
-    long double *inputs11 = malloc(sizeof(long double) * 2);
-    long double *target00 = malloc(sizeof(long double) * 1);
-    long double *target10 = malloc(sizeof(long double) * 1);
-    long double *target01 = malloc(sizeof(long double) * 1);
-    long double *target11 = malloc(sizeof(long double) * 1);
-
-    long double error;
+    int NUMBER_PATTERNS = 3;
+    int NUMBER_PIXELS_CHARACTER = 256;
+    int NUMBER_INPUT_NEURONS = NUMBER_PIXELS_CHARACTER;
+    int NUMBER_HIDDEN_NEURONS = 2 * NUMBER_INPUT_NEURONS;
+    int NUMBER_OUTPUT_NEURONS = NUMBER_PATTERNS;
     int iterations, i;
+
+
+    flags.inputsFlag = calloc(NUMBER_PIXELS_CHARACTER,
+			      sizeof(long double));
+
+    //inputsUser is used so as to debug/check the NN
+    long double *inputsUser = calloc(NUMBER_PIXELS_CHARACTER,
+				     sizeof(long double));
+    /*
+    * *inputs is a matrix with NB_PATTERNS vector
+    * contains all the inputs of the NN i-e
+    * all the vector of each character recognizable
+    * vectors are size of NUMBER_PIXELS_CHARACTER as size
+    */
+
+    long double **inputs = calloc(NUMBER_PATTERNS,
+				  sizeof(long double));
+
+    /*
+     * targets is a matrix of NUM_PATTERNS vector
+     * contains all the expected results for each patterns
+     * size of vector of each expected results NUM_PATTERN
+     */
+    long double **targets = calloc(NUMBER_PATTERNS,
+				   sizeof(long double));
+    /*
+     * results is a matrix of NUM_PATTERNS vector
+     * contains the results of each patterns
+     * Will be compared to targets
+     * each vector are size of NUM_PATTERNS
+     */
+    long double **results = calloc(NUMBER_PATTERNS,
+                                   sizeof(long double));
+
+    /*
+     * Here are all the vector for each PATTERNS (= nb characters)
+     * Will fill the **inputs matrix
+     * Vectors are size of NUM_PIXELS_CHARACTERS (=256)
+     */
+    long double *inputsA = calloc(NUMBER_PIXELS_CHARACTER,
+                                   sizeof(long double));
+    long double *inputsB = calloc(NUMBER_PIXELS_CHARACTER,
+                                   sizeof(long double));
+    long double *inputsC = calloc(NUMBER_PIXELS_CHARACTER,
+                                   sizeof(long double));
+    long double error;
+
+    /*
+     * calloc all the matrix (malloc are for weak people parait-il)
+     * **inputs && targets && results
+     */
+
+    for(i = 0; i < NUMBER_PATTERNS; i++)
+    {
+        inputs[i] = calloc(NUMBER_PIXELS_CHARACTER,
+                           sizeof(long double));
+        targets[i] = calloc(NUMBER_PATTERNS,
+                            sizeof(long double));
+        results[i] = calloc(NUMBER_PATTERNS,
+                            sizeof(long double));
+    }
+
+    //Set the inputs
+    stat_to_dyn(CHAR_A, NUMBER_PIXELS_CHARACTER, inputsA);
+    stat_to_dyn(CHAR_B, NUMBER_PIXELS_CHARACTER, inputsB);
+    stat_to_dyn(CHAR_C, NUMBER_PIXELS_CHARACTER, inputsC);
+
+    inputs[0] = inputsA;
+    inputs[1] = inputsB;
+    inputs[2] = inputsC;
+
 
     //*******************************************//
     //          VARIABLES AFFECTATIONS           //
@@ -78,42 +163,13 @@ int main(int argc, char *argv[])
     flags.learning = 0;
     flags.iterations = -1;
 
-    //Malloc all the matrix
-    for(i = 0; i < 4; i++)
-    {
-        inputs[i] = malloc(sizeof(long double) * 2);
-        targets[i] = malloc(sizeof(long double) * 1);
-        results[i] = malloc(sizeof(long double) * 1);
-    }
-
     iterations = 0;
     error = 100;
 
-    //Set the inputs
-    inputs00[0] = 0;
-    inputs00[1] = 0;
-    inputs10[0] = 1;
-    inputs10[1] = 0;
-    inputs01[0] = 0;
-    inputs01[1] = 1;
-    inputs11[0] = 1;
-    inputs11[1] = 1;
-
-    inputs[0] = inputs00;
-    inputs[1] = inputs01;
-    inputs[2] = inputs10;
-    inputs[3] = inputs11;
-
     //Set the targets
-    target00[0] = 0;
-    target10[0] = 1;
-    target01[0] = 1;
-    target11[0] = 0;
+    for(i = 0; i < NUMBER_PATTERNS; i++)
+	targets[i][i] = 1;
 
-    targets[0] = target00;
-    targets[1] = target10;
-    targets[2] = target01;
-    targets[3] = target11;
 
     if(checkFlags(argc, argv, &flags))
         return 1;
@@ -123,34 +179,41 @@ int main(int argc, char *argv[])
             return 1;
         else
         {
-            initialize_layer(&input, 2, 4, BIAS);
-            initialize_layer(&hidden, 4, 1, BIAS);
-            initialize_layer(&output, 1, 0, BIAS);
+            initialize_layer(&input, NUMBER_INPUT_NEURONS,
+			     NUMBER_HIDDEN_NEURONS, BIAS);
+            initialize_layer(&hidden, NUMBER_HIDDEN_NEURONS,
+			     NUMBER_OUTPUT_NEURONS, BIAS);
+            initialize_layer(&output, NUMBER_OUTPUT_NEURONS,
+			     0, BIAS);
 
             initialize_network(&network, &input, &hidden, &output);
 
-            inputsUser[0] = flags.input0;
-            inputsUser[1] = flags.input1;
-            if(flags.learning == 0)
+	    if(flags.learning == 0)
             {
-                set_inputs(&network, inputsUser);
-                feedforward(&network);
+		inputsUser = flags.inputsFlag;
+		set_inputs(&network, inputsUser);
+		feedforward(&network);
                 printOutput(&network);
             }
             else
             {
+		set_inputs(&network, inputsUser);
+                feedforward(&network);
+                printOutput(&network);
+
+
+		inputsUser = flags.inputsFlag;
                 if(flags.iterations == -1)
-                    learning(&network, 4, &iterations,
-                            &inputs, &targets, &results, &error,
-                            ETA, ALPHA, 0.001);
-                else
+		    learning(&network, NUMBER_PATTERNS, &iterations,
+			     &inputs, &targets, &results, &error,
+			     ETA, ALPHA, 0.001);
+		else
                 {
-                    //TODO
-                    learning2(&network, 4, flags.iterations,
-                            &inputs, &targets, &results, &error,
-                            ETA, ALPHA);
+                    learning2(&network, NUMBER_PATTERNS, flags.iterations,
+			      &inputs, &targets, &results, &error,
+			      ETA, ALPHA);
                 }
-                set_inputs(&network, inputsUser);
+		set_inputs(&network, inputsUser);
                 feedforward(&network);
                 printOutput(&network);
             }
@@ -186,37 +249,26 @@ int checkFlags(int argc, char *argv[], struct s_flags *flags)
                 flags->iterations = atoi(argv[i]);
             }
         }
-        else if(strcmp(argv[i], "-inputs:00") == 0)
+        else if(strcmp(argv[i], "-inputs:A") == 0)
         {
             if(flags->inputsSet)
                 return print_flag_error();
-            flags->input0 = 0;
-            flags->input1 = 0;
             flags->inputsSet = 1;
+	    stat_to_dyn(CHAR_A, PIXELS, flags->inputsFlag);
+	}
+        else if(strcmp(argv[i], "-inputs:B") == 0)
+        {
+            if(flags->inputsSet)
+                return print_flag_error();
+            flags->inputsSet = 1;
+	    stat_to_dyn(CHAR_B, PIXELS, flags->inputsFlag);
         }
-        else if(strcmp(argv[i], "-inputs:01") == 0)
+        else if(strcmp(argv[i], "-inputs:C") == 0)
         {
             if(flags->inputsSet)
                 return print_flag_error();
-            flags->input0 = 0;
-            flags->input1 = 1;
             flags->inputsSet = 1;
-        }
-        else if(strcmp(argv[i], "-inputs:10") == 0)
-        {
-            if(flags->inputsSet)
-                return print_flag_error();
-            flags->input0 = 1;
-            flags->input1 = 0;
-            flags->inputsSet = 1;
-        }
-        else if(strcmp(argv[i], "-inputs:11") == 0)
-        {
-            if(flags->inputsSet)
-                return print_flag_error();
-            flags->input0 = 1;
-            flags->input1 = 1;
-            flags->inputsSet = 1;
+	    stat_to_dyn(CHAR_C, PIXELS, flags->inputsFlag);
         }
         else
             return print_flag_error();
@@ -235,15 +287,14 @@ void printHelp()
 {
     printf("\n\n./main then -\"your arguments\"\n");
     printf("Here is the list of available args : \n"
-            "-inputs:00 -> set the inputs to (0,0)\n"
-            "-inputs:01 -> set the inputs to (0,1)\n"
-            "-inputs:10 -> set the inputs to (1,0)\n"
-            "-inputs:11 -> set the inputs to (1,1)\n"
-            "-learning -> start the learning process\n"
+            "-inputs:A -> set the inputs with A matrix\n"
+            "-inputs:B -> set the inputs with B matrix\n"
+            "-inputs:C -> set the inputs with C matrix\n"
+	   "-learning -> start the learning process\n"
             "-iterations [white space] \"your number\"\n\n"
-            "For example for inputs (0,1) and for learning with 2500 "
+            "For example for inputs A matrix and for learning with 2500 "
             "iterations :\n"
-            "--> .\\main -inputs:01 -learning -iterations 2500\n\n");
+            "--> .\\main -inputs:A -learning -iterations 2500\n\n");
 }
 
 #endif
