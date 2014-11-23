@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "char.h"
+#include "char5.h"
 #include "network.h"
 #include "layer.h"
 #include "nn_main.h"
@@ -42,7 +42,7 @@ void printInputVector(long double *vector, size_t size)
     {
 	if(u != 0 && u % 16 == 0)
 	    printf("\n");
-	printf("%d", (int)vector[u]);
+	printf("%Lf", vector[u]);
     }
 }
 
@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
     int NUMBER_PATTERNS = 3;
     int NUMBER_PIXELS_CHARACTER = 256;
     int NUMBER_INPUT_NEURONS = NUMBER_PIXELS_CHARACTER;
-    int NUMBER_HIDDEN_NEURONS = 5 * NUMBER_INPUT_NEURONS;
+    int NUMBER_HIDDEN_NEURONS = 2 * NUMBER_INPUT_NEURONS;
     int NUMBER_OUTPUT_NEURONS = NUMBER_PATTERNS;
     int iterations, i;
 
@@ -144,7 +144,6 @@ int main(int argc, char *argv[])
                             sizeof(long double));
     }
 
-
     //Set the inputs
     stat_to_dyn(CHAR_A, NUMBER_PIXELS_CHARACTER, inputsA);
     stat_to_dyn(CHAR_B, NUMBER_PIXELS_CHARACTER, inputsB);
@@ -192,13 +191,18 @@ int main(int argc, char *argv[])
 	    if(flags.learning == 0)
             {
 		inputsUser = flags.inputsFlag;
-		printInputVector(inputsUser, 256);
-                set_inputs(&network, inputsUser);
+		set_inputs(&network, inputsUser);
 		feedforward(&network);
                 printOutput(&network);
             }
             else
             {
+		set_inputs(&network, inputsUser);
+                feedforward(&network);
+                printOutput(&network);
+
+
+		inputsUser = flags.inputsFlag;
                 if(flags.iterations == -1)
 		    learning(&network, NUMBER_PATTERNS, &iterations,
 			     &inputs, &targets, &results, &error,
@@ -209,7 +213,7 @@ int main(int argc, char *argv[])
 			      &inputs, &targets, &results, &error,
 			      ETA, ALPHA);
                 }
-                set_inputs(&network, inputsUser);
+		set_inputs(&network, inputsUser);
                 feedforward(&network);
                 printOutput(&network);
             }

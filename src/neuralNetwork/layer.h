@@ -17,5 +17,5 @@ void free_layer(struct s_layer *layer);
 void compute_values(struct s_layer *l1, struct s_layer *l2);
 
 long double sigmoid(long double x);
-
+long double tanhyp(long double x);
 #endif

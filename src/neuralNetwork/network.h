@@ -10,9 +10,9 @@
 #include "layer.h"
 #include "learning.h"
 
-#define ETA 0.8
-#define ALPHA 0.4
-#define BIAS 0
+#define ETA 0.1
+#define ALPHA 0.1
+#define BIAS 0.5
 
 long double random_values(void);
 

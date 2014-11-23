@@ -11,6 +11,7 @@ void compute_delta_output(struct s_network *network,
     for(u = 0; u < network->output->nbUnits; u++)
         network->output->delta[u] =
             (target[u] - computed[u]) * computed[u] * (1.0 - computed[u]);
+	    // (target[u] - computed[u]) * (1.0 - computed[u] * computed[u]);
 }
 
 void compute_delta_hidden(struct s_network *network)
@@ -26,7 +27,8 @@ void compute_delta_hidden(struct s_network *network)
                 network->output->delta[out];
         }
         network->hidden->delta[u] = sum *
-            network->hidden->outputs[u] * (1.0 - network->hidden->outputs[u]);
+	    network->hidden->outputs[u] * (1.0 - network->hidden->outputs[u]);
+	//(1.0 - network->hidden->outputs[u] * network->hidden->outputs[u]);
     }
 }
 
@@ -76,6 +78,7 @@ void learning(struct s_network *network, int nbPatterns, int *nbIterations,
 
     while(*error > errorThreshold)
     {
+	printf("Iteration : %d. Error : %Lf\n", *nbIterations, *error);
 	p =  (int) rand() % nbPatterns;
 	set_inputs(network, (*inputs)[p]);
 	feedforward(network);

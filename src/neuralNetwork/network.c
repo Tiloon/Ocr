@@ -40,7 +40,5 @@ void stat_to_dyn(long double stat[], size_t size, long double *vector)
 {
     size_t i;
     for(i = 0; i < size; i++)
-    {
 	vector[i] = stat[i];
-    }
 }
