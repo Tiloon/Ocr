@@ -287,15 +287,14 @@ void printHelp()
 {
     printf("\n\n./main then -\"your arguments\"\n");
     printf("Here is the list of available args : \n"
-            "-inputs:00 -> set the inputs to (0,0)\n"
-            "-inputs:01 -> set the inputs to (0,1)\n"
-            "-inputs:10 -> set the inputs to (1,0)\n"
-            "-inputs:11 -> set the inputs to (1,1)\n"
-            "-learning -> start the learning process\n"
+            "-inputs:A -> set the inputs with A matrix\n"
+            "-inputs:B -> set the inputs with B matrix\n"
+            "-inputs:C -> set the inputs with C matrix\n"
+	   "-learning -> start the learning process\n"
             "-iterations [white space] \"your number\"\n\n"
-            "For example for inputs (0,1) and for learning with 2500 "
+            "For example for inputs A matrix and for learning with 2500 "
             "iterations :\n"
-            "--> .\\main -inputs:01 -learning -iterations 2500\n\n");
+            "--> .\\main -inputs:A -learning -iterations 2500\n\n");
 }
 
 #endif
