@@ -9,7 +9,7 @@ int gdk_to_binary(GdkPixbuf *picture, struct s_binarypic *binarypic)
 
     pixel_tab = gdk_pixbuf_get_pixels(picture);
 
-    binarypic->pixels = malloc((1 + binarypic->w) * (1 + binarypic->h) * sizeof(char));
+    binarypic->pixels = calloc((1 + binarypic->w) * (1 + binarypic->h), sizeof(char));
 
     for (i = 0; i < (binarypic->h * binarypic->w); i++)
     {

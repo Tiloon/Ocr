@@ -1,5 +1,7 @@
 #include "split_lines.h"
 
+#include <stdio.h>
+
 struct s_rectangle* split_lines(struct s_binarypic *picture,
         struct s_rectangle *bloc)
 {
@@ -19,7 +21,9 @@ struct s_rectangle* split_lines(struct s_binarypic *picture,
         left = picture->w;
         right = 0;
 
-        for(j = bloc->x; j < (bloc->x + bloc->w); j++)
+        for(j = bloc->x; (j < (bloc->x + bloc->w)) &&
+                (i * picture->w + j < picture->w * picture->h)
+                ; j++)
         {
             // First black pixel we meet
             if(is_white && (picture->pixels[i * picture->w + j] == 0))
@@ -37,6 +41,7 @@ struct s_rectangle* split_lines(struct s_binarypic *picture,
             {
                 lines = realloc(lines,
                         (current + 2) * sizeof(struct s_rectangle));
+                lines[current].h = 0;
                 lines[current].y = i;
                 lines[current].x = left;
                 lines[current].w = right;
@@ -57,10 +62,7 @@ struct s_rectangle* split_lines(struct s_binarypic *picture,
     if(lines == NULL)
         return lines;
 
-    lines[current].x = 0;
-    lines[current].y = 0;
-    lines[current].w = 0;
-    lines[current].h = 0;
+    lines[current] = (struct s_rectangle){0, 0, 0, 0};
 
     return lines;
 }

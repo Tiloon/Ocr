@@ -5,7 +5,7 @@ struct s_binarypic *copy_binarypic(struct s_binarypic *origin)
     size_t i;
     struct s_binarypic *new;
 
-    new = malloc(sizeof(struct s_binarypic));
+    new = calloc(1, sizeof(struct s_binarypic));
 
     if(new == NULL)
     {
@@ -14,7 +14,7 @@ struct s_binarypic *copy_binarypic(struct s_binarypic *origin)
     }
     new->w = origin->w;
     new->h = origin->h;
-    new->pixels = malloc((new->w + 1) * (new->h + 1) * sizeof(char));
+    new->pixels = calloc((new->w + 1) * (new->h + 1), sizeof(char));
     for(i = 0; i < (new->h * new->w); i++)
         new->pixels[i] = origin->pixels[i];
 
