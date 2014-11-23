@@ -14,21 +14,38 @@ int debug_vectorized_char(char * v)
     return 0;
 }
 
+/*
+ * TTTTTTTTT  OOOO  DDDDD   OOOO
+ *     T     O    O D    D O    O     O
+ *     T     O    O D    D O    O
+ *     T     O    O D    D O    O
+ *     T     O    O D    D O    O     O
+ *     T      OOOO  DDDDD   OOOO
+ *
+ * Keep characters ratio (ie consider them as square, and pixels outside orig
+ * as white pixels)
+ */
+
+
 char* vectorize_char(struct s_binarypic *picture, struct s_rectangle *orig) {
     char *car;
     int A, B, C, D, x, y, index, gray;
-    int w = orig->w;
-    int h = orig->h;
-    float x_ratio = ((float)(w - 1)) / ((float) CHAR_WIDTH);
-    float y_ratio = ((float)(h - 1)) / ((float) CHAR_HEIGHT);
-    float x_diff, y_diff;
-    int offset = 0;
+    size_t w, h, offset, current;
+    float x_ratio, y_ratio, x_diff, y_diff;
     int i, j;
+
     if(!(car = calloc(CHAR_WIDTH * CHAR_HEIGHT, sizeof(char))))
     {
         LOG_ALLOC_ERR();
         return 0;
     }
+
+    w = orig->w;
+    h = orig->h;
+    x_ratio = ((float)(w - 1)) / ((float) (CHAR_WIDTH - 1)); // -2 = magic
+    y_ratio = ((float)(h - 1)) / ((float) (CHAR_HEIGHT - 2));
+    offset = 0;
+
     for(i = 0; i < CHAR_HEIGHT; i++)
     {
         for(j = 0; j < CHAR_WIDTH; j++)
@@ -39,28 +56,19 @@ char* vectorize_char(struct s_binarypic *picture, struct s_rectangle *orig) {
             y_diff = (y_ratio * i) - y;
             index = y * w + x;
 
-            A = picture->pixels[orig->y * picture->w + orig->x
-                + index % orig->w + (index / orig->w) * picture->w];
-            B = picture->pixels[orig->y * picture->w + orig->x
-                + index % orig->w + (index / orig->w) * picture->w + 1];
-            C = picture->pixels[orig->y * picture->w + orig->x
-                + index % orig->w + (index / orig->w) * picture->w + w];
-            D = picture->pixels[orig->y * picture->w + orig->x
-                + index % orig->w + (index / orig->w) * picture->w + w + 1];
+            current = orig->y * picture->w + orig->x;
 
-            /*
-            B = picture->pixels[orig->y * orig->w + orig->x
-                + index % orig->w + (index / orig->w) * orig->w + 1];
-            C = picture->pixels[orig->y * orig->w + orig->x
-                + index % orig->w + (index / orig->w) * orig->w + w];
-            D = picture->pixels[orig->y * orig->w + orig->x
-                + index % orig->w + (index / orig->w) * orig->w + w + 1];
-            */
 
-            gray = (int)(A * (1 - x_diff) * (1 - y_diff)
+            // TODO 80 col
+            A = picture->pixels[current + index % orig->w + (index / orig->w) * picture->w];
+            B = picture->pixels[current + 1 + index % orig->w + (index / orig->w) * picture->w];
+            C = picture->pixels[current + picture->w + index % orig->w + (index / orig->w) * picture->w];
+            D = picture->pixels[current + picture->w + 1 + index % orig->w + (index / orig->w) * picture->w];
+
+            gray = ((A * (1 - x_diff) * (1 - y_diff)
                     + B * (x_diff) * (1 - y_diff)
                     + C * (y_diff) * (1 - x_diff)
-                    + D * (x_diff * y_diff));
+                    + D * (x_diff * y_diff)) > 0.5F);
 
             //printf("gray = %i\n", gray);
             car[offset++] = gray;
