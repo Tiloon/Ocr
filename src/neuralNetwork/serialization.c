@@ -3,13 +3,14 @@
 
 #include "serialization.h"
 
+/*
 int main(void)
 {
     FILE *file = NULL;
     file = fopen("test", "r+");
     if(file != NULL)
     {
-	
     }
     return 0;
 }
+*/
