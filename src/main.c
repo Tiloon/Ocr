@@ -77,12 +77,6 @@ GdkPixbuf* segmentation_full(GdkPixbuf *origin)
     mask = copy_binarypic(pic);
     morph_erode(mask->pixels, mask->w, mask->h, 12, 12);
 
-    //sub = copy_binarypic(mask);
-    //binary_to_gdk(sub, &pixbuf);
-
-    //picture_save_pixbuf(pixbuf,
-    //    "./eroded.png");
-
     blocs = split_blocs(mask);
 
     if(!blocs)
@@ -103,6 +97,7 @@ GdkPixbuf* segmentation_full(GdkPixbuf *origin)
                             itr_chars++)
                     {
                         //free(vectorize_char(pic, chars + itr_chars));
+                        
                         draw_rectangle(pixbuf, chars + itr_chars, ~0, 0, 0);
                     }
                 }

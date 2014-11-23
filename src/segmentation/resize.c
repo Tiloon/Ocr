@@ -16,31 +16,72 @@ int debug_vectorized_char(char * v)
 
 char* vectorize_char(struct s_binarypic *picture, struct s_rectangle *orig) {
     char *car = calloc(CHAR_WIDTH * CHAR_HEIGHT, sizeof(char));
-    unsigned int i;
-    unsigned int j;
+    int A, B, C, D, x, y, index, gray, w2 = CHAR_WIDTH, h2 = CHAR_HEIGHT;
+    int w = orig->w;
+    int h = orig->h;
+    float x_ratio = ((float)(w-1))/w2;
+    float y_ratio = ((float)(h-1))/h2;
+    float x_diff, y_diff;
+    int offset = 0;
+    int i, j;
 
-    for(i = orig->y; i < orig->y + orig->h; i++)
+    for(i = 0; i < h2; i++)
     {
-        for(j = orig->x; j < orig->x + orig->w; j++)
+        for(j = 0; j < w2; j++)
         {
-            if(car[i * CHAR_WIDTH + j])
-                car[i * CHAR_WIDTH + j] = picture->pixels[i + picture->w + j
-                    + ((i - orig->y) * orig->w / 16) * picture->w
-                    + (j - orig->x) * orig->h / 16];
+            x = (int)(x_ratio * j);
+            y = (int)(y_ratio * i);
+            x_diff = (x_ratio * j) - x;
+            y_diff = (y_ratio * i) - y;
+            index = y * w + x;
+
+            A = picture->pixels[orig->y * picture->w + orig->x 
+                + index % orig->w + (index / orig->w) * picture->w];
+            B = picture->pixels[orig->y * picture->w + orig->x 
+                + index % orig->w + (index / orig->w) * picture->w + 1];
+            C = picture->pixels[orig->y * picture->w + orig->x 
+                + index % orig->w + (index / orig->w) * picture->w + w];
+            D = picture->pixels[orig->y * picture->w + orig->x 
+                + index % orig->w + (index / orig->w) * picture->w + w + 1];
+
+            B = picture->pixels[orig->y * orig->w + orig->x 
+                + index % orig->w + (index / orig->w) * orig->w+ 1];
+            C = picture->pixels[orig->y * orig->w + orig->x 
+                + index % orig->w + (index / orig->w) * orig->w+ w];
+            D = picture->pixels[orig->y * orig->w + orig->x 
+                + index % orig->w + (index / orig->w) * orig->w+ w + 1];
+
+            gray = (int)(A * (1 - x_diff) * (1 - y_diff) 
+                            + B * (x_diff) * (1 - y_diff) 
+                            + C * (y_diff) * (1 - x_diff)
+                            + D * (x_diff * y_diff));
+
+            //printf("gray = %i\n", gray);
+            car[offset++] = gray; 
         }
     }
 
-    for(i = orig->y; i < orig->y + orig->h; i++)
-    {
-        for(j = orig->x; j < orig->x + orig->w; j++)
-        {
-            if(car[i * CHAR_WIDTH + j])
-                car[i * CHAR_WIDTH + j] = picture->pixels[i + picture->w + j
-                    + ((i - orig->y) * orig->w / 16) * picture->w
-                    + (j - orig->x) * orig->h / 16];
-        }
-    }
-    debug_vectorized_char(car);
+    //debug_vectorized_char(car); //draw the letter
     return car;
+
+    
+    //version qui marche mal
+    /*char *car = calloc(CHAR_WIDTH * CHAR_HEIGHT, sizeof(char));
+    int rpw = orig->w / CHAR_WIDTH;
+    int rph = orig->h / CHAR_HEIGHT;
+    int i,j;
+
+    for(i = 0; i < CHAR_HEIGHT; i++)
+    {
+        for(j = 0; j < CHAR_WIDTH; j++)
+        {
+                car[i * CHAR_WIDTH + j] = 
+                    picture->pixels[orig->y * picture->w + orig->x 
+                    + (i * rph) * picture->w + (j * rpw)];
+        }
+    }
+
+    debug_vectorized_char(car);
+    return car;*/
 }
 
