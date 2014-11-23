@@ -64,8 +64,8 @@ int main(int argc, char *argv[])
     struct s_network network;
     struct s_flags flags;
 
-    unsigned NUMBER_PATTERNS = 10;
-    unsigned NUMBER_PIXELS_CHARACTER = 256;
+    int NUMBER_PATTERNS = 10;
+    int NUMBER_PIXELS_CHARACTER = 256;
 
     //inputsUser is used so as to debug/check the NN
     long double *inputsUser = calloc(NUMBER_PIXELS_CHARACTER,
@@ -108,19 +108,6 @@ int main(int argc, char *argv[])
     long double *inputsC = calloc(NUMBER_PIXELS_CHARACTER,
                                    sizeof(long double));
 
-    /*
-     * Here are all the vector for each PATTERNS (= nb characters)
-     * Will fill the **targets matrix
-     * Vectors are size of NB_PATTERNS (=256)
-     */
-
-    long double *targetA = calloc(NUMBER_PATTERNS,
-                                   sizeof(long double));
-    long double *targetB = calloc(NUMBER_PATTERNS,
-                                   sizeof(long double));
-    long double *targetC = calloc(NUMBER_PATTERNS,
-                                   sizeof(long double));
-
     long double error;
     int iterations, i;
 
@@ -133,23 +120,33 @@ int main(int argc, char *argv[])
     flags.learning = 0;
     flags.iterations = -1;
 
-    //Malloc all the matrix
-    for(i = 0; i < 4; i++)
+    /*
+     * calloc all the matrix (malloc are for weak people parait-il)
+     * **inputs && targets && results
+     */
+
+    for(i = 0; i < NUMBER_PATTERNS; i++)
     {
-        inputs[i] = malloc(sizeof(long double) * 2);
-        targets[i] = malloc(sizeof(long double) * 1);
-        results[i] = malloc(sizeof(long double) * 1);
+        inputs[i] = calloc(NUMBER_PIXELS_CHARACTER,
+			   sizeof(long double));
+        targets[i] = calloc(NUMBER_PATTERNS,
+			    sizeof(long double));
+        results[i] = calloc(NUMBER_PATTERNS,
+                            sizeof(long double));
     }
 
     iterations = 0;
     error = 100;
 
     //Set the inputs
-
-    /* TO DO */
+    stat_to_dyn(CHAR_A, NUMBER_PIXELS_CHARACTER, inputsA);
+    stat_to_dyn(CHAR_B, NUMBER_PIXELS_CHARACTER, inputsB);
+    stat_to_dyn(CHAR_C, NUMBER_PIXELS_CHARACTER, inputsC);
 
     //Set the targets
-    /* TO DO */
+    for(i = 0; i < NUMBER_PATTERNS; i++)
+	targets[i][i] = 1;
+
 
     if(checkFlags(argc, argv, &flags))
         return 1;
