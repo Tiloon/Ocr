@@ -11,7 +11,6 @@ void compute_delta_output(struct s_network *network,
     for(u = 0; u < network->output->nbUnits; u++)
         network->output->delta[u] =
             (target[u] - computed[u]) * computed[u] * (1.0 - computed[u]);
-	    // (target[u] - computed[u]) * (1.0 - computed[u] * computed[u]);
 }
 
 void compute_delta_hidden(struct s_network *network)
@@ -28,7 +27,6 @@ void compute_delta_hidden(struct s_network *network)
         }
         network->hidden->delta[u] = sum *
 	    network->hidden->outputs[u] * (1.0 - network->hidden->outputs[u]);
-	//(1.0 - network->hidden->outputs[u] * network->hidden->outputs[u]);
     }
 }
 
@@ -84,7 +82,8 @@ void learning(struct s_network *network, int nbPatterns, int *nbIterations,
 	feedforward(network);
 	outputs_to_list(network, &(*computed)[p]);
 	update_weights(network, (*targets)[p], (*computed)[p], eta, alpha);
-	compute_error(targets, computed, nbPatterns, error);
+	compute_error(targets, computed, nbPatterns, network->output->nbUnits,
+		      error);
 	(*nbIterations)++;
     }
     printf("Number iterations : %d\n\n", *nbIterations);
@@ -105,25 +104,30 @@ void learning2(struct s_network *network, int nbPatterns, int nbIterations,
     it = 0;
     while(it < nbIterations )
     {
+	printf("Iteration : %d. Error : %Lf\n", it, *error);
         p =  (int) rand() % nbPatterns;
         set_inputs(network, (*inputs)[p]);
         feedforward(network);
         outputs_to_list(network, &(*computed)[p]);
         update_weights(network, (*targets)[p], (*computed)[p], eta, alpha);
-        compute_error(targets, computed, nbPatterns, error);
+        compute_error(targets, computed, nbPatterns, network->output->nbUnits,
+		      error);
         it++;
     }
     printf("Number iterations : %d\n\n", nbIterations);
 }
 
 void compute_error(long double ***targets, long double ***outputs,
-        int nbPatterns, long double *error)
+		   int nbPatterns, int nbUnits,  long double *error)
 {
-    int p;
+    int p, u;
     *error = 0;
     for(p = 0; p < nbPatterns; p++)
     {
-        *error += 0.5 * ((*targets)[p][0] - (*outputs)[p][0]) *
-            ((*targets)[p][0] - (*outputs)[p][0]);
+	for(u = 0; u < nbUnits; u++)
+	{
+	    *error += 0.5 * ((*targets)[p][u] - (*outputs)[p][u]) *
+		((*targets)[p][u] - (*outputs)[p][u]);
+	}
     }
 }

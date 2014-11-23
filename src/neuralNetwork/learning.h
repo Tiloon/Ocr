@@ -33,6 +33,6 @@ void learning2(struct s_network *network, int nbPatterns, int nbIterations,
 	      long double ***computed, long double *error,
               long double eta, long double alpha);
 void compute_error(long double ***targets, long double ***outputs,
-        int nbPatterns, long double *error);
+		   int nbPatterns, int nbUnits, long double *error);
 
 #endif
