@@ -4,13 +4,109 @@
 #include "serialization.h"
 
 /*
-int main(void)
+ * All this part is dedicated to convert the neural network
+ * from DATA to a text file. For more information about structure,
+ *  please see serialization.h
+ *
+ */
+
+void network_to_text(FILE *file, struct s_network *network)
 {
-    FILE *file = NULL;
-    file = fopen("test", "r+");
-    if(file != NULL)
-    {
-    }
-    return 0;
+    set_general_data(file, network);
+    set_specific_data(file, network);
 }
-*/
+
+void set_general_data(FILE *file, struct s_network *network)
+{
+    set_header_file(file);
+    set_number_units(file, network);
+    set_number_weights(file, network);
+}
+
+void set_specific_data(FILE *file, struct s_network *network)
+{
+    set_weights_bias(file, network);
+    //set_weights(file, network);
+    //set_bias(file, network);
+}
+
+void set_header_file(FILE *file)
+{
+    fprintf(file, "OSF : OCAML Serialization Format 1.0 24/11/05 \n");
+}
+
+void set_number_units(FILE *file, struct s_network *network)
+{
+    if(file == NULL)
+    {
+	printf("FILE NULL : set_number_units\n");
+	return;
+    }
+    int nb_inputs, nb_hidden, nb_outputs;
+    nb_inputs = network->input->nbUnits;
+    nb_hidden = network->hidden->nbUnits;
+    nb_outputs = network->output->nbUnits;
+    fprintf(file, "%d %d %d ", nb_inputs, nb_hidden, nb_outputs);
+}
+
+void set_number_weights(FILE *file, struct s_network *network)
+{
+    if(file == NULL)
+    {
+        printf("FILE NULL : set_number_weights\n");
+        return;
+    }
+    int nb_w_inputs, nb_w_hidden, nb_w_outputs;
+    nb_w_inputs = network->input->nbWeights;
+    nb_w_hidden = network->hidden->nbWeights;
+    nb_w_outputs = network->output->nbWeights;
+    fprintf(file, "%d %d %d \n", nb_w_inputs, nb_w_hidden, nb_w_outputs);
+}
+void set_weights(FILE *file, struct s_network *network)
+{
+    set_weights_layer(file, network->input);
+    set_weights_layer(file, network->hidden);
+    set_weights_layer(file, network->output);
+}
+void set_bias(FILE *file, struct s_network *network)
+{
+    set_bias_layer(file, network->input);
+    set_bias_layer(file, network->hidden);
+    set_bias_layer(file, network->output);
+}
+
+void set_weights_bias(FILE *file, struct s_network *network)
+{
+    set_weights_layer(file, network->input);
+    set_bias_layer(file, network->input);
+    set_weights_layer(file, network->hidden);
+    set_bias_layer(file, network->hidden);
+    set_weights_layer(file, network->output);
+    set_bias_layer(file, network->output);
+}
+
+void set_weights_layer(FILE *file, struct s_layer *layer)
+{
+    if(file == NULL)
+    {
+	printf("file == NULL : set_weights_layer()\n");
+	return;
+    }
+    int nb_units, nb_weights;
+    for(nb_units = 0; nb_units < layer->nbUnits; nb_units++)
+    {
+	for(nb_weights = 0; nb_weights < layer->nbWeights; nb_weights++)
+	    fprintf(file, "%Lf \n", layer->weights[nb_units][nb_weights]);
+    }
+}
+void set_bias_layer(FILE *file, struct s_layer *layer)
+{
+    if(file == NULL)
+    {
+        printf("file == NULL : set_bias_layer()\n");
+	return;
+    }
+    int nb_units;
+    for(nb_units = 0; nb_units < layer->nbUnits; nb_units++)
+	fprintf(file, "%Lf \n", layer->bias[nb_units]);
+}

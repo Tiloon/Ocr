@@ -11,7 +11,7 @@ LDLIBS=-lm
 #
 
 all:
-	clang -Wall -Wextra -Wall -std=c99 -O2 network.c layer.c learning.c nn_main.c -lm -o main -D_NN_TEST
+	clang -Wall -Wextra -Wall -std=c99 -O2 network.c layer.c serialization.c learning.c nn_main.c -lm -o main -D_NN_TEST
 
 
 clean:

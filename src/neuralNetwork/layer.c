@@ -70,7 +70,6 @@ void compute_values(struct s_layer *l1, struct s_layer *l2)
         for(prev = 0; prev < l1->nbUnits; prev++)
             sum += l1->outputs[prev] * l1->weights[prev][curr];
 	l2->outputs[curr] = sigmoid(sum);
-	//l2->outputs[curr] = tanhyp(sum);
     }
 }
 
@@ -79,7 +78,3 @@ long double sigmoid(long double x)
     return (1 / (1 + exp(-x)));
 }
 
-long double tanhyp(long double x)
-{
-    return tanh(x);
-}

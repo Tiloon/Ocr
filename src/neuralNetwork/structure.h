@@ -24,5 +24,4 @@ struct s_network
     struct s_layer *hidden;
     struct s_layer *output;
 };
-
 #endif

@@ -39,6 +39,7 @@ void compute_delta_weights(struct s_layer *previous, struct s_layer *next,
         //Update Bias
         next->deltaBias[w] = (eta * next->delta[w]) +
             (alpha * next->deltaBias[w]);
+	next->bias[w] += next->deltaBias[w];
         for(u = 0; u < previous->nbUnits; u++)
         {
             //Update the delta weights

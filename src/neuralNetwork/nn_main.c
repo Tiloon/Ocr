@@ -9,12 +9,27 @@
 #include "nn_main.h"
 #include "structure.h"
 #include "learning.h"
+#include "serialization.h"
 
 /*
  * CHECKING FUNCTIONS
  */
 
-
+void serialization(struct s_network *network)
+{
+    FILE *file = NULL;
+    file = fopen("test", "w+");
+    if(file == NULL)
+    {
+	printf("File not opened\n");
+	return;
+    }
+    printf("File opened\n");
+    set_general_data(file, network);
+    set_specific_data(file, network);
+    fclose(file);
+    printf("File closed\n");
+}
 void printMatrix (long double ***matrix, int x, int y)
 {
     int x1, y1;
@@ -162,7 +177,6 @@ int main(int argc, char *argv[])
     flags.inputsSet = 0;
     flags.learning = 0;
     flags.iterations = -1;
-
     iterations = 0;
     error = 100;
 
@@ -216,6 +230,7 @@ int main(int argc, char *argv[])
 		set_inputs(&network, inputsUser);
                 feedforward(&network);
                 printOutput(&network);
+		serialization(&network);
             }
         }
     }
