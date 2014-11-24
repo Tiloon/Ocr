@@ -18,7 +18,7 @@ void network_to_text(FILE *file, struct s_network *network)
 
 void set_general_data(FILE *file, struct s_network *network)
 {
-    set_header_file(file);
+//    set_header_file(file);
     set_number_units(file, network);
     set_number_weights(file, network);
 }
@@ -30,10 +30,11 @@ void set_specific_data(FILE *file, struct s_network *network)
     //set_bias(file, network);
 }
 
-void set_header_file(FILE *file)
+/*void set_header_file(FILE *file)
 {
-    fprintf(file, "OSF : OCAML Serialization Format 1.0 24/11/05 \n");
+   fprintf(file, "OSF : OCAML Serialization Format 1.0 24/11/05 \n");
 }
+*/
 
 void set_number_units(FILE *file, struct s_network *network)
 {
@@ -109,4 +110,62 @@ void set_bias_layer(FILE *file, struct s_layer *layer)
     int nb_units;
     for(nb_units = 0; nb_units < layer->nbUnits; nb_units++)
 	fprintf(file, "%Lf \n", layer->bias[nb_units]);
+}
+
+
+/*
+ * All this part is dedicated to convert the neural network
+ * from a text file to a working neural network.
+ * For more information about program structure,
+ *  please see serialization.h
+ *
+ */
+
+void text_to_network(FILE *file, struct s_network *network)
+{
+    get_general_data(file, network);
+    get_specific_data(file, network);
+}
+void get_general_data(FILE *file, struct s_network *network)
+{
+    fscanf(file, "%d %d %d %d %d %d",
+           &network->input->nbUnits,
+           &network->hidden->nbUnits,
+           &network->output->nbUnits,
+           &network->input->nbWeights,
+           &network->hidden->nbWeights,
+           &network->output->nbWeights);
+}
+void get_specific_data(FILE *file, struct s_network *network)
+{
+    get_weights_bias(file, network);
+}
+void get_bias(FILE *file, struct s_network *network);
+void get_weights(FILE *file, struct s_network *network);
+
+void get_weights_bias(FILE *file, struct s_network *network)
+{
+    get_weights_layer(file, network->input);
+    get_bias_layer(file, network->input);
+    get_weights_layer(file, network->hidden);
+    get_bias_layer(file, network->hidden);
+    get_weights_layer(file, network->output);
+    get_bias_layer(file, network->output);
+}
+void get_bias_layer(FILE *file, struct s_layer *layer)
+{
+    int nb_units;
+    for(nb_units = 0; nb_units < layer->nbUnits; nb_units++)
+    {
+	fscanf(file, "%Lf", &layer->bias[nb_units]);
+    }
+}
+void get_weights_layer(FILE *file, struct s_layer *layer)
+{
+    int nb_units, nb_weights;
+    for(nb_units = 0; nb_units < layer->nbUnits; nb_units++)
+    {
+	for(nb_weights = 0; nb_weights < layer->nbWeights; nb_weights++)
+	    fscanf(file, "%Lf", &layer->weights[nb_units][nb_weights]);
+    }
 }

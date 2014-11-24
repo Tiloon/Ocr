@@ -1,5 +1,10 @@
 #include "structure.h"
 
+/*
+ * All this part is dedicated to convert the neural network
+ * from DATA to a text file
+ */
+
 //Gather all the setter methods
 void network_to_text(FILE *file, struct s_network *network);
 //Gather bias and weights setter methods
@@ -35,3 +40,21 @@ void set_weights_bias(FILE *file, struct s_network *network);
 
 void set_weights_layer(FILE *file, struct s_layer *layer);
 void set_bias_layer(FILE *file, struct s_layer *layer);
+
+
+/*
+ * All this part is dedicated to convert a text file
+ * into a working neural network
+ */
+
+void text_to_network(FILE *file, struct s_network *network);
+void get_general_data(FILE *file, struct s_network *network);
+void get_specific_data(FILE *file, struct s_network *network);
+
+void get_number_units(FILE *file, struct s_network *network);
+void get_number_weights(FILE *file, struct s_network *network);
+void get_bias(FILE *file, struct s_network *network);
+void get_weights(FILE *file, struct s_network *network);
+void get_bias_layer(FILE *file, struct s_layer *layer);
+void get_weights_layer(FILE *file, struct s_layer *layer);
+void get_weights_bias(FILE *file, struct s_network *network);

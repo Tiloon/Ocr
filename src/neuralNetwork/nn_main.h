@@ -15,6 +15,8 @@ struct s_flags
     int inputsSet;
     int learning;
     int iterations;
+    int text_to_data;
+    int serialize;
 };
 
 #endif

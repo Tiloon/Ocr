@@ -18,18 +18,29 @@
 void serialization(struct s_network *network)
 {
     FILE *file = NULL;
-    file = fopen("test", "w+");
+    file = fopen("serialized", "w+");
     if(file == NULL)
     {
 	printf("File not opened\n");
 	return;
     }
-    printf("File opened\n");
-    set_general_data(file, network);
-    set_specific_data(file, network);
+    network_to_text(file, network);
     fclose(file);
-    printf("File closed\n");
 }
+
+void get_data(struct s_network *network)
+{
+    FILE *file = NULL;
+    file = fopen("serialized", "r+");
+    if(file == NULL)
+    {
+	printf("File not opened\n");
+        return;
+    }
+    text_to_network(file, network);
+    fclose(file);
+}
+
 void printMatrix (long double ***matrix, int x, int y)
 {
     int x1, y1;
@@ -177,6 +188,8 @@ int main(int argc, char *argv[])
     flags.inputsSet = 0;
     flags.learning = 0;
     flags.iterations = -1;
+    flags.text_to_data = 0;
+    flags.serialize = 0;
     iterations = 0;
     error = 100;
 
@@ -202,20 +215,19 @@ int main(int argc, char *argv[])
 
             initialize_network(&network, &input, &hidden, &output);
 
+	    if(flags.text_to_data == 1)
+		get_data(&network);
 	    if(flags.learning == 0)
             {
 		inputsUser = flags.inputsFlag;
 		set_inputs(&network, inputsUser);
 		feedforward(&network);
                 printOutput(&network);
+		if(flags.serialize)
+		    serialization(&network);
             }
             else
             {
-		set_inputs(&network, inputsUser);
-                feedforward(&network);
-                printOutput(&network);
-
-
 		inputsUser = flags.inputsFlag;
                 if(flags.iterations == -1)
 		    learning(&network, NUMBER_PATTERNS, &iterations,
@@ -230,7 +242,8 @@ int main(int argc, char *argv[])
 		set_inputs(&network, inputsUser);
                 feedforward(&network);
                 printOutput(&network);
-		serialization(&network);
+		if(flags.serialize)
+		    serialization(&network);
             }
         }
     }
@@ -253,6 +266,18 @@ int checkFlags(int argc, char *argv[], struct s_flags *flags)
             if(flags->learning)
                 return print_flag_error();
             flags->learning = 1;
+        }
+	else if(strcmp(argv[i], "-serialize") == 0)
+        {
+            if(flags->serialize)
+		return print_flag_error();
+            flags->serialize = 1;
+        }
+	else if(strcmp(argv[i], "-fromtext") == 0)
+        {
+	    if(flags->text_to_data)
+		return print_flag_error();
+	    flags->text_to_data = 1;
         }
         else if(strcmp(argv[i], "-iterations") == 0)
         {
@@ -307,7 +332,9 @@ void printHelp()
             "-inputs:C -> set the inputs with C matrix\n"
 	   "-learning -> start the learning process\n"
             "-iterations [white space] \"your number\"\n\n"
-            "For example for inputs A matrix and for learning with 2500 "
+	   "-serialize -> serialize the NN into serialize"
+           "-fromtext to make a neural network with serialized data"
+	   "For example for inputs A matrix and for learning with 2500 "
             "iterations :\n"
             "--> .\\main -inputs:A -learning -iterations 2500\n\n");
 }
