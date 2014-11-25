@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
     struct s_network network;
     struct s_flags flags;
 
-    int NUMBER_PATTERNS = 3;
+    int NUMBER_PATTERNS = 26;
     int NUMBER_PIXELS_CHARACTER = 256;
     int NUMBER_INPUT_NEURONS = NUMBER_PIXELS_CHARACTER;
     int NUMBER_HIDDEN_NEURONS = 0.2 * NUMBER_INPUT_NEURONS;
@@ -157,7 +157,6 @@ int main(int argc, char *argv[])
                                    sizeof(long double));
     long double *inputs_c = calloc(NUMBER_PIXELS_CHARACTER,
                                    sizeof(long double));
-/*
     long double *inputs_d = calloc(NUMBER_PIXELS_CHARACTER,
                                    sizeof(long double));
     long double *inputs_e = calloc(NUMBER_PIXELS_CHARACTER,
@@ -205,7 +204,6 @@ int main(int argc, char *argv[])
     long double *inputs_z = calloc(NUMBER_PIXELS_CHARACTER,
                                    sizeof(long double));
 
-*/
     /*
      * Here are CAPS letters
      */
@@ -290,10 +288,57 @@ int main(int argc, char *argv[])
     stat_to_dyn(CHAR_a, NUMBER_PIXELS_CHARACTER, inputs_a);
     stat_to_dyn(CHAR_b, NUMBER_PIXELS_CHARACTER, inputs_b);
     stat_to_dyn(CHAR_c, NUMBER_PIXELS_CHARACTER, inputs_c);
+    stat_to_dyn(CHAR_d, NUMBER_PIXELS_CHARACTER, inputs_d);
+    stat_to_dyn(CHAR_e, NUMBER_PIXELS_CHARACTER, inputs_e);
+    stat_to_dyn(CHAR_f, NUMBER_PIXELS_CHARACTER, inputs_f);
+    stat_to_dyn(CHAR_g, NUMBER_PIXELS_CHARACTER, inputs_g);
+    stat_to_dyn(CHAR_h, NUMBER_PIXELS_CHARACTER, inputs_h);
+    stat_to_dyn(CHAR_i, NUMBER_PIXELS_CHARACTER, inputs_i);
+    stat_to_dyn(CHAR_j, NUMBER_PIXELS_CHARACTER, inputs_j);
+    stat_to_dyn(CHAR_k, NUMBER_PIXELS_CHARACTER, inputs_k);
+    stat_to_dyn(CHAR_l, NUMBER_PIXELS_CHARACTER, inputs_l);
+    stat_to_dyn(CHAR_m, NUMBER_PIXELS_CHARACTER, inputs_m);
+    stat_to_dyn(CHAR_n, NUMBER_PIXELS_CHARACTER, inputs_n);
+    stat_to_dyn(CHAR_o, NUMBER_PIXELS_CHARACTER, inputs_o);
+    stat_to_dyn(CHAR_p, NUMBER_PIXELS_CHARACTER, inputs_p);
+    stat_to_dyn(CHAR_q, NUMBER_PIXELS_CHARACTER, inputs_q);
+    stat_to_dyn(CHAR_r, NUMBER_PIXELS_CHARACTER, inputs_r);
+    stat_to_dyn(CHAR_s, NUMBER_PIXELS_CHARACTER, inputs_s);
+    stat_to_dyn(CHAR_t, NUMBER_PIXELS_CHARACTER, inputs_t);
+    stat_to_dyn(CHAR_u, NUMBER_PIXELS_CHARACTER, inputs_u);
+    stat_to_dyn(CHAR_v, NUMBER_PIXELS_CHARACTER, inputs_v);
+    stat_to_dyn(CHAR_w, NUMBER_PIXELS_CHARACTER, inputs_w);
+    stat_to_dyn(CHAR_x, NUMBER_PIXELS_CHARACTER, inputs_x);
+    stat_to_dyn(CHAR_y, NUMBER_PIXELS_CHARACTER, inputs_y);
+    stat_to_dyn(CHAR_z, NUMBER_PIXELS_CHARACTER, inputs_z);
 
     inputs[0] = inputs_a;
     inputs[1] = inputs_b;
     inputs[2] = inputs_c;
+    inputs[3] = inputs_d;
+    inputs[4] = inputs_e;
+    inputs[5] = inputs_f;
+    inputs[6] = inputs_g;
+    inputs[7] = inputs_h;
+    inputs[8] = inputs_i;
+    inputs[9] = inputs_j;
+    inputs[10] = inputs_k;
+    inputs[11] = inputs_l;
+    inputs[12] = inputs_m;
+    inputs[13] = inputs_n;
+    inputs[14] = inputs_o;
+    inputs[15] = inputs_p;
+    inputs[16] = inputs_q;
+    inputs[17] = inputs_r;
+    inputs[18] = inputs_s;
+    inputs[19] = inputs_t;
+    inputs[20] = inputs_u;
+    inputs[21] = inputs_v;
+    inputs[22] = inputs_w;
+    inputs[23] = inputs_x;
+    inputs[24] = inputs_y;
+    inputs[25] = inputs_z;
+
 
 
     //*******************************************//
