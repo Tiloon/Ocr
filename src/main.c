@@ -19,6 +19,13 @@ int main(int argc, char *argv[])
         return 0;
     }
 
+    if(!strcmp(argv[1], "nn"))
+    {
+        // return nn_main();
+        fprintf(stderr, "Not implemented yet\n");
+        return 0;
+    }
+
     if(get_flags(argc, argv, FLAGS))
     {
         show_help();
@@ -120,20 +127,21 @@ GdkPixbuf* segmentation_full(GdkPixbuf *origin)
 
 void show_help()
 {
-    printf(
-            "OCAML : Optical Character Analysis and Machine Learning\n"
-            "(Compiled : " __DATE__ " " __TIME__")\n"
-            "usage : ocrocaml [arguments] -i file    Process file\n"
-            "   or : ocrocaml -gui                   Graphical Interface\n"
-            "   or : ocrocaml -help \"keyword\"        Get help about keywod"
-            "\n\n"
-            "Arguments : \n"
-            "    -f \"filter\"[,opt]      apply filter with options\n"
-            "    -i \"file\"              load picture \"file\"\n"
-            "    -ofilters \"file\"       save file after applying filters\n"
-            "    -v                       verbose\n"
-            "\n\n"
-            "More about this software : http://ocrocaml.ovh/\n");
+    printf("OCAML : Optical Character Analysis and Machine Learning\n\
+(Compiled : " __DATE__ " " __TIME__")\n\
+usage : ocrocaml [args] -i file     Process file\n\
+   or : ocrocaml -gui               Graphical Interface\n\
+   or : ocrocaml nn [args]          Neural network setup\n\
+   or : ocrocaml -help \"keyword\"    Get help about keyword\n\n\
+Arguments : \n\
+    -f \"filter\"[,opt]               Apply filter with options\n\
+    -i \"file\"                       load picture \"file\"\n\
+    -ofilters \"file\"                save file after applying filters\n\
+    -v                              verbose\n\
+\n\n\
+Neural network arguments :\n\
+\n\n\
+More about this software : http://ocrocaml.ovh/\n");
 }
 
 int get_flags(int argc, char *argv[], struct s_flags *flags)

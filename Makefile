@@ -12,23 +12,22 @@ GTKLIBS=`pkg-config --libs gtk+-2.0` -lm
 #
 
 SRC= ${wildcard ./src/*.c ./src/*/*.c}
-OBJ= ${addprefix obj/,$(notdir $(SRC:.c=.o))}
+OBJ= ${notdir ${SRC:.c=.o}}
 VPATH= ${dir ${SRC}}
 BUILDNAME= ocrocaml
 
-all: obj/${BUILDNAME}
-	mv obj/${BUILDNAME} ./${BUILDNAME}
+all: ${BUILDNAME}
 
-obj/${BUILDNAME}: ${OBJ}
-	$(CC) $(CFLAGS) $(GTKLIBS) -o obj/${BUILDNAME} obj/*.o
+${BUILDNAME}: ${OBJ}
+	$(CC) $(CFLAGS) $(GTKLIBS) -o ${BUILDNAME} *.o
 
-obj:
-	mkdir obj
-
-obj/%.o: %.c obj
+%.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@ $(LDFLAGS) $(LDLIBS)
 
-clean:
-	rm -rf *~ *.o obj/* ./${BUILDNAME} obj/
+clean: proper
+	rm -rf *~ ./${BUILDNAME}
+
+proper:
+	rm -rf *.o
 
 # END
