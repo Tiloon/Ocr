@@ -25,9 +25,9 @@ ${BUILDNAME}: ${OBJ}
 	$(CC) $(CFLAGS) -c $< -o $@ $(LDFLAGS) $(LDLIBS)
 
 clean: proper
-	rm -rf *~ ./${BUILDNAME}
+	rm -rf ./${BUILDNAME}
 
 proper:
-	rm -rf *.o
+	rm -rf *.o *~
 
 # END
