@@ -77,6 +77,8 @@ void learning(struct s_network *network, int nbPatterns, int *nbIterations,
 
     while(*error > errorThreshold)
     {
+	if(*nbIterations % 10000 == 0)
+	    printf("it : %d; error : %Lf\n", *nbIterations, *error);
 	p =  (int) rand() % nbPatterns;
 	set_inputs(network, (*inputs)[p]);
 	feedforward(network);
@@ -104,6 +106,8 @@ void learning2(struct s_network *network, int nbPatterns, int nbIterations,
     it = 0;
     while(it < nbIterations )
     {
+	if(nbIterations % 10000 == 0)
+	    printf("it : %d; error : %Lf\n", it, *error);
 	p =  (int) rand() % nbPatterns;
         set_inputs(network, (*inputs)[p]);
         feedforward(network);

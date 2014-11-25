@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
     struct s_network network;
     struct s_flags flags;
 
-    int NUMBER_PATTERNS = 26;
+    int NUMBER_PATTERNS = 52;
     int NUMBER_PIXELS_CHARACTER = 256;
     int NUMBER_INPUT_NEURONS = NUMBER_PIXELS_CHARACTER;
     int NUMBER_HIDDEN_NEURONS = 0.2 * NUMBER_INPUT_NEURONS;
@@ -208,7 +208,7 @@ int main(int argc, char *argv[])
      * Here are CAPS letters
      */
 
-/*    long double *inputs_A = calloc(NUMBER_PIXELS_CHARACTER,
+    long double *inputs_A = calloc(NUMBER_PIXELS_CHARACTER,
                                    sizeof(long double));
     long double *inputs_B = calloc(NUMBER_PIXELS_CHARACTER,
                                    sizeof(long double));
@@ -261,7 +261,6 @@ int main(int argc, char *argv[])
     long double *inputs_Z = calloc(NUMBER_PIXELS_CHARACTER,
                                    sizeof(long double));
 
-*/
 
 
 
@@ -312,6 +311,33 @@ int main(int argc, char *argv[])
     stat_to_dyn(CHAR_y, NUMBER_PIXELS_CHARACTER, inputs_y);
     stat_to_dyn(CHAR_z, NUMBER_PIXELS_CHARACTER, inputs_z);
 
+    stat_to_dyn(CHAR_A, NUMBER_PIXELS_CHARACTER, inputs_A);
+    stat_to_dyn(CHAR_B, NUMBER_PIXELS_CHARACTER, inputs_B);
+    stat_to_dyn(CHAR_C, NUMBER_PIXELS_CHARACTER, inputs_C);
+    stat_to_dyn(CHAR_D, NUMBER_PIXELS_CHARACTER, inputs_D);
+    stat_to_dyn(CHAR_E, NUMBER_PIXELS_CHARACTER, inputs_E);
+    stat_to_dyn(CHAR_F, NUMBER_PIXELS_CHARACTER, inputs_F);
+    stat_to_dyn(CHAR_G, NUMBER_PIXELS_CHARACTER, inputs_G);
+    stat_to_dyn(CHAR_H, NUMBER_PIXELS_CHARACTER, inputs_H);
+    stat_to_dyn(CHAR_I, NUMBER_PIXELS_CHARACTER, inputs_I);
+    stat_to_dyn(CHAR_J, NUMBER_PIXELS_CHARACTER, inputs_J);
+    stat_to_dyn(CHAR_K, NUMBER_PIXELS_CHARACTER, inputs_K);
+    stat_to_dyn(CHAR_L, NUMBER_PIXELS_CHARACTER, inputs_L);
+    stat_to_dyn(CHAR_M, NUMBER_PIXELS_CHARACTER, inputs_M);
+    stat_to_dyn(CHAR_N, NUMBER_PIXELS_CHARACTER, inputs_N);
+    stat_to_dyn(CHAR_O, NUMBER_PIXELS_CHARACTER, inputs_O);
+    stat_to_dyn(CHAR_P, NUMBER_PIXELS_CHARACTER, inputs_P);
+    stat_to_dyn(CHAR_Q, NUMBER_PIXELS_CHARACTER, inputs_Q);
+    stat_to_dyn(CHAR_R, NUMBER_PIXELS_CHARACTER, inputs_R);
+    stat_to_dyn(CHAR_S, NUMBER_PIXELS_CHARACTER, inputs_S);
+    stat_to_dyn(CHAR_T, NUMBER_PIXELS_CHARACTER, inputs_T);
+    stat_to_dyn(CHAR_U, NUMBER_PIXELS_CHARACTER, inputs_U);
+    stat_to_dyn(CHAR_V, NUMBER_PIXELS_CHARACTER, inputs_V);
+    stat_to_dyn(CHAR_W, NUMBER_PIXELS_CHARACTER, inputs_W);
+    stat_to_dyn(CHAR_X, NUMBER_PIXELS_CHARACTER, inputs_X);
+    stat_to_dyn(CHAR_Y, NUMBER_PIXELS_CHARACTER, inputs_Y);
+    stat_to_dyn(CHAR_Z, NUMBER_PIXELS_CHARACTER, inputs_Z);
+
     inputs[0] = inputs_a;
     inputs[1] = inputs_b;
     inputs[2] = inputs_c;
@@ -338,8 +364,33 @@ int main(int argc, char *argv[])
     inputs[23] = inputs_x;
     inputs[24] = inputs_y;
     inputs[25] = inputs_z;
-
-
+    
+    inputs[26] = inputs_A;
+    inputs[27] = inputs_B;
+    inputs[28] = inputs_C;
+    inputs[29] = inputs_D;
+    inputs[30] = inputs_E;
+    inputs[31] = inputs_F;
+    inputs[32] = inputs_G;
+    inputs[33] = inputs_H;
+    inputs[34] = inputs_I;
+    inputs[35] = inputs_J;
+    inputs[36] = inputs_K;
+    inputs[37] = inputs_L;
+    inputs[38] = inputs_M;
+    inputs[39] = inputs_N;
+    inputs[40] = inputs_O;
+    inputs[41] = inputs_P;
+    inputs[42] = inputs_Q;
+    inputs[43] = inputs_R;
+    inputs[44] = inputs_S;
+    inputs[45] = inputs_T;
+    inputs[46] = inputs_U;
+    inputs[47] = inputs_V;
+    inputs[48] = inputs_W;
+    inputs[49] = inputs_X;
+    inputs[50] = inputs_Y;
+    inputs[51] = inputs_Z;
 
     //*******************************************//
     //          VARIABLES AFFECTATIONS           //
@@ -393,7 +444,7 @@ int main(int argc, char *argv[])
                 if(flags.iterations == -1)
 		    learning(&network, NUMBER_PATTERNS, &iterations,
 			     &inputs, &targets, &results, &error,
-			     ETA, ALPHA, 0.001);
+			     ETA, ALPHA, 0.01);
 		else
                 {
                     learning2(&network, NUMBER_PATTERNS, flags.iterations,
