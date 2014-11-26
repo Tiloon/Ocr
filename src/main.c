@@ -111,15 +111,15 @@ GdkPixbuf* segmentation_full(GdkPixbuf *origin)
                         draw_rectangle(pixbuf, chars + itr_chars, ~0, 0, 0);
                     }
                 }
-                free(chars);
+                FREE(chars);
                 draw_rectangle(pixbuf, lines + itr_lines, 0, 0, ~0);
             }
         }
-        free(lines);
+        FREE(lines);
         draw_rectangle(pixbuf, blocs + itr_blocs, 0, ~0, 0);
     }
-    free(blocs);
-    free(pic);
+    FREE(blocs);
+    FREE(pic);
 
     return pixbuf;
 }

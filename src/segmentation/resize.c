@@ -77,7 +77,7 @@ char* vectorize_char(struct s_binarypic *picture, struct s_rectangle *orig) {
         }
     }
 
-    //debug_vectorized_char(car); //draw the letter
+    debug_vectorized_char(car); //draw the letter
     return car;
 }
 
