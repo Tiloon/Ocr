@@ -6,6 +6,9 @@
 
 
 static char gaussian_filter_name[] = "gaussian_filter";
+
+#ifndef NOHELP
+
 static char gaussian_filter_help_msg[] =
     "Gaussian filter\n\n"
     "This filter could be used to remove artifacts in the picture.\n"
@@ -14,6 +17,8 @@ static char gaussian_filter_help_msg[] =
     "O(2N)\n"
     "Authors :\n"
     "  - Pimzero\n";
+
+#endif
 
 extern int gaussian_filter(GdkPixbuf *picture, size_t nb_params, char **params);
 

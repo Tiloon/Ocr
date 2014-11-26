@@ -26,10 +26,10 @@ int main(int argc, char *argv[])
         return 0;
     }
 
+#ifndef NOHELP
     if(!strcmp(argv[1], "help"))
-    {
         return show_help(argc > 2 ? argv[2] : 0);
-    }
+#endif
 
     if(get_flags(argc, argv, FLAGS))
     {
@@ -67,8 +67,10 @@ int main(int argc, char *argv[])
         picture_save_pixbuf(segmentation_full(picture_get_image()),
                 "./segmentation_demo.png");
     }
+#ifndef NOGUI
     if(FLAGS->gui)
         gui_main(argc, argv);
+#endif
     return 0;
 }
 
@@ -137,10 +139,15 @@ void show_main_help()
 {
     printf("OCAML : Optical Character Analysis and Machine Learning\n\
 (Compiled : " __DATE__ " " __TIME__")\n\
-usage : ocrocaml [args] -i file     Process file\n\
-   or : ocrocaml -gui               Graphical Interface\n\
-   or : ocrocaml nn [args]          Neural network setup\n\
-   or : ocrocaml help \"keyword\"    Get help about keyword\n\n\
+usage : ocrocaml [args] -i file     Process file\n"
+#ifndef NOGUI
+"   or : ocrocaml -gui               Graphical Interface\n"
+#endif
+"   or : ocrocaml nn [args]          Neural network setup\n"
+#ifndef NOHELP
+"   or : ocrocaml help \"keyword\"    Get help about keyword\n"
+#endif
+"\n\
 Arguments : \n\
     -f \"filter\"[,opt]               Apply filter with options\n\
     -i \"file\"                       load picture \"file\"\n\

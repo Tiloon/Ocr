@@ -7,8 +7,20 @@
 #define FILTER_LIST_SZE 2
 
 const struct s_filter_entry filter_list[] = {
-    {sample_filter, sample_filter_name, sample_filter_help_msg},
-    {gaussian_filter, gaussian_filter_name, gaussian_filter_help_msg}
+    {
+        sample_filter,
+        sample_filter_name,
+#ifndef NOHELP
+        sample_filter_help_msg
+#endif
+    },
+    {
+        gaussian_filter,
+        gaussian_filter_name,
+#ifndef NOHELP
+        gaussian_filter_help_msg
+#endif
+    }
     // Other filters...
 };
 
@@ -65,21 +77,6 @@ struct s_filter_rule* filter_get_rule(char *rule)
     return filter;
 }
 
-int get_filter_about(unsigned int id, char **name, char **help)
-{
-    // If id > filter_list.length, return fail
-    if(id > FILTER_LIST_SZE)
-        return 1;
-
-    if(name != NULL)
-        *name = filter_list[id].filter_name;
-
-    if(help != NULL)
-        *help = filter_list[id].filter_help_message;
-    return 0;
-}
-
-
 void print_filter_error(const char *str, const char *filter_name)
 {
     fprintf(stderr, "Filter error (%s) : %s", filter_name, str);
@@ -135,6 +132,7 @@ int filter_add(char *rule)
     return 0;
 }
 
+#ifndef NOHELP
 int filter_make_help(char ***keywords, char ***message)
 {
     size_t i;
@@ -147,3 +145,4 @@ int filter_make_help(char ***keywords, char ***message)
     }
     return FILTER_LIST_SZE;
 }
+#endif

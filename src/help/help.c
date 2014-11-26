@@ -1,3 +1,5 @@
+#ifndef NOHELP
+
 #include "help.h"
 #include <strings.h>
 
@@ -79,3 +81,5 @@ int show_help(char *keyword)
     printf("Keyword \"%s\": no help found\n", keyword);
     return 1;
 }
+
+#endif

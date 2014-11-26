@@ -4,6 +4,9 @@
 #include "filters.h"
 
 static char sample_filter_name[] = "sample_filter";
+
+#ifndef NOHELP
+
 static char sample_filter_help_msg[] =
     "Sample filter\n\n"
     "This filter is just a sample. The only way it affects pictures is by"
@@ -12,6 +15,8 @@ static char sample_filter_help_msg[] =
     "ceil percentage.\n\n"
     "Authors :\n"
     "  - Pimzero\n";
+
+#endif
 
 extern int sample_filter(GdkPixbuf *picture, size_t nb_params, char **params);
 

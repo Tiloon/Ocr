@@ -22,13 +22,17 @@ struct s_filter_entry
 {
     t_filter *filter_func;
     char *filter_name;
+#ifndef NOHELP
     char *filter_help_message;
+#endif
 };
 
-int get_filter_about(unsigned int id, char **name, char **help);
 void print_filter_error(const char *str, const char *filter_name);
 int filters_apply_all(GdkPixbuf *picture);
 int filter_add(char *name);
+
+#ifndef NOHELP
 int filter_make_help(char ***keywords, char ***message);
+#endif
 
 #endif
