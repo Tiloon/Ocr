@@ -1,7 +1,6 @@
-#ifdef _NN_TEST
+#ifndef NN_MAIN_H
+#define NN_MAIN_H
 
-#ifndef MAIN_H
-#define MAIN_H
 #define PIXELS 256
 #define PTTS 3
 #include <stdlib.h>
@@ -9,7 +8,7 @@
 #include "network.h"
 #include <string.h>
 
-struct s_flags
+struct s_flags_nn
 {
     long double *inputsFlag;
     int inputsSet;
@@ -19,5 +18,6 @@ struct s_flags
     int serialize;
 };
 
-#endif
+int nn_main(int argc, char *argv[]);
+
 #endif

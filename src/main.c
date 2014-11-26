@@ -1,9 +1,9 @@
 #include "main.h"
 
-void show_main_help(void);
-int get_flags(int argc, char *argv[], struct s_flags *flags);
-int print_flag_error(char *flag, int error);
-GdkPixbuf* segmentation_full(GdkPixbuf *origin);
+static void show_main_help(void);
+static int get_flags(int argc, char *argv[], struct s_flags *flags);
+static int print_flag_error(char *flag, int error);
+static GdkPixbuf* segmentation_full(GdkPixbuf *origin);
 
 
 int main(int argc, char *argv[])
@@ -20,11 +20,7 @@ int main(int argc, char *argv[])
     }
 
     if(!strcmp(argv[1], "nn"))
-    {
-        // return nn_main();
-        fprintf(stderr, "Not implemented yet\n");
-        return 0;
-    }
+        return nn_main(argc - 1, argv + 1);
 
 #ifndef NOHELP
     if(!strcmp(argv[1], "help"))
@@ -74,7 +70,7 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-GdkPixbuf* segmentation_full(GdkPixbuf *origin)
+static GdkPixbuf* segmentation_full(GdkPixbuf *origin)
 {
     GdkPixbuf *pixbuf;
     struct s_binarypic *pic, *mask;
@@ -135,7 +131,7 @@ GdkPixbuf* segmentation_full(GdkPixbuf *origin)
 }
 
 
-void show_main_help()
+static void show_main_help()
 {
     printf("OCAML : Optical Character Analysis and Machine Learning\n\
 (Compiled : " __DATE__ " " __TIME__")\n\
@@ -159,7 +155,7 @@ Neural network arguments :\n\
 More about this software : http://ocrocaml.ovh/\n");
 }
 
-int get_flags(int argc, char *argv[], struct s_flags *flags)
+static int get_flags(int argc, char *argv[], struct s_flags *flags)
 {
     int i;
     for (i = 1; i < argc; i++)
@@ -216,7 +212,7 @@ int get_flags(int argc, char *argv[], struct s_flags *flags)
     return 0;
 }
 
-int print_flag_error(char *flag, int error)
+static int print_flag_error(char *flag, int error)
 {
     if(error & FLAG_ALREADY_SET)
         fprintf(stderr, "Error : flag already set : %s\n", flag);

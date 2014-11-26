@@ -26,7 +26,7 @@ void compute_delta_hidden(struct s_network *network)
                 network->output->delta[out];
         }
         network->hidden->delta[u] = sum *
-	    network->hidden->outputs[u] * (1.0 - network->hidden->outputs[u]);
+            network->hidden->outputs[u] * (1.0 - network->hidden->outputs[u]);
     }
 }
 
@@ -39,7 +39,7 @@ void compute_delta_weights(struct s_layer *previous, struct s_layer *next,
         //Update Bias
         next->deltaBias[w] = (eta * next->delta[w]) +
             (alpha * next->deltaBias[w]);
-	next->bias[w] += next->deltaBias[w];
+        next->bias[w] += next->deltaBias[w];
         for(u = 0; u < previous->nbUnits; u++)
         {
             //Update the delta weights
@@ -65,7 +65,7 @@ void learning(struct s_network *network, int nbPatterns, int *nbIterations,
         long double ***inputs, long double ***targets,
         long double ***computed, long double *error,
         long double eta, long double alpha,
-	long double errorThreshold)
+        long double errorThreshold)
 {
     int p;
     p = 0;
@@ -77,24 +77,24 @@ void learning(struct s_network *network, int nbPatterns, int *nbIterations,
 
     while(*error > errorThreshold)
     {
-	if(*nbIterations % 10000 == 0)
-	    printf("it : %d; error : %Lf\n", *nbIterations, *error);
-	p =  (int) rand() % nbPatterns;
-	set_inputs(network, (*inputs)[p]);
-	feedforward(network);
-	outputs_to_list(network, &(*computed)[p]);
-	update_weights(network, (*targets)[p], (*computed)[p], eta, alpha);
-	compute_error(targets, computed, nbPatterns, network->output->nbUnits,
-		      error);
-	(*nbIterations)++;
+        if(*nbIterations % 10000 == 0)
+            printf("it : %d; error : %Lf\n", *nbIterations, *error);
+        p =  (int) rand() % nbPatterns;
+        set_inputs(network, (*inputs)[p]);
+        feedforward(network);
+        outputs_to_list(network, &(*computed)[p]);
+        update_weights(network, (*targets)[p], (*computed)[p], eta, alpha);
+        compute_error(targets, computed, nbPatterns, network->output->nbUnits,
+                error);
+        (*nbIterations)++;
     }
     printf("Number iterations : %d\n\n", *nbIterations);
 }
 
 void learning2(struct s_network *network, int nbPatterns, int nbIterations,
-	       long double ***inputs, long double ***targets,
-	       long double ***computed, long double *error,
-	       long double eta, long double alpha)
+        long double ***inputs, long double ***targets,
+        long double ***computed, long double *error,
+        long double eta, long double alpha)
 {
     int p, it;
     p = 0;
@@ -106,31 +106,31 @@ void learning2(struct s_network *network, int nbPatterns, int nbIterations,
     it = 0;
     while(it < nbIterations )
     {
-	if(nbIterations % 10000 == 0)
-	    printf("it : %d; error : %Lf\n", it, *error);
-	p =  (int) rand() % nbPatterns;
+        if(nbIterations % 10000 == 0)
+            printf("it : %d; error : %Lf\n", it, *error);
+        p =  (int) rand() % nbPatterns;
         set_inputs(network, (*inputs)[p]);
         feedforward(network);
         outputs_to_list(network, &(*computed)[p]);
         update_weights(network, (*targets)[p], (*computed)[p], eta, alpha);
         compute_error(targets, computed, nbPatterns, network->output->nbUnits,
-		      error);
+                error);
         it++;
     }
     printf("Number iterations : %d\n\n", nbIterations);
 }
 
 void compute_error(long double ***targets, long double ***outputs,
-		   int nbPatterns, int nbUnits,  long double *error)
+        int nbPatterns, int nbUnits,  long double *error)
 {
     int p, u;
     *error = 0;
     for(p = 0; p < nbPatterns; p++)
     {
-	for(u = 0; u < nbUnits; u++)
-	{
-	    *error += 0.5 * ((*targets)[p][u] - (*outputs)[p][u]) *
-		((*targets)[p][u] - (*outputs)[p][u]);
-	}
+        for(u = 0; u < nbUnits; u++)
+        {
+            *error += 0.5 * ((*targets)[p][u] - (*outputs)[p][u]) *
+                ((*targets)[p][u] - (*outputs)[p][u]);
+        }
     }
 }

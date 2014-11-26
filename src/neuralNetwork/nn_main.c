@@ -1,5 +1,3 @@
-#ifdef _NN_TEST
-
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -15,26 +13,26 @@
  * CHECKING FUNCTIONS
  */
 
-void serialization(struct s_network *network)
+static void serialization(struct s_network *network)
 {
     FILE *file = NULL;
     file = fopen("serialized", "w+");
     if(file == NULL)
     {
-	printf("File not opened\n");
-	return;
+        printf("File not opened\n");
+        return;
     }
     network_to_text(file, network);
     fclose(file);
 }
 
-void get_data(struct s_network *network)
+static void get_data(struct s_network *network)
 {
     FILE *file = NULL;
     file = fopen("serialized", "r+");
     if(file == NULL)
     {
-	printf("File not opened\n");
+        printf("File not opened\n");
         return;
     }
     text_to_network(file, network);
@@ -58,7 +56,7 @@ void printVector(long double *vector, size_t size)
 {
     size_t u;
     for(u = 0; u < size; u++)
-	printf(" |%Lf", vector[u]);
+        printf(" |%Lf", vector[u]);
 }
 
 void printInputVector(long double *vector, size_t size)
@@ -66,18 +64,18 @@ void printInputVector(long double *vector, size_t size)
     size_t u;
     for(u = 0; u < size; u++)
     {
-	if(u != 0 && u % 16 == 0)
-	    printf("\n");
-	printf("%Lf", vector[u]);
+        if(u != 0 && u % 16 == 0)
+            printf("\n");
+        printf("%Lf", vector[u]);
     }
 }
 
-void printOutput(struct s_network *network)
+static void printOutput(struct s_network *network)
 {
     int u;
     for(u = 0; u < network->output->nbUnits; u++)
     {
-	printf("\n %Lf", network->output->outputs[u]);
+        printf("\n %Lf", network->output->outputs[u]);
     }
     printf("\n");
 }
@@ -86,11 +84,11 @@ void printOutput(struct s_network *network)
  *  testing functions
  */
 
-int checkFlags(int argc, char* argv[], struct s_flags *flags);
-int print_flag_error();
-void printHelp();
+static int checkFlags(int argc, char* argv[], struct s_flags_nn *flags);
+static int print_flag_error();
+static void print_nn_help();
 
-int main(int argc, char *argv[])
+int nn_main(int argc, char *argv[])
 {
     //*******************************************//
     //             VARIABLES DECLARATIONS        //
@@ -100,7 +98,7 @@ int main(int argc, char *argv[])
     struct s_layer hidden;
     struct s_layer output;
     struct s_network network;
-    struct s_flags flags;
+    struct s_flags_nn flags;
 
     int NUMBER_PATTERNS = 52;
     int NUMBER_PIXELS_CHARACTER = 256;
@@ -111,20 +109,20 @@ int main(int argc, char *argv[])
 
 
     flags.inputsFlag = calloc(NUMBER_PIXELS_CHARACTER,
-			      sizeof(long double));
+            sizeof(long double));
 
     //inputsUser is used so as to debug/check the NN
     long double *inputsUser = calloc(NUMBER_PIXELS_CHARACTER,
-				     sizeof(long double));
+            sizeof(long double));
     /*
-    * *inputs is a matrix with NB_PATTERNS vector
-    * contains all the inputs of the NN i-e
-    * all the vector of each character recognizable
-    * vectors are size of NUMBER_PIXELS_CHARACTER as size
-    */
+     * *inputs is a matrix with NB_PATTERNS vector
+     * contains all the inputs of the NN i-e
+     * all the vector of each character recognizable
+     * vectors are size of NUMBER_PIXELS_CHARACTER as size
+     */
 
     long double **inputs = calloc(NUMBER_PATTERNS,
-				  sizeof(long double));
+            sizeof(long double));
 
     /*
      * targets is a matrix of NUM_PATTERNS vector
@@ -132,7 +130,7 @@ int main(int argc, char *argv[])
      * size of vector of each expected results NUM_PATTERN
      */
     long double **targets = calloc(NUMBER_PATTERNS,
-				   sizeof(long double));
+            sizeof(long double));
     /*
      * results is a matrix of NUM_PATTERNS vector
      * contains the results of each patterns
@@ -140,7 +138,7 @@ int main(int argc, char *argv[])
      * each vector are size of NUM_PATTERNS
      */
     long double **results = calloc(NUMBER_PATTERNS,
-                                   sizeof(long double));
+            sizeof(long double));
 
     /*
      * Here are all the vector for each PATTERNS (= nb characters)
@@ -152,114 +150,114 @@ int main(int argc, char *argv[])
      * Here are min letters
      */
     long double *inputs_a = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_b = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_c = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_d = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_e = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_f = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_g = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_h = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_i = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_j = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_k = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_l = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_m = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_n = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_o = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_p = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_q = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_r = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_s = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_t = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_u = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_v = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_w = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_x = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_y = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_z = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
 
     /*
      * Here are CAPS letters
      */
 
     long double *inputs_A = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_B = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_C = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_D = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_E = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_F = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_G = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_H = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_I = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_J = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_K = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_L = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_M = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_N = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_O = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_P = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_Q = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_R = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_S = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_T = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_U = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_V = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_W = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_X = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_Y = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
     long double *inputs_Z = calloc(NUMBER_PIXELS_CHARACTER,
-                                   sizeof(long double));
+            sizeof(long double));
 
 
 
@@ -276,11 +274,11 @@ int main(int argc, char *argv[])
     for(i = 0; i < NUMBER_PATTERNS; i++)
     {
         inputs[i] = calloc(NUMBER_PIXELS_CHARACTER,
-                           sizeof(long double));
+                sizeof(long double));
         targets[i] = calloc(NUMBER_PATTERNS,
-                            sizeof(long double));
+                sizeof(long double));
         results[i] = calloc(NUMBER_PATTERNS,
-                            sizeof(long double));
+                sizeof(long double));
     }
 
     //Set the inputs
@@ -364,7 +362,7 @@ int main(int argc, char *argv[])
     inputs[23] = inputs_x;
     inputs[24] = inputs_y;
     inputs[25] = inputs_z;
-    
+
     inputs[26] = inputs_A;
     inputs[27] = inputs_B;
     inputs[28] = inputs_C;
@@ -407,7 +405,7 @@ int main(int argc, char *argv[])
 
     //Set the targets
     for(i = 0; i < NUMBER_PATTERNS; i++)
-	targets[i][i] = 1;
+        targets[i][i] = 1;
 
 
     if(checkFlags(argc, argv, &flags))
@@ -419,43 +417,43 @@ int main(int argc, char *argv[])
         else
         {
             initialize_layer(&input, NUMBER_INPUT_NEURONS,
-			     NUMBER_HIDDEN_NEURONS, BIAS);
+                    NUMBER_HIDDEN_NEURONS, BIAS);
             initialize_layer(&hidden, NUMBER_HIDDEN_NEURONS,
-			     NUMBER_OUTPUT_NEURONS, BIAS);
+                    NUMBER_OUTPUT_NEURONS, BIAS);
             initialize_layer(&output, NUMBER_OUTPUT_NEURONS,
-			     0, BIAS);
+                    0, BIAS);
 
             initialize_network(&network, &input, &hidden, &output);
 
-	    if(flags.text_to_data == 1)
-		get_data(&network);
-	    if(flags.learning == 0)
+            if(flags.text_to_data == 1)
+                get_data(&network);
+            if(flags.learning == 0)
             {
-		inputsUser = flags.inputsFlag;
-		set_inputs(&network, inputsUser);
-		feedforward(&network);
+                inputsUser = flags.inputsFlag;
+                set_inputs(&network, inputsUser);
+                feedforward(&network);
                 printOutput(&network);
-		if(flags.serialize)
-		    serialization(&network);
+                if(flags.serialize)
+                    serialization(&network);
             }
             else
             {
-		inputsUser = flags.inputsFlag;
+                inputsUser = flags.inputsFlag;
                 if(flags.iterations == -1)
-		    learning(&network, NUMBER_PATTERNS, &iterations,
-			     &inputs, &targets, &results, &error,
-			     ETA, ALPHA, 0.01);
-		else
+                    learning(&network, NUMBER_PATTERNS, &iterations,
+                            &inputs, &targets, &results, &error,
+                            ETA, ALPHA, 0.01);
+                else
                 {
                     learning2(&network, NUMBER_PATTERNS, flags.iterations,
-			      &inputs, &targets, &results, &error,
-			      ETA, ALPHA);
+                            &inputs, &targets, &results, &error,
+                            ETA, ALPHA);
                 }
-		set_inputs(&network, inputsUser);
+                set_inputs(&network, inputsUser);
                 feedforward(&network);
                 printOutput(&network);
-		if(flags.serialize)
-		    serialization(&network);
+                if(flags.serialize)
+                    serialization(&network);
             }
         }
     }
@@ -463,12 +461,12 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-int checkFlags(int argc, char *argv[], struct s_flags *flags)
+static int checkFlags(int argc, char *argv[], struct s_flags_nn *flags)
 {
     int i;
     if(argc == 2 && strcmp(argv[1], "-h") == 0)
     {
-        printHelp();
+        print_nn_help();
         return 1;
     }
     for (i = 1; i < argc; i++)
@@ -479,17 +477,17 @@ int checkFlags(int argc, char *argv[], struct s_flags *flags)
                 return print_flag_error();
             flags->learning = 1;
         }
-	else if(strcmp(argv[i], "-serialize") == 0)
+        else if(strcmp(argv[i], "-serialize") == 0)
         {
             if(flags->serialize)
-		return print_flag_error();
+                return print_flag_error();
             flags->serialize = 1;
         }
-	else if(strcmp(argv[i], "-fromtext") == 0)
+        else if(strcmp(argv[i], "-fromtext") == 0)
         {
-	    if(flags->text_to_data)
-		return print_flag_error();
-	    flags->text_to_data = 1;
+            if(flags->text_to_data)
+                return print_flag_error();
+            flags->text_to_data = 1;
         }
         else if(strcmp(argv[i], "-iterations") == 0)
         {
@@ -506,21 +504,21 @@ int checkFlags(int argc, char *argv[], struct s_flags *flags)
             if(flags->inputsSet)
                 return print_flag_error();
             flags->inputsSet = 1;
-	    stat_to_dyn(CHAR_a, PIXELS, flags->inputsFlag);
-	}
+            stat_to_dyn(CHAR_a, PIXELS, flags->inputsFlag);
+        }
         else if(strcmp(argv[i], "-inputs:b") == 0)
         {
             if(flags->inputsSet)
                 return print_flag_error();
             flags->inputsSet = 1;
-	    stat_to_dyn(CHAR_b, PIXELS, flags->inputsFlag);
+            stat_to_dyn(CHAR_b, PIXELS, flags->inputsFlag);
         }
         else if(strcmp(argv[i], "-inputs:c") == 0)
         {
             if(flags->inputsSet)
                 return print_flag_error();
             flags->inputsSet = 1;
-	    stat_to_dyn(CHAR_c, PIXELS, flags->inputsFlag);
+            stat_to_dyn(CHAR_c, PIXELS, flags->inputsFlag);
         }
         else
             return print_flag_error();
@@ -529,26 +527,24 @@ int checkFlags(int argc, char *argv[], struct s_flags *flags)
 }
 
 
-int print_flag_error()
+static int print_flag_error(void)
 {
     printf("Flag ERROR : type -h for help\n");
     return 1;
 }
 
-void printHelp()
+static void print_nn_help(void)
 {
     printf("\n\n./main then -\"your arguments\"\n");
     printf("Here is the list of available args : \n"
             "-inputs:a -> set the inputs with a matrix\n"
             "-inputs:b -> set the inputs with b matrix\n"
             "-inputs:c -> set the inputs with c matrix\n"
-	   "-learning -> start the learning process\n"
+            "-learning -> start the learning process\n"
             "-iterations [white space] \"your number\"\n\n"
-	   "-serialize -> serialize the NN into serialize"
-           "-fromtext to make a neural network with serialized data"
-	   "For example for inputs a matrix and for learning with 2500 "
+            "-serialize -> serialize the NN into serialize"
+            "-fromtext to make a neural network with serialized data"
+            "For example for inputs a matrix and for learning with 2500 "
             "iterations :\n"
             "--> .\\main -inputs:a -learning -iterations 2500\n\n");
 }
-
-#endif

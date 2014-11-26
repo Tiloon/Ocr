@@ -1,4 +1,4 @@
-#include "resize.h"
+#include "vectorize_char.h"
 
 // Debugging purposes :D
 #include <stdio.h>

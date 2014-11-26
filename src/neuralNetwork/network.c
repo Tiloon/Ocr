@@ -27,7 +27,7 @@ void set_inputs(struct s_network *network, long double *inputs)
 {
     int u;
     for(u = 0; u < network->input->nbUnits; u++)
-	network->input->outputs[u] = inputs[u];
+        network->input->outputs[u] = inputs[u];
 }
 
 void outputs_to_list(struct s_network *network, long double **store_data)
@@ -40,5 +40,5 @@ void stat_to_dyn(long double stat[], size_t size, long double *vector)
 {
     size_t i;
     for(i = 0; i < size; i++)
-	vector[i] = stat[i];
+        vector[i] = stat[i];
 }

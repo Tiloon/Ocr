@@ -18,7 +18,9 @@
 #include "segmentation/draw_rectangle.h"
 #include "segmentation/morphology.h"
 
-#include "segmentation/resize.h"
+#include "segmentation/vectorize_char.h"
+
+#include "neuralNetwork/nn_main.h"
 
 #include "help/help.h"
 

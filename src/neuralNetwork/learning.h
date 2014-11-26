@@ -25,14 +25,14 @@ void update_weights(struct s_network *network,
 void learning(struct s_network *network, int nbPatterns, int *nbIterations,
         long double ***inputs, long double ***targets,
         long double ***computed, long double *error,
-	      long double eta, long double alpha, long double errorThreshold);
+        long double eta, long double alpha, long double errorThreshold);
 
 //Call all the learning functions, with specific iterations nb
 void learning2(struct s_network *network, int nbPatterns, int nbIterations,
-	      long double ***inputs, long double ***targets,
-	      long double ***computed, long double *error,
-              long double eta, long double alpha);
+        long double ***inputs, long double ***targets,
+        long double ***computed, long double *error,
+        long double eta, long double alpha);
 void compute_error(long double ***targets, long double ***outputs,
-		   int nbPatterns, int nbUnits, long double *error);
+        int nbPatterns, int nbUnits, long double *error);
 
 #endif

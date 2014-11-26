@@ -69,7 +69,7 @@ void compute_values(struct s_layer *l1, struct s_layer *l2)
         sum = l2->bias[curr];
         for(prev = 0; prev < l1->nbUnits; prev++)
             sum += l1->outputs[prev] * l1->weights[prev][curr];
-	l2->outputs[curr] = sigmoid(sum);
+        l2->outputs[curr] = sigmoid(sum);
     }
 }
 

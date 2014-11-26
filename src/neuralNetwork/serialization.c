@@ -18,7 +18,7 @@ void network_to_text(FILE *file, struct s_network *network)
 
 void set_general_data(FILE *file, struct s_network *network)
 {
-//    set_header_file(file);
+    //    set_header_file(file);
     set_number_units(file, network);
     set_number_weights(file, network);
 }
@@ -31,17 +31,17 @@ void set_specific_data(FILE *file, struct s_network *network)
 }
 
 /*void set_header_file(FILE *file)
-{
-   fprintf(file, "OSF : OCAML Serialization Format 1.0 24/11/05 \n");
-}
-*/
+  {
+  fprintf(file, "OSF : OCAML Serialization Format 1.0 24/11/05 \n");
+  }
+  */
 
 void set_number_units(FILE *file, struct s_network *network)
 {
     if(file == NULL)
     {
-	printf("FILE NULL : set_number_units\n");
-	return;
+        printf("FILE NULL : set_number_units\n");
+        return;
     }
     int nb_inputs, nb_hidden, nb_outputs;
     nb_inputs = network->input->nbUnits;
@@ -90,14 +90,14 @@ void set_weights_layer(FILE *file, struct s_layer *layer)
 {
     if(file == NULL)
     {
-	printf("file == NULL : set_weights_layer()\n");
-	return;
+        printf("file == NULL : set_weights_layer()\n");
+        return;
     }
     int nb_units, nb_weights;
     for(nb_units = 0; nb_units < layer->nbUnits; nb_units++)
     {
-	for(nb_weights = 0; nb_weights < layer->nbWeights; nb_weights++)
-	    fprintf(file, "%Lf \n", layer->weights[nb_units][nb_weights]);
+        for(nb_weights = 0; nb_weights < layer->nbWeights; nb_weights++)
+            fprintf(file, "%Lf \n", layer->weights[nb_units][nb_weights]);
     }
 }
 void set_bias_layer(FILE *file, struct s_layer *layer)
@@ -105,11 +105,11 @@ void set_bias_layer(FILE *file, struct s_layer *layer)
     if(file == NULL)
     {
         printf("file == NULL : set_bias_layer()\n");
-	return;
+        return;
     }
     int nb_units;
     for(nb_units = 0; nb_units < layer->nbUnits; nb_units++)
-	fprintf(file, "%Lf \n", layer->bias[nb_units]);
+        fprintf(file, "%Lf \n", layer->bias[nb_units]);
 }
 
 
@@ -129,12 +129,12 @@ void text_to_network(FILE *file, struct s_network *network)
 void get_general_data(FILE *file, struct s_network *network)
 {
     fscanf(file, "%d %d %d %d %d %d",
-           &network->input->nbUnits,
-           &network->hidden->nbUnits,
-           &network->output->nbUnits,
-           &network->input->nbWeights,
-           &network->hidden->nbWeights,
-           &network->output->nbWeights);
+            &network->input->nbUnits,
+            &network->hidden->nbUnits,
+            &network->output->nbUnits,
+            &network->input->nbWeights,
+            &network->hidden->nbWeights,
+            &network->output->nbWeights);
 }
 void get_specific_data(FILE *file, struct s_network *network)
 {
@@ -157,7 +157,7 @@ void get_bias_layer(FILE *file, struct s_layer *layer)
     int nb_units;
     for(nb_units = 0; nb_units < layer->nbUnits; nb_units++)
     {
-	fscanf(file, "%Lf", &layer->bias[nb_units]);
+        fscanf(file, "%Lf", &layer->bias[nb_units]);
     }
 }
 void get_weights_layer(FILE *file, struct s_layer *layer)
@@ -165,7 +165,7 @@ void get_weights_layer(FILE *file, struct s_layer *layer)
     int nb_units, nb_weights;
     for(nb_units = 0; nb_units < layer->nbUnits; nb_units++)
     {
-	for(nb_weights = 0; nb_weights < layer->nbWeights; nb_weights++)
-	    fscanf(file, "%Lf", &layer->weights[nb_units][nb_weights]);
+        for(nb_weights = 0; nb_weights < layer->nbWeights; nb_weights++)
+            fscanf(file, "%Lf", &layer->weights[nb_units][nb_weights]);
     }
 }
