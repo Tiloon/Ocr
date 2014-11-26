@@ -10,6 +10,7 @@
 
 struct s_flags_nn
 {
+    char **dataset_files;
     long double *inputsFlag;
     int inputsSet;
     int learning;
