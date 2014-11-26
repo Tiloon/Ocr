@@ -500,7 +500,7 @@ static int checkFlags(int argc, char *argv[], struct s_flags_nn *flags)
                 flags->iterations = atoi(argv[i]);
             }
         }
-        else if(!strcmp(argv[i], "-datasetsfile"))
+        else if(!strcmp(argv[i], "-datasetsfiles"))
         {
             if(i + 1 >= argc)
                 return print_flag_error();
