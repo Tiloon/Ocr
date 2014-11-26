@@ -1,12 +1,13 @@
 #include "learn_from_pics.h"
 
-static int segmentation_get_chars(GdkPixbuf *origin, char ***p_vect,
+static int segmentation_get_chars(GdkPixbuf *origin, long double ***p_vect,
         size_t char_count)
 {
     GdkPixbuf *pixbuf;
     struct s_binarypic *pic, *mask;
     struct s_rectangle *chars, *lines, *blocs;
-    size_t itr_chars, itr_lines, itr_blocs, i;
+    size_t itr_chars, itr_lines, itr_blocs, i, j;
+    char *arr;
 
     mask = NULL;
     if(!(pic = calloc(1, sizeof(struct s_binarypic))))
@@ -50,7 +51,10 @@ static int segmentation_get_chars(GdkPixbuf *origin, char ***p_vect,
                             fprintf(stderr, "Error : too much chars\n");
                             return -1;
                         }
-                        (*p_vect)[i] = vectorize_char(pic, chars + itr_chars);
+                        arr = vectorize_char(pic, chars + itr_chars);
+                        (*p_vect)[i] = calloc(256, sizeof(long double));
+                        for(j = 0; j < 256; j++)
+                            (*p_vect)[i][j] = ((long double)arr[j]) - 0.5;
                         draw_rectangle(pixbuf, chars + itr_chars, ~0, 0, 0);
                     }
                 }
@@ -72,10 +76,10 @@ static int segmentation_get_chars(GdkPixbuf *origin, char ***p_vect,
     return 0;
 }
 
-char ***load_image_set(char **files, size_t char_count)
+long double ***load_image_set(char **files, size_t char_count)
 {
     size_t i;
-    char ***p_datasets;
+    long double ***p_datasets;
 
     p_datasets = 0;
 
