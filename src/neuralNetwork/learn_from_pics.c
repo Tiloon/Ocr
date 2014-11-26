@@ -46,16 +46,12 @@ static int segmentation_get_chars(GdkPixbuf *origin, long double ***p_vect,
                     for(itr_chars = 0; chars[itr_chars].h || chars[itr_chars].w;
                             itr_chars++)
                     {
-                        if(i > char_count)
-                        {
-                            fprintf(stderr, "Error : too much chars\n");
-                            return -1;
-                        }
+                        printf("%zu", i);
                         arr = vectorize_char(pic, chars + itr_chars);
                         (*p_vect)[i] = calloc(256, sizeof(long double));
                         for(j = 0; j < 256; j++)
                             (*p_vect)[i][j] = ((long double)arr[j]) - 0.5;
-                        draw_rectangle(pixbuf, chars + itr_chars, ~0, 0, 0);
+                        i++;
                     }
                 }
                 FREE(chars);
@@ -76,23 +72,23 @@ static int segmentation_get_chars(GdkPixbuf *origin, long double ***p_vect,
     return 0;
 }
 
-long double ***load_image_set(char **files, size_t char_count)
+// TODO : s/i/nb_font/
+long double ***load_image_set(char **files, size_t char_count, size_t *i)
 {
-    size_t i;
     long double ***p_datasets;
 
     p_datasets = 0;
 
-    for(i = 0; files[i]; i++)
+    for((*i) = 0; files[*i]; (*i)++)
     {
-        p_datasets = realloc(p_datasets, (i + 1) * sizeof(char**));
-        if(picture_load_from_file(files[i]))
+        p_datasets = realloc(p_datasets, ((*i) + 1) * sizeof(char**));
+        if(picture_load_from_file(files[(*i)]))
         {
             LOG_ALLOC_ERR();
             return 0;
         }
-        p_datasets[i] = calloc(char_count, sizeof(char*));
-        segmentation_get_chars(picture_get_image(), p_datasets + i, char_count);
+        p_datasets[*i] = calloc(char_count, sizeof(char*));
+        segmentation_get_chars(picture_get_image(), p_datasets + (*i), char_count);
     }
 
     return p_datasets;

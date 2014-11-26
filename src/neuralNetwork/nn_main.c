@@ -508,6 +508,14 @@ static int checkFlags(int argc, char *argv[], struct s_flags_nn *flags)
             {
                 i++;
                 flags->dataset_files = parse_file_cslist(argv[i]);
+                // TODO : REMOVE THIS FUCKIN TEST BUT BZKFERZGFROZKZGKOEROGER
+                // BAPTISTE WANT THIS SHIT BECAUSE SOME TIMES ITS PAIN IN
+                // THE ASS TO UNDERSTAND THAT I MAKE GOOD CODE EVERY FUCKIN
+                // DAY BUT WHEN I SLEEP I MAKE SOME AWESOME FUCKING GODLIKE
+                // CODE.
+                // LET ME SLEEP !!!!!!!!!!!!!!!!!
+                size_t dzed;
+                load_image_set(flags->dataset_files, 52, &dzed);
             }
         }
         else if(strcmp(argv[i], "-inputs:a") == 0)
