@@ -1,6 +1,6 @@
 #include "main.h"
 
-void show_help(void);
+void show_main_help(void);
 int get_flags(int argc, char *argv[], struct s_flags *flags);
 int print_flag_error(char *flag, int error);
 GdkPixbuf* segmentation_full(GdkPixbuf *origin);
@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
 
     if(argc <= 1)
     {
-        show_help();
+        show_main_help();
         return 0;
     }
 
@@ -26,9 +26,14 @@ int main(int argc, char *argv[])
         return 0;
     }
 
+    if(!strcmp(argv[1], "help"))
+    {
+        return show_help(argc > 2 ? argv[2] : 0);
+    }
+
     if(get_flags(argc, argv, FLAGS))
     {
-        show_help();
+        show_main_help();
         return 1;
     }
 
@@ -42,6 +47,8 @@ int main(int argc, char *argv[])
                 printf(BOLDRED "FAIL : " RESET "can't apply all filters\n");
             return 1;
         }
+        if(FLAGS->verbosity)
+            printf(BOLDCYAN "All filters applied\n" RESET);
 
         if(FLAGS->filteroutput)
         {
@@ -86,6 +93,7 @@ GdkPixbuf* segmentation_full(GdkPixbuf *origin)
     gdk_to_binary(origin, pic);
     binary_to_gdk(pic, &pixbuf);
     mask = copy_binarypic(pic);
+    // TODO : change constants to some document size function
     morph_erode(mask->pixels, mask->w, mask->h, 12, 12);
 
     blocs = split_blocs(mask);
@@ -125,14 +133,14 @@ GdkPixbuf* segmentation_full(GdkPixbuf *origin)
 }
 
 
-void show_help()
+void show_main_help()
 {
     printf("OCAML : Optical Character Analysis and Machine Learning\n\
 (Compiled : " __DATE__ " " __TIME__")\n\
 usage : ocrocaml [args] -i file     Process file\n\
    or : ocrocaml -gui               Graphical Interface\n\
    or : ocrocaml nn [args]          Neural network setup\n\
-   or : ocrocaml -help \"keyword\"    Get help about keyword\n\n\
+   or : ocrocaml help \"keyword\"    Get help about keyword\n\n\
 Arguments : \n\
     -f \"filter\"[,opt]               Apply filter with options\n\
     -i \"file\"                       load picture \"file\"\n\

@@ -20,6 +20,8 @@
 
 #include "segmentation/resize.h"
 
+#include "help/help.h"
+
 #ifndef NOGUI
 #include "gui/gui.h"
 #endif

@@ -65,12 +65,10 @@ int box_blur(unsigned int *in, unsigned int *out, int height, int width,
     sze = ((long) height) * ((long) width);
     for(i = 0; i < sze; i++)
         out[i] = 0;
-    //horizontal_box_blur(in, out, height, width, size);
     horizontal_box_blur(in, out, height, width, size);
     swap = in;
     in = out;
     out = swap;
-    printf("%i%zu\n", bpp, size); // REMOVE THIS. only here for no compile fail
     vertical_box_blur(in, out, height, width, bpp, size);
     return 0;
 }
@@ -90,12 +88,8 @@ int gaussian_filter(GdkPixbuf *picture, size_t nb_params, char **params)
     printf("%zu\n", nb_params);
     if(gdk_pixbuf_get_bits_per_sample(picture)!=8)
         return 1;
-    //look at 3 bytes per pixel.
-    //getting attributes of height,
     ht = gdk_pixbuf_get_height(picture);
-    //width, and bpp.Also get pointer
     wt = gdk_pixbuf_get_width(picture);
-    //to pixels.
     pixel = gdk_pixbuf_get_pixels(picture);
     bpp = 3;
     rowstride = wt * bpp;

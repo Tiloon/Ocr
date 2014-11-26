@@ -134,3 +134,16 @@ int filter_add(char *rule)
 
     return 0;
 }
+
+int filter_make_help(char ***keywords, char ***message)
+{
+    size_t i;
+    (*keywords) = calloc(FILTER_LIST_SZE, sizeof(char*));
+    (*message) = calloc(FILTER_LIST_SZE, sizeof(char*));
+    for(i = 0; i < FILTER_LIST_SZE; i++)
+    {
+        (*keywords)[i] = filter_list[i].filter_name;
+        (*message)[i] = filter_list[i].filter_help_message;
+    }
+    return FILTER_LIST_SZE;
+}
