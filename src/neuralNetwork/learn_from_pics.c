@@ -93,3 +93,32 @@ char ***load_image_set(char **files, size_t char_count)
 
     return p_datasets;
 }
+
+char **parse_file_cslist(char *str)
+{
+    size_t i, j;
+    char **list;
+
+    if(!str)
+        return NULL;
+
+    j = 0;
+    list = NULL;
+    list = calloc(1, sizeof(char*));
+    list[0] = str;
+
+    for(i = 0; str[i]; i++) // on créé la liste des str qui finissent par ,
+    {
+        if(str[i] == ',')
+        {
+            str[i] = 0;
+            j++;
+            list = realloc(list, (j + 2) * sizeof(char*));
+            list[j] = str + i + 1;
+        }
+    }
+
+    list[j + 1] = NULL; // On marque la fin de la liste
+
+    return list;
+}

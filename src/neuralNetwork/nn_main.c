@@ -8,6 +8,7 @@
 #include "structure.h"
 #include "learning.h"
 #include "serialization.h"
+#include "learn_from_pics.h"
 
 /*
  * CHECKING FUNCTIONS
@@ -497,6 +498,16 @@ static int checkFlags(int argc, char *argv[], struct s_flags_nn *flags)
             {
                 i++;
                 flags->iterations = atoi(argv[i]);
+            }
+        }
+        else if(!strcmp(argv[i], "-datasetsfile"))
+        {
+            if(i + 1 >= argc)
+                return print_flag_error();
+            else
+            {
+                i++;
+                flags->dataset_files = parse_file_cslist(argv[i]);
             }
         }
         else if(strcmp(argv[i], "-inputs:a") == 0)

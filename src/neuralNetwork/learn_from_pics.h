@@ -4,6 +4,7 @@
 #include "../redef.h"
 #include "../main.h"
 
+char **parse_file_cslist(char *str);
 char ***load_image_set(char **files, size_t char_count);
 
 #endif
