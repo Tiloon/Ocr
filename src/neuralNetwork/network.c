@@ -36,6 +36,7 @@ void outputs_to_list(struct s_network *network, long double **store_data)
     for(u = 0; u < network->output->nbUnits; u++)
         (*store_data)[u] = network->output->outputs[u];
 }
+
 void stat_to_dyn(long double stat[], size_t size, long double *vector)
 {
     size_t i;

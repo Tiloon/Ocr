@@ -63,11 +63,15 @@ void printVector(long double *vector, size_t size)
 void printInputVector(long double *vector, size_t size)
 {
     size_t u;
+    printf("\n");
     for(u = 0; u < size; u++)
     {
         if(u != 0 && u % 16 == 0)
             printf("\n");
-        printf("%Lf", vector[u]);
+	if(vector[u] > 0)
+	    printf("+%Lf", vector[u]);
+	else
+	    printf("%Lf", vector[u]);
     }
 }
 
@@ -85,7 +89,7 @@ static void printOutput(struct s_network *network)
  *  testing functions
  */
 
-static int checkFlags(int argc, char* argv[], struct s_flags_nn *flags);
+static int checkFlags(int argc, char* argv[], struct s_flags_nn *flags, long double ****inputs);
 static int print_flag_error();
 static void print_nn_help();
 
@@ -101,6 +105,7 @@ int nn_main(int argc, char *argv[])
     struct s_network network;
     struct s_flags_nn flags;
 
+    int NUMBER_FONTS = 1;
     int NUMBER_PATTERNS = 52;
     int NUMBER_PIXELS_CHARACTER = 256;
     int NUMBER_INPUT_NEURONS = NUMBER_PIXELS_CHARACTER;
@@ -108,9 +113,34 @@ int nn_main(int argc, char *argv[])
     int NUMBER_OUTPUT_NEURONS = NUMBER_PATTERNS;
     int iterations, i;
 
-
+    long double ***all_inputs;
     flags.inputsFlag = calloc(NUMBER_PIXELS_CHARACTER,
             sizeof(long double));
+
+    long double ***all_results = calloc(NUMBER_FONTS, sizeof(long double));
+    long double ***all_targets = calloc(NUMBER_FONTS, sizeof(long double));
+
+
+    int a, b;
+    for(a = 0; a < NUMBER_FONTS; a++)
+    {
+	all_results[a] = calloc(NUMBER_PATTERNS, sizeof(long double));
+	all_targets[a] = calloc(NUMBER_PATTERNS, sizeof(long double));
+    }
+    for(a = 0; a < NUMBER_FONTS; a++)
+	for(b = 0; b < NUMBER_PATTERNS; b++)
+	{
+	    all_results[a][b] = calloc(NUMBER_PIXELS_CHARACTER,
+				    sizeof(long double));
+	    all_targets[a][b] = calloc(NUMBER_PIXELS_CHARACTER,
+				    sizeof(long double));
+	    // printVector(all_results[0][b], 256);
+	    // printVector(all_targets[0][b], 256);
+    }
+
+    for(a = 0; a < NUMBER_FONTS; a++)
+	for(b = 0; b < NUMBER_PATTERNS; b++)
+		all_targets[a][b][b] = 1;
 
     //inputsUser is used so as to debug/check the NN
     long double *inputsUser = calloc(NUMBER_PIXELS_CHARACTER,
@@ -121,7 +151,6 @@ int nn_main(int argc, char *argv[])
      * all the vector of each character recognizable
      * vectors are size of NUMBER_PIXELS_CHARACTER as size
      */
-
     long double **inputs = calloc(NUMBER_PATTERNS,
             sizeof(long double));
 
@@ -409,7 +438,7 @@ int nn_main(int argc, char *argv[])
         targets[i][i] = 1;
 
 
-    if(checkFlags(argc, argv, &flags))
+    if(checkFlags(argc, argv, &flags, &all_inputs))
         return 1;
     else
     {
@@ -441,10 +470,15 @@ int nn_main(int argc, char *argv[])
             {
                 inputsUser = flags.inputsFlag;
                 if(flags.iterations == -1)
-                    learning(&network, NUMBER_PATTERNS, &iterations,
-                            &inputs, &targets, &results, &error,
-                            ETA, ALPHA, 0.01);
-                else
+                    //learning(&network, NUMBER_PATTERNS, &iterations,
+		    //       &inputs, &targets, &results, &error,
+		    //      ETA, ALPHA, 0.01);
+		    learning_fonts(&network, NUMBER_PATTERNS, &iterations,
+				   NUMBER_FONTS, &all_inputs, &all_targets,
+				   &all_results,
+				   &error, ETA, ALPHA, 1);
+
+		else
                 {
                     learning2(&network, NUMBER_PATTERNS, flags.iterations,
                             &inputs, &targets, &results, &error,
@@ -462,7 +496,8 @@ int nn_main(int argc, char *argv[])
     return 0;
 }
 
-static int checkFlags(int argc, char *argv[], struct s_flags_nn *flags)
+static int checkFlags(int argc, char *argv[], struct s_flags_nn *flags,
+		      long double ****p_all_inputs)
 {
     int i;
     if(argc == 2 && strcmp(argv[1], "-h") == 0)
@@ -514,9 +549,13 @@ static int checkFlags(int argc, char *argv[], struct s_flags_nn *flags)
                 // DAY BUT WHEN I SLEEP I MAKE SOME AWESOME FUCKING GODLIKE
                 // CODE.
                 // LET ME SLEEP !!!!!!!!!!!!!!!!!
-                size_t dzed;
-                load_image_set(flags->dataset_files, 52, &dzed);
-            }
+
+		// Sleeping is cheating
+		// You are weak
+		// Nixon said : what an old cock sucker
+		size_t dzed;
+                (*p_all_inputs) = load_image_set(flags->dataset_files, 52, &dzed);
+	    }
         }
         else if(strcmp(argv[i], "-inputs:a") == 0)
         {

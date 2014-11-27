@@ -4,6 +4,14 @@
 #include "nn_main.h"
 #include "layer.h"
 
+void printVector2(long double *vector, size_t size)
+{
+    size_t u;
+    for(u = 0; u < size; u++)
+        printf(" |%Lf", vector[u]);
+}
+
+
 void compute_delta_output(struct s_network *network,
         long double *target, long double *computed)
 {
@@ -106,7 +114,7 @@ void learning2(struct s_network *network, int nbPatterns, int nbIterations,
     it = 0;
     while(it < nbIterations )
     {
-        if(nbIterations % 10000 == 0)
+        if(it % 10000 == 0)
             printf("it : %d; error : %Lf\n", it, *error);
         p =  (int) rand() % nbPatterns;
         set_inputs(network, (*inputs)[p]);
@@ -133,4 +141,60 @@ void compute_error(long double ***targets, long double ***outputs,
                 ((*targets)[p][u] - (*outputs)[p][u]);
         }
     }
+}
+
+void compute_error_fonts(long double ****targets, long double ****outputs,
+                         int nb_patterns, int nb_fonts, long double nb_units,
+                         long double *error)
+{
+    int p, u, f;
+    *error = 0;
+    for(f = 0; f < nb_fonts; f++)
+    {
+	for(p = 0; p < nb_patterns; p++)
+	{
+	    for(u = 0; u < nb_units; u++)
+	    {
+		*error += 0.5 * ((*targets)[f][p][u] - (*outputs)[f][p][u]) *
+		    ((*targets)[f][p][u] - (*outputs)[f][p][u]);
+	    }
+	}
+    }
+}
+
+void learning_fonts(struct s_network *network, int nb_patterns,
+		    int *nb_iterations, int nb_fonts,
+		    long double ****inputs, long double ****targets,
+		    long double ****computed, long double *error,
+		    long double eta, long double alpha,
+		    long double errorThreshold)
+{
+    int p, f;
+    static unsigned seed;
+
+    if(!seed)
+	srand(seed = (unsigned)time(NULL));
+
+    while(*error > errorThreshold)
+    {
+	for(f = 0; f < nb_fonts; f++)
+	{
+	    for(p = 0; p < nb_patterns; p++)
+	    {
+		if((*nb_iterations) % 10000 == 0)
+		    printf("it : %d; error : %Lf\n",
+			   (*nb_iterations), *error);
+		set_inputs(network, (*inputs)[f][p]);
+		feedforward(network);
+		outputs_to_list(network, &(*computed)[f][p]);
+		update_weights(network, (*targets)[f][p], (*computed)[f][p],
+			       eta, alpha);
+		compute_error_fonts(targets, computed, nb_patterns, nb_fonts,
+			      network->output->nbUnits,
+			      error);
+		(*nb_iterations)++;
+	    }
+	}
+    }
+    printf("Number iterations : %d\n\n", *nb_iterations);
 }

@@ -6,6 +6,8 @@
 #include "layer.h"
 #include "nn_main.h"
 
+void printVector2(long double *vector, size_t size);
+
 void compute_delta_output(struct s_network *network,
         long double *target, long double *computed);
 void compute_delta_hidden(struct s_network *network);
@@ -34,5 +36,17 @@ void learning2(struct s_network *network, int nbPatterns, int nbIterations,
         long double eta, long double alpha);
 void compute_error(long double ***targets, long double ***outputs,
         int nbPatterns, int nbUnits, long double *error);
+
+void learning_fonts(struct s_network *network, int nb_patterns,
+		    int *nb_iterations, int nb_fonts,
+		    long double ****inputs,
+		    long double ****targets,
+		    long double ****computed, long double *error,
+		    long double eta,
+		    long double alpha, long double errorThreshold);
+
+void compute_error_fonts(long double ****targets, long double ****outputs,
+			 int nb_patterns, int nb_fonts, long double nb_units,
+			 long double *error);
 
 #endif
