@@ -113,6 +113,10 @@ int nn_main(int argc, char *argv[])
     int NUMBER_OUTPUT_NEURONS = NUMBER_PATTERNS;
     int iterations, i;
 
+    long double ETA1 = 0.1;
+    long double ALPHA1 = 0.8;
+    long double ERROR1 = 0.02;
+
     long double ***all_inputs;
     flags.inputsFlag = calloc(NUMBER_PIXELS_CHARACTER,
             sizeof(long double));
@@ -470,19 +474,19 @@ int nn_main(int argc, char *argv[])
             {
                 inputsUser = flags.inputsFlag;
                 if(flags.iterations == -1)
-                    //learning(&network, NUMBER_PATTERNS, &iterations,
-		    //       &inputs, &targets, &results, &error,
-		    //      ETA, ALPHA, 0.01);
-		    learning_fonts(&network, NUMBER_PATTERNS, &iterations,
-				   NUMBER_FONTS, &all_inputs, &all_targets,
-				   &all_results,
-				   &error, ETA, ALPHA, 1);
+                    learning(&network, NUMBER_PATTERNS, &iterations,
+		           &inputs, &targets, &results, &error,
+		          ETA1, ALPHA1, ERROR1);
+		    //learning_fonts(&network, NUMBER_PATTERNS, &iterations,
+		    //		   NUMBER_FONTS, &all_inputs, &all_targets,
+		    //             &all_results,
+		    //	           &error, ETA, ALPHA, 1);
 
 		else
                 {
                     learning2(&network, NUMBER_PATTERNS, flags.iterations,
                             &inputs, &targets, &results, &error,
-                            ETA, ALPHA);
+                            ETA1, ALPHA1);
                 }
                 set_inputs(&network, inputsUser);
                 feedforward(&network);

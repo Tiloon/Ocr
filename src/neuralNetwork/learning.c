@@ -85,8 +85,13 @@ void learning(struct s_network *network, int nbPatterns, int *nbIterations,
 
     while(*error > errorThreshold)
     {
-        if(*nbIterations % 10000 == 0)
-            printf("it : %d; error : %Lf\n", *nbIterations, *error);
+	if(*error < 0.2)
+	{
+	    eta = 0.9999;
+	    alpha = 0.1; 
+	}
+	if(*nbIterations % 10000 == 0)
+            printf("alpha : %Lf, eta : %Lf, it : %d; error : %Lf\n",alpha, eta, *nbIterations, *error);
         p =  (int) rand() % nbPatterns;
         set_inputs(network, (*inputs)[p]);
         feedforward(network);
@@ -96,7 +101,8 @@ void learning(struct s_network *network, int nbPatterns, int *nbIterations,
                 error);
         (*nbIterations)++;
     }
-    printf("Number iterations : %d\n\n", *nbIterations);
+    printf("Number iterations : %d\n", *nbIterations);
+    printf("Final error : %Lf\n\n", *error);
 }
 
 void learning2(struct s_network *network, int nbPatterns, int nbIterations,
@@ -137,10 +143,11 @@ void compute_error(long double ***targets, long double ***outputs,
     {
         for(u = 0; u < nbUnits; u++)
         {
-            *error += 0.5 * ((*targets)[p][u] - (*outputs)[p][u]) *
+            *error += ((*targets)[p][u] - (*outputs)[p][u]) *
                 ((*targets)[p][u] - (*outputs)[p][u]);
         }
     }
+    *error = *error * 1 / nbPatterns;
 }
 
 void compute_error_fonts(long double ****targets, long double ****outputs,
@@ -155,11 +162,12 @@ void compute_error_fonts(long double ****targets, long double ****outputs,
 	{
 	    for(u = 0; u < nb_units; u++)
 	    {
-		*error += 0.5 * ((*targets)[f][p][u] - (*outputs)[f][p][u]) *
+		*error += ((*targets)[f][p][u] - (*outputs)[f][p][u]) *
 		    ((*targets)[f][p][u] - (*outputs)[f][p][u]);
 	    }
 	}
     }
+    *error = *error * 1 / nb_patterns;
 }
 
 void learning_fonts(struct s_network *network, int nb_patterns,
