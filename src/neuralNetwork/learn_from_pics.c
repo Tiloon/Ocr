@@ -50,8 +50,9 @@ static int segmentation_get_chars(GdkPixbuf *origin, long double ***p_vect,
                         arr = vectorize_char(pic, chars + itr_chars);
                         (*p_vect)[i] = calloc(256, sizeof(long double));
                         for(j = 0; j < 256; j++)
-                            (*p_vect)[i][j] = ((long double)arr[j]) - 0.5;
-                        i++;
+			    (*p_vect)[i][j] = ((long double)arr[j]) - 0.5;
+			    //(*p_vect)[i][j] = ((long double)arr[j]) ? 1 : -1;
+			    i++;
                     }
                 }
                 FREE(chars);
