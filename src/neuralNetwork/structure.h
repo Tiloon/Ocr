@@ -24,4 +24,13 @@ struct s_network
     struct s_layer *hidden;
     struct s_layer *output;
 };
+
+struct s_neural_network
+{
+    struct s_network network;
+    struct s_layer input;
+    struct s_layer hidden;
+    struct s_layer output;
+};
+
 #endif

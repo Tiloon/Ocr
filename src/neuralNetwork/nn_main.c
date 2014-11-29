@@ -87,14 +87,11 @@ int nn_main(int argc, char *argv[])
     //*******************************************//
 
     //NETWORK
-    struct s_layer input;
-    struct s_layer hidden;
-    struct s_layer output;
-    struct s_network network;
+    struct s_neural_network neural_network;
     struct s_flags_nn flags;
 
     //NETWORKS PARAMETERS
-    int NUMBER_FONTS = 2;
+    int NUMBER_FONTS = 1;
     int NUMBER_PATTERNS = 52;
     int NUMBER_PIXELS_CHARACTER = 256;
     int NUMBER_INPUT_NEURONS = NUMBER_PIXELS_CHARACTER;
@@ -149,29 +146,28 @@ int nn_main(int argc, char *argv[])
         return 1;
     else
     {
-	super_initialization_network(&network, &input, &hidden, &output,
-				     NUMBER_PATTERNS,
-				     NUMBER_INPUT_NEURONS,
-				     NUMBER_HIDDEN_NEURONS,
-				     BIAS);
-	inputsUser = all_inputs[1][0 + 9];
+	initialization_neural_network(&neural_network, NUMBER_PATTERNS,
+				      NUMBER_INPUT_NEURONS,
+				      NUMBER_HIDDEN_NEURONS,
+				      BIAS);
+	inputsUser = all_inputs[0][0 + 9];
 
 	if(flags.learning == 0)
 	{
 	    //Compute just for checking
-	    printResultsVector(compute_character(&network,
+	    printResultsVector(compute_character(&neural_network.network,
 						 inputsUser), NUMBER_PATTERNS);
 	}
 	else
             {
-		learning_fonts(&network, NUMBER_PATTERNS, &iterations,
+		learning_fonts(&neural_network.network, NUMBER_PATTERNS, &iterations,
 			       NUMBER_FONTS, &all_inputs, &all_targets,
 			       &all_results,
 			       &error, ETA, ALPHA, ERROR);
-		printResultsVector(compute_character(&network,
+		printResultsVector(compute_character(&neural_network.network,
 						     inputsUser), NUMBER_PATTERNS);
 		if(flags.serialize)
-                    serialization(&network);
+                    serialization(&neural_network.network);
             }
     }
     printf("\n\n");
