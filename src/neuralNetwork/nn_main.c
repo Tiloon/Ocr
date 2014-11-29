@@ -68,10 +68,10 @@ void printInputVector(long double *vector, size_t size)
     {
         if(u != 0 && u % 16 == 0)
             printf("\n");
-	if(vector[u] > 0)
-	    printf("+%Lf", vector[u]);
-	else
-	    printf("%Lf", vector[u]);
+        if(vector[u] > 0)
+            printf("+%Lf", vector[u]);
+        else
+            printf("%Lf", vector[u]);
     }
 }
 
@@ -129,26 +129,26 @@ int nn_main(int argc, char *argv[])
 
     //inputsUser is used so as to debug/check the NN
     long double *inputsUser = calloc(NUMBER_PIXELS_CHARACTER,
-				     sizeof(long double));
+            sizeof(long double));
 
     int a, b;
     for(a = 0; a < NUMBER_FONTS; a++)
     {
-	all_results[a] = calloc(NUMBER_PATTERNS, sizeof(long double));
-	all_targets[a] = calloc(NUMBER_PATTERNS, sizeof(long double));
+        all_results[a] = calloc(NUMBER_PATTERNS, sizeof(long double));
+        all_targets[a] = calloc(NUMBER_PATTERNS, sizeof(long double));
     }
     for(a = 0; a < NUMBER_FONTS; a++)
-	for(b = 0; b < NUMBER_PATTERNS; b++)
-	{
-	    all_results[a][b] = calloc(NUMBER_PIXELS_CHARACTER,
-				    sizeof(long double));
-	    all_targets[a][b] = calloc(NUMBER_PIXELS_CHARACTER,
-				    sizeof(long double));
-	}
+        for(b = 0; b < NUMBER_PATTERNS; b++)
+        {
+            all_results[a][b] = calloc(NUMBER_PIXELS_CHARACTER,
+                    sizeof(long double));
+            all_targets[a][b] = calloc(NUMBER_PIXELS_CHARACTER,
+                    sizeof(long double));
+        }
 
     for(a = 0; a < NUMBER_FONTS; a++)
-	for(b = 0; b < NUMBER_PATTERNS; b++)
-		all_targets[a][b][b] = 1;
+        for(b = 0; b < NUMBER_PATTERNS; b++)
+            all_targets[a][b][b] = 1;
 
 
     //*******************************************//
@@ -172,11 +172,11 @@ int nn_main(int argc, char *argv[])
             return 1;
         else
         {
-	    super_initialization_network(&network, &input, &hidden, &output,
-					 NUMBER_PATTERNS,
-					 NUMBER_INPUT_NEURONS,
-					 NUMBER_HIDDEN_NEURONS,
-					 BIAS);
+            super_initialization_network(&network, &input, &hidden, &output,
+                    NUMBER_PATTERNS,
+                    NUMBER_INPUT_NEURONS,
+                    NUMBER_HIDDEN_NEURONS,
+                    BIAS);
 
             if(flags.text_to_data == 1)
                 get_data(&network);
@@ -190,13 +190,13 @@ int nn_main(int argc, char *argv[])
             else
             {
                 inputsUser = flags.inputsFlag;
-		//         learning(&network, NUMBER_PATTERNS, &iterations,
-                //	           &inputs, &targets, &results, &error,
-                //		   ETA, ALPHA, ERROR);
-		learning_fonts(&network, NUMBER_PATTERNS, &iterations,
-			       NUMBER_FONTS, &all_inputs, &all_targets,
-			       &all_results,
-			       &error, ETA, ALPHA, ERROR);
+                //         learning(&network, NUMBER_PATTERNS, &iterations,
+                //             &inputs, &targets, &results, &error,
+                //             ETA, ALPHA, ERROR);
+                learning_fonts(&network, NUMBER_PATTERNS, &iterations,
+                        NUMBER_FONTS, &all_inputs, &all_targets,
+                        &all_results,
+                        &error, ETA, ALPHA, ERROR);
 
                 set_inputs(&network, inputsUser);
                 feedforward(&network);
@@ -211,7 +211,7 @@ int nn_main(int argc, char *argv[])
 }
 
 static int checkFlags(int argc, char *argv[], struct s_flags_nn *flags,
-		      long double ****p_all_inputs)
+        long double ****p_all_inputs)
 {
     int i;
     if(argc == 2 && strcmp(argv[1], "-h") == 0)
@@ -254,12 +254,12 @@ static int checkFlags(int argc, char *argv[], struct s_flags_nn *flags,
                 // CODE.
                 // LET ME SLEEP !!!!!!!!!!!!!!!!!
 
-		// Sleeping is cheating
-		// You are weak
-		// Nixon said : what an old cock sucker
-		size_t dzed;
+                // Sleeping is cheating
+                // You are weak
+                // Nixon said : what an old cock sucker
+                size_t dzed;
                 (*p_all_inputs) = load_image_set(flags->dataset_files, 52, &dzed);
-	    }
+            }
         }
         else if(strcmp(argv[i], "-inputs:a") == 0)
         {
@@ -282,7 +282,7 @@ static int checkFlags(int argc, char *argv[], struct s_flags_nn *flags,
             flags->inputsSet = 1;
             stat_to_dyn(CHAR_z, PIXELS, flags->inputsFlag);
         }
-	else if(strcmp(argv[i], "-inputs:Z") == 0)
+        else if(strcmp(argv[i], "-inputs:Z") == 0)
         {
             if(flags->inputsSet)
                 return print_flag_error();
@@ -307,7 +307,7 @@ static void print_nn_help(void)
     printf("\n\n./main then -\"your arguments\"\n");
     printf("Here is the list of available args : \n"
             "-inputs:a -> set the inputs with a matrix\n"
-	   "-learning -> start the learning process\n"
+            "-learning -> start the learning process\n"
             "-iterations [white space] \"your number\"\n\n"
             "-serialize -> serialize the NN into serialize"
             "-fromtext to make a neural network with serialized data"

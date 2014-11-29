@@ -4,69 +4,53 @@ static int segmentation_get_chars(GdkPixbuf *origin, long double ***p_vect,
         size_t char_count)
 {
     GdkPixbuf *pixbuf;
-    struct s_binarypic *pic, *mask;
-    struct s_rectangle *chars, *lines, *blocs;
-    size_t itr_chars, itr_lines, itr_blocs, i, j;
+    struct s_binarypic *pic;
+    struct s_rectangle *chars, *lines, bloc;
+    size_t itr_chars, itr_lines, i, j;
     char *arr;
 
-    mask = NULL;
     if(!(pic = calloc(1, sizeof(struct s_binarypic))))
     {
         LOG_ALLOC_ERR();
         return 0;
     }
     pixbuf = NULL;
-    blocs = NULL;
     lines = NULL;
     chars = NULL;
     i = 0;
 
     gdk_to_binary(origin, pic);
     binary_to_gdk(pic, &pixbuf);
-    mask = copy_binarypic(pic);
-    // TODO : change constants to some document size function
-    morph_erode(mask->pixels, mask->w, mask->h, 12, 12);
-
-    blocs = split_blocs(mask);
-
-    if(!blocs)
-        return -1;
-
-    for(itr_blocs = 0; blocs[itr_blocs].h || blocs[itr_blocs].w; itr_blocs++)
+    bloc = (struct s_rectangle){.x = 0, .y = 0, .w = pic->w, .h = pic->h};
+    lines = split_lines(pic, &bloc);
+    if(lines)
     {
-        lines = split_lines(pic, blocs + itr_blocs);
-        if(lines)
+        for(itr_lines = 0; lines[itr_lines].h || lines[itr_lines].w;
+                itr_lines++)
         {
-            for(itr_lines = 0; lines[itr_lines].h || lines[itr_lines].w;
-                    itr_lines++)
+            chars = split_chars(pic, lines + itr_lines);
+            if(chars)
             {
-                chars = split_chars(pic, lines + itr_lines);
-                if(chars)
+                for(itr_chars = 0; chars[itr_chars].h || chars[itr_chars].w;
+                        itr_chars++)
                 {
-                    for(itr_chars = 0; chars[itr_chars].h || chars[itr_chars].w;
-                            itr_chars++)
-                    {
-                        printf("%zu", i);
-                        arr = vectorize_char(pic, chars + itr_chars);
-                        (*p_vect)[i] = calloc(256, sizeof(long double));
-                        for(j = 0; j < 256; j++)
-			    (*p_vect)[i][j] = ((long double)arr[j]) - 0.5;
-			    //(*p_vect)[i][j] = ((long double)arr[j]) ? 1 : -1;
-			    i++;
-                    }
+                    printf("%zu", i);
+                    arr = vectorize_char(pic, chars + itr_chars);
+                    (*p_vect)[i] = calloc(256, sizeof(long double));
+                    for(j = 0; j < 256; j++)
+                        (*p_vect)[i][j] = ((long double)arr[j]) - 0.5;
+                    i++;
                 }
-                FREE(chars);
             }
+            FREE(chars);
         }
-        FREE(lines);
     }
-    FREE(blocs);
+    FREE(lines);
     FREE(pic);
 
-
-    if(i + 1 < char_count)
+    if(i != char_count)
     {
-        fprintf(stderr, "Error : too much chars\n");
+        fprintf(stderr, "Error : chars count (%zu / %zu)\n", i, char_count);
         return -1;
     }
 
@@ -109,15 +93,15 @@ char **parse_file_cslist(char *str)
     list[0] = str;
 
     for(i = 0; str[i]; i++) // on créé la liste des str qui finissent par ,
-    {
-        if(str[i] == ',')
         {
-            str[i] = 0;
-            j++;
-            list = realloc(list, (j + 2) * sizeof(char*));
-            list[j] = str + i + 1;
+            if(str[i] == ',')
+            {
+                str[i] = 0;
+                j++;
+                list = realloc(list, (j + 2) * sizeof(char*));
+                list[j] = str + i + 1;
+            }
         }
-    }
 
     list[j + 1] = NULL; // On marque la fin de la liste
 
