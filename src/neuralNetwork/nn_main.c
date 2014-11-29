@@ -94,15 +94,15 @@ int nn_main(int argc, char *argv[])
     struct s_flags_nn flags;
 
     //NETWORKS PARAMETERS
-    int NUMBER_FONTS = 1;
+    int NUMBER_FONTS = 2;
     int NUMBER_PATTERNS = 52;
     int NUMBER_PIXELS_CHARACTER = 256;
     int NUMBER_INPUT_NEURONS = NUMBER_PIXELS_CHARACTER;
     int NUMBER_HIDDEN_NEURONS = 0.1 * NUMBER_INPUT_NEURONS;
     long double ETA = 0.1;
-    long double ALPHA = 0.1;
+    long double ALPHA = 0.4;
     long double BIAS = 0.5;
-    long double ERROR = 0.001;
+    long double ERROR = 0.05;
     long double error;
     int iterations;
 
@@ -126,15 +126,14 @@ int nn_main(int argc, char *argv[])
 	for(b = 0; b < NUMBER_PATTERNS; b++)
 	{
 	    all_results[a][b] = calloc(NUMBER_PIXELS_CHARACTER,
-				    sizeof(long double));
+				       sizeof(long double));
 	    all_targets[a][b] = calloc(NUMBER_PIXELS_CHARACTER,
-				    sizeof(long double));
+				       sizeof(long double));
 	}
 
     for(a = 0; a < NUMBER_FONTS; a++)
 	for(b = 0; b < NUMBER_PATTERNS; b++)
-		all_targets[a][b][b] = 1;
-
+	    all_targets[a][b][b] = 1;
 
     //*******************************************//
     //          VARIABLES AFFECTATIONS           //
@@ -155,7 +154,7 @@ int nn_main(int argc, char *argv[])
 				     NUMBER_INPUT_NEURONS,
 				     NUMBER_HIDDEN_NEURONS,
 				     BIAS);
-	inputsUser = all_inputs[0][5];
+	inputsUser = all_inputs[1][0 + 9];
 
 	if(flags.learning == 0)
 	{
