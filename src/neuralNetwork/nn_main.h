@@ -11,10 +11,7 @@
 struct s_flags_nn
 {
     char **dataset_files;
-    long double *inputsFlag;
-    int inputsSet;
     int learning;
-    int text_to_data;
     int serialize;
 };
 

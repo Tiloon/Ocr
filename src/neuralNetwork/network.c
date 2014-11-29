@@ -37,7 +37,7 @@ void super_initialization_network(struct s_network *network,
 		     0, bias);
 
     initialize_network(network, input, hidden, output);
-//    import_serialization(network);
+    import_serialization(network);
 }
 
 void feedforward(struct s_network *network)

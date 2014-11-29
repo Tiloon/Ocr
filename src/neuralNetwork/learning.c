@@ -157,12 +157,12 @@ void compute_error_fonts(long double ****targets, long double ****outputs,
 	{
 	    for(u = 0; u < nb_units; u++)
 	    {
-		*error += 0.5 * ((*targets)[f][p][u] - (*outputs)[f][p][u]) *
+		*error += ((*targets)[f][p][u] - (*outputs)[f][p][u]) *
 		    ((*targets)[f][p][u] - (*outputs)[f][p][u]);
 	    }
 	}
     }
-    //*error = *error * 1 / nb_patterns;
+    *error = *error * 1 / nb_patterns;
 }
 
 void learning_fonts(struct s_network *network, int nb_patterns,
@@ -188,7 +188,6 @@ void learning_fonts(struct s_network *network, int nb_patterns,
 		    printf("font : %d; alpha : %Lf; eta : %Lf;"
 			   "it : %d; error : %Lf\n", f, alpha, eta,
 			   *(nb_iterations), *error);
-
 		set_inputs(network, (*inputs)[f][p]);
 		feedforward(network);
 		outputs_to_list(network, &(*computed)[f][p]);
