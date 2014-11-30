@@ -15,7 +15,7 @@ int sample_filter(GdkPixbuf *picture, size_t nb_params, char **params)
         printf("Filter parameters : \"%s\"\n", params[0]);
 
     printf("%zu\n", nb_params);
-    if(gdk_pixbuf_get_bits_per_sample(picture)!=8)
+    if(gdk_pixbuf_get_bits_per_sample(picture) != 8)
         return 1;
     //look at 3 bytes per pixel.
     //getting attributes of height,
@@ -24,7 +24,7 @@ int sample_filter(GdkPixbuf *picture, size_t nb_params, char **params)
     wt = gdk_pixbuf_get_width(picture);
     //to pixels.
     pixel = gdk_pixbuf_get_pixels(picture);
-    bpp = 3;
+    bpp = gdk_pixbuf_get_n_channels(picture);
     rowstride = wt * bpp;
     for(i = 0; i < ht; i++) //iterate over the height of image.
     {
