@@ -1,29 +1,134 @@
 #include "convert_pic.h"
 
+static unsigned char * gdk_to_8bit_grayscale(GdkPixbuf *picture)
+{
+    unsigned char *grayscale, *pixel_tab;
+    size_t i, h, w, channels;
+
+    channels = gdk_pixbuf_get_n_channels(picture);
+    h = gdk_pixbuf_get_height(picture);
+    w = gdk_pixbuf_get_width(picture);
+
+    pixel_tab = gdk_pixbuf_get_pixels(picture);
+
+    if(!(grayscale = calloc((w + 1) * (h + 1), sizeof(unsigned char))))
+    {
+        LOG_ALLOC_ERR();
+        return NULL;
+    }
+
+    for (i = 0; i < (h * w); i++)
+    {
+        grayscale[i] =
+            (pixel_tab[i * channels] +
+            pixel_tab[i * channels + 1] +
+            pixel_tab[i * channels + 2]) / 3;
+    }
+
+    return grayscale;
+}
+
+static long double * make_histogram(unsigned char * grayscale, size_t size)
+{
+    size_t *tmp_histo;
+    size_t i;
+    long double *histo;
+
+    if(!(tmp_histo = calloc(256, sizeof(size_t))))
+    {
+        LOG_ALLOC_ERR();
+        return NULL;
+    }
+
+    for(i = 0; i < size; i++)
+        (tmp_histo[grayscale[i]])++;
+
+    if(!(histo = calloc(256, sizeof(long double))))
+    {
+        LOG_ALLOC_ERR();
+        return NULL;
+    }
+
+    for(i = 0; i < 256; i++)
+        histo[i] = ((long double) tmp_histo[i]) / ((long double) size);
+
+    FREE(tmp_histo);
+
+    return histo;
+}
+
+static unsigned char get_treshold(long double *histo)
+{
+    // Otsu's method implemenation
+
+    long double sum, sumB, wB, wF, mB, mF,  max, between, threshold1, threshold2;
+    size_t i;
+
+    wB = 0;
+    sumB = 0;
+    sum = 0;
+    max = 0;
+
+    for(i = 0; i < 256; i++)
+        sum += i * histo[i];
+
+    for(i = 0; i < 256; i++)
+    {
+        wB += histo[i];
+        if(wB == 0)
+            continue; // no pixel of color i
+
+        wF = ((long double)1.0) - wB;
+        if(wF == 0)
+            break; // All pixel have color i
+
+        sumB += i * histo[i];
+
+        mB = sumB / wB;
+        mF = (sum - sumB) / wF;
+        between = wB * wF * (mB - mF) * (mB - mF);
+        printf("%Lf\n", between);
+        if(between >= max)
+        {
+            threshold1 = i;
+            if(between > max)
+                threshold2 = i;
+            max = between;
+        }
+    }
+    return (unsigned char)((threshold1 + threshold2) / ((long double)2));
+}
+
 int gdk_to_binary(GdkPixbuf *picture, struct s_binarypic *binarypic)
 {
-    unsigned int i;
-    unsigned char *pixel_tab;
-    int channels = gdk_pixbuf_get_n_channels(picture);
+    size_t i;
+    unsigned char *grayscale;
+    unsigned char threshold;
+    long double *histogram;
 
     binarypic->h = gdk_pixbuf_get_height(picture);
     binarypic->w = gdk_pixbuf_get_width(picture);
 
-    pixel_tab = gdk_pixbuf_get_pixels(picture);
+
+    if(!(grayscale = gdk_to_8bit_grayscale(picture)))
+        return 1;
+    if(!(histogram = make_histogram(grayscale, binarypic->h * binarypic->w)))
+        return 1;
+
+    threshold = get_treshold(histogram);
+    printf("%u", threshold);
 
     if(!(binarypic->pixels = calloc((1 + binarypic->w) * (1 + binarypic->h),
                     sizeof(char))))
     {
-        fprintf(stderr, "Alloc error %s:%i\n", __FILE__, __LINE__);
+        LOG_ALLOC_ERR();
         *binarypic->pixels = 0;
         return 1;
     }
+
     for (i = 0; i < (binarypic->h * binarypic->w); i++)
     {
-        binarypic->pixels[i] =
-            (pixel_tab[i * channels] / 3) +
-            (pixel_tab[i * channels + 1] / 3) +
-            (pixel_tab[i * channels + 2] / 3) >= 0x7F;
+        binarypic->pixels[i] = grayscale[i] >= threshold;
     }
 
     return 0;

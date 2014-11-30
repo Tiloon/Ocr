@@ -19,6 +19,19 @@ void initialize_network(struct s_network *network, struct s_layer *input,
     network->output = output;
 }
 
+void initialization_neural_network(struct s_neural_network *neural_network,
+				   int nb_patterns, int nb_inputs,
+				   int nb_hidden_neurons, long double bias)
+{
+    super_initialization_network(&neural_network->network,
+				 &neural_network->input,
+				 &neural_network->hidden,
+				 &neural_network->output,
+				 nb_patterns, nb_inputs,
+				 nb_hidden_neurons,
+				 bias);
+}
+
 void super_initialization_network(struct s_network *network,
                                   struct s_layer *input,
                                   struct s_layer *hidden,

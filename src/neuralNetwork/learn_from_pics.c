@@ -1,12 +1,25 @@
 #include "learn_from_pics.h"
 
+long double* vector_bool_to_nn(char* vect, size_t size)
+{
+    size_t i;
+    long double *ret;
+
+    ret = calloc(size, sizeof(long double));
+
+    for(i = 0; i < size; i++)
+        ret[i] = ((long double) vect[i]) - 0.5;
+
+    return ret;
+}
+
 static int segmentation_get_chars(GdkPixbuf *origin, long double ***p_vect,
         size_t char_count)
 {
     GdkPixbuf *pixbuf;
     struct s_binarypic *pic;
     struct s_rectangle *chars, *lines, bloc;
-    size_t itr_chars, itr_lines, i, j;
+    size_t itr_chars, itr_lines, i;
     char *arr;
 
     if(!(pic = calloc(1, sizeof(struct s_binarypic))))
@@ -36,9 +49,7 @@ static int segmentation_get_chars(GdkPixbuf *origin, long double ***p_vect,
                 {
                     printf("%zu", i);
                     arr = vectorize_char(pic, chars + itr_chars);
-                    (*p_vect)[i] = calloc(256, sizeof(long double));
-                    for(j = 0; j < 256; j++)
-                        (*p_vect)[i][j] = ((long double)arr[j]) - 0.5;
+                    (*p_vect)[i] = vector_bool_to_nn(arr, 256);
                     i++;
                 }
             }

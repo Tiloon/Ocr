@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
         if(filters_apply_all(picture_get_image()))
         {
             if(FLAGS->verbosity)
-                printf(BOLDRED "FAIL : " RESET "can't apply all filters\n");
+                printf(BOLDRED "FAIL: " RESET "can't apply all filters\n");
             return 1;
         }
         if(FLAGS->verbosity)
@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
             if(picture_save_to_file(FLAGS->filteroutput))
             {
                 if(FLAGS->verbosity)
-                    printf(BOLDRED "FAIL : " RESET "can't save to %s\n",
+                    printf(BOLDRED "FAIL: " RESET "can't save to %s\n",
                             FLAGS->filteroutput);
                 return 1;
             } else
@@ -70,12 +70,17 @@ int main(int argc, char *argv[])
     return 0;
 }
 
+
+
 static GdkPixbuf* segmentation_full(GdkPixbuf *origin)
 {
     GdkPixbuf *pixbuf;
     struct s_binarypic *pic, *mask;
     struct s_rectangle *chars, *lines, *blocs;
-    size_t itr_chars, itr_lines, itr_blocs;
+    struct s_neural_network neural_network;
+    size_t itr_chars, itr_lines, itr_blocs, itr_spaces, *spaces;
+    char *vectorized;
+    long double *nn_inputs;
 
     mask = NULL;
     if(!(pic = calloc(1, sizeof(struct s_binarypic))))
@@ -88,11 +93,16 @@ static GdkPixbuf* segmentation_full(GdkPixbuf *origin)
     lines = NULL;
     chars = NULL;
 
+    initialization_neural_network(&neural_network, NUMBER_PATTERNS,
+            NUMBER_INPUT_NEURONS,
+            NUMBER_HIDDEN_NEURONS,
+            BIAS);
+
     gdk_to_binary(origin, pic);
     binary_to_gdk(pic, &pixbuf);
     mask = copy_binarypic(pic);
     // TODO : change constants to some document size function
-    morph_erode(mask->pixels, mask->w, mask->h, 12, 12);
+    morph_erode(mask->pixels, mask->w, mask->h, mask->w/100, mask->h/100);
 
     blocs = split_blocs(mask);
 
@@ -108,21 +118,60 @@ static GdkPixbuf* segmentation_full(GdkPixbuf *origin)
                     itr_lines++)
             {
                 chars = split_chars(pic, lines + itr_lines);
+                spaces = get_spaces(chars);
+                itr_spaces = 0;
+                //debuging spaces
+                /*if(itr_lines == 0 && itr_blocs == 0)
+                {
+                    printf("start\n");
+                    size_t *spaces = get_spaces(chars);
+                    int fake = 0;
+                    for(fake = 0; spaces[fake]; fake++)
+                    {
+                        printf("space number %i = %zu\n",
+                             fake+1, spaces[fake]);
+                    }
+                    free(spaces); //good idea to free at the end of each line
+                    printf("end\n");
+                }*/
+
                 if(chars)
                 {
                     for(itr_chars = 0; chars[itr_chars].h || chars[itr_chars].w;
                             itr_chars++)
                     {
-                        free(vectorize_char(pic, chars + itr_chars));
+                        vectorized = vectorize_char(pic, chars + itr_chars);
+                        if(!vectorized)
+                        {
+                            FREE(chars);
+                            FREE(lines);
+                            FREE(blocs);
+                            FREE(pic);
+                            LOG_ALLOC_ERR();
+                            return NULL;
+                        }
+                        nn_inputs = vector_bool_to_nn(vectorized, 256);
+                        print_matching_char(
+                        compute_character(&neural_network.network, nn_inputs),
+                                NUMBER_PATTERNS);
+                        FREE(vectorized);
                         draw_rectangle(pixbuf, chars + itr_chars, ~0, 0, 0);
+                        if(spaces[itr_spaces] && spaces[itr_spaces] == itr_chars + 1)
+                        {
+                            printf(" ");
+                            itr_spaces++;
+                        }
                     }
                 }
+                FREE(spaces);
                 FREE(chars);
                 draw_rectangle(pixbuf, lines + itr_lines, 0, 0, ~0);
+                printf(" ");
             }
         }
         FREE(lines);
         draw_rectangle(pixbuf, blocs + itr_blocs, 0, ~0, 0);
+        printf("\n");
     }
     FREE(blocs);
     FREE(pic);
@@ -141,18 +190,18 @@ usage : ocrocaml [args] -i file     Process file\n"
 #endif
 "   or : ocrocaml nn [args]          Neural network setup\n"
 #ifndef NOHELP
-"   or : ocrocaml help \"keyword\"    Get help about keyword\n"
+"   or : ocrocaml help \"keyword\"     Get help about keyword\n"
 #endif
 "\n\
 Arguments : \n\
     -f \"filter\"[,opt]               Apply filter with options\n\
-    -i \"file\"                       load picture \"file\"\n\
-    -ofilters \"file\"                save file after applying filters\n\
-    -v                              verbose\n\
-\n\n\
-Neural network arguments :\n\
-\n\n\
-More about this software : http://ocrocaml.ovh/\n");
+    -i \"file\"                       Load picture \"file\"\n\
+    -ofilters \"file\"                Save file after applying filters\n\
+    -v                              Verbose\n\
+\n\
+Neural network arguments :\n");
+    print_nn_help();
+    printf("\nMore about this software : http://ocrocaml.ovh/\n");
 }
 
 static int get_flags(int argc, char *argv[], struct s_flags *flags)

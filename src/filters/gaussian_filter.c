@@ -91,7 +91,7 @@ int gaussian_filter(GdkPixbuf *picture, size_t nb_params, char **params)
     ht = gdk_pixbuf_get_height(picture);
     wt = gdk_pixbuf_get_width(picture);
     pixel = gdk_pixbuf_get_pixels(picture);
-    bpp = 3;
+    bpp = gdk_pixbuf_get_n_channels(picture);
     rowstride = wt * bpp;
     if(!((temp = calloc(wt * bpp * ht, sizeof(unsigned int))) &&
         (temp_out = calloc(wt * bpp * ht, sizeof(unsigned int)))))

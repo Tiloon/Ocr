@@ -23,6 +23,8 @@
 #include "segmentation/vectorize_char.h"
 
 #include "neuralNetwork/nn_main.h"
+#include "neuralNetwork/learn_from_pics.h"
+#include "neuralNetwork/consts.h"
 
 #include "help/help.h"
 
