@@ -102,7 +102,7 @@ static GdkPixbuf* segmentation_full(GdkPixbuf *origin)
     binary_to_gdk(pic, &pixbuf);
     mask = copy_binarypic(pic);
     // TODO : change constants to some document size function
-    morph_erode(mask->pixels, mask->w, mask->h, 25, 25);
+    morph_erode(mask->pixels, mask->w, mask->h, mask->w/100, mask->h/100);
 
     blocs = split_blocs(mask);
 
