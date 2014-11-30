@@ -99,7 +99,19 @@ int nn_main(int argc, char *argv[])
     struct s_flags_nn flags;
 
     //NETWORKS PARAMETERS
+<<<<<<< HEAD
     int NUMBER_FONTS = 1;
+=======
+    int NUMBER_FONTS = 3;
+    int NUMBER_PATTERNS = 52;
+    int NUMBER_PIXELS_CHARACTER = 256;
+    int NUMBER_INPUT_NEURONS = NUMBER_PIXELS_CHARACTER;
+    int NUMBER_HIDDEN_NEURONS = 0.1 * NUMBER_INPUT_NEURONS;
+    long double ETA = 0.4;
+    long double ALPHA = 0.4;
+    long double BIAS = 0.5;
+    long double ERROR = 0.08;
+>>>>>>> 0f17370cf7b577c2605e587240f29f40e9406101
     long double error;
     int iterations;
 
