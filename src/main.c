@@ -78,7 +78,7 @@ static GdkPixbuf* segmentation_full(GdkPixbuf *origin)
     struct s_binarypic *pic, *mask;
     struct s_rectangle *chars, *lines, *blocs;
     struct s_neural_network neural_network;
-    size_t itr_chars, itr_lines, itr_blocs;
+    size_t itr_chars, itr_lines, itr_blocs, itr_spaces, *spaces;
     char *vectorized;
     long double *nn_inputs;
 
@@ -118,6 +118,8 @@ static GdkPixbuf* segmentation_full(GdkPixbuf *origin)
                     itr_lines++)
             {
                 chars = split_chars(pic, lines + itr_lines);
+                spaces = get_spaces(chars);
+                itr_spaces = 0;
                 //debuging spaces
                 /*if(itr_lines == 0 && itr_blocs == 0)
                 {
@@ -154,14 +156,22 @@ static GdkPixbuf* segmentation_full(GdkPixbuf *origin)
                                 NUMBER_PATTERNS);
                         FREE(vectorized);
                         draw_rectangle(pixbuf, chars + itr_chars, ~0, 0, 0);
+                        if(spaces[itr_spaces] && spaces[itr_spaces] == itr_chars + 1)
+                        {
+                            printf(" ");
+                            itr_spaces++;
+                        }
                     }
                 }
+                FREE(spaces);
                 FREE(chars);
                 draw_rectangle(pixbuf, lines + itr_lines, 0, 0, ~0);
+                printf(" ");
             }
         }
         FREE(lines);
         draw_rectangle(pixbuf, blocs + itr_blocs, 0, ~0, 0);
+        printf("\n");
     }
     FREE(blocs);
     FREE(pic);
