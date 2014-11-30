@@ -92,7 +92,7 @@ static GdkPixbuf* segmentation_full(GdkPixbuf *origin)
     binary_to_gdk(pic, &pixbuf);
     mask = copy_binarypic(pic);
     // TODO : change constants to some document size function
-    morph_erode(mask->pixels, mask->w, mask->h, 12, 12);
+    morph_erode(mask->pixels, mask->w, mask->h, 25, 25);
 
     blocs = split_blocs(mask);
 
@@ -108,6 +108,21 @@ static GdkPixbuf* segmentation_full(GdkPixbuf *origin)
                     itr_lines++)
             {
                 chars = split_chars(pic, lines + itr_lines);
+                //debuging spaces
+                /*if(itr_lines == 0 && itr_blocs == 0)
+                {
+                    printf("start\n");
+                    size_t *spaces = get_spaces(chars);
+                    int fake = 0;
+                    for(fake = 0; spaces[fake]; fake++)
+                    {
+                        printf("space number %i = %zu\n",
+                             fake+1, spaces[fake]);
+                    }
+                    free(spaces); //good idea to free at the end of each line
+                    printf("end\n");
+                }*/
+
                 if(chars)
                 {
                     for(itr_chars = 0; chars[itr_chars].h || chars[itr_chars].w;

@@ -1,5 +1,45 @@
 #include "split_chars.h"
 
+unsigned int get_step(struct s_rectangle *car)
+{
+    int i;
+    unsigned int rep = 0;
+
+    for(i = 0; car[i+1].h || car[i+1].w; i++)
+    {
+        //printf("calculating step, i+1.x = %i, i.x = %i, i.w = %i\n", car[i+1].x, car[i].x, car[i].w);
+        rep += car[i+1].x - car[i].x - car[i].w;
+    }
+    return rep / i;
+}
+
+size_t* get_spaces(struct s_rectangle *car)
+{
+    if(car[0].h || !car[0].w || !car[1].h || !car[1].w)
+        return calloc(1,sizeof(size_t)); //0 or 1  car, no spaces
+
+    unsigned int step = get_step(car) * 1.4;
+
+    int l;
+    for(l = 0; car[l].h || car[l].w;l++){} //get lenght
+
+    size_t *rep = calloc(l, sizeof(size_t));
+    int k = 0;
+    size_t i;
+    
+    //printf("step = %i\n", step);
+    for(i = 0; car[i+1].h || car[i+1].w; i++)
+    {
+        //printf("current space = %i\n", car[i+1].x - car[i].x - car[i].w);
+        if(car[i+1].x - car[i].x - car[i].w >= step)
+        {
+            //printf("k = %i and i = %zu\n", k, i);
+            rep[k++] = i+1;
+        }
+    }
+    return rep;
+}
+
 struct s_rectangle* split_chars(struct s_binarypic *picture,
         struct s_rectangle *line)
 {
