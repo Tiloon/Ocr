@@ -86,7 +86,6 @@ void print_matching_char(long double *vector, size_t size)
 
 static int checkFlags(int argc, char* argv[], struct s_flags_nn *flags);
 static int print_flag_error();
-static void print_nn_help();
 
 int nn_main(int argc, char *argv[])
 {
@@ -220,11 +219,10 @@ static int print_flag_error(void)
     return 1;
 }
 
-static void print_nn_help(void)
+void print_nn_help(void)
 {
-    printf("\n\n./main then -\"your arguments\"\n");
-    printf("Here is the list of available args : \n"
-            "-learning -> start the learning process\n"
-            "-serialize -> serialize the NN into serialize\n"
-            "-datasetsfiles 2.png\n\n");
+    printf("\
+    -learning                       Start the learning process\n\
+    -serialize                      Serialize the NN into serialize\n\
+    -datasetsfiles [files]          Comma separated file list\n\n");
 }

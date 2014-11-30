@@ -19,5 +19,6 @@ struct s_flags_nn
 
 void print_matching_char(long double *vector, size_t size);
 int nn_main(int argc, char *argv[]);
+void print_nn_help(void);
 
 #endif

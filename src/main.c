@@ -183,25 +183,25 @@ static GdkPixbuf* segmentation_full(GdkPixbuf *origin)
 static void show_main_help()
 {
     printf("OCAML : Optical Character Analysis and Machine Learning\n\
-            (Compiled : " __DATE__ " " __TIME__")\n\
-            usage : ocrocaml [args] -i file     Process file\n"
+(Compiled : " __DATE__ " " __TIME__")\n\
+usage : ocrocaml [args] -i file     Process file\n"
 #ifndef NOGUI
-            "   or : ocrocaml -gui               Graphical Interface\n"
+"   or : ocrocaml -gui               Graphical Interface\n"
 #endif
-            "   or : ocrocaml nn [args]          Neural network setup\n"
+"   or : ocrocaml nn [args]          Neural network setup\n"
 #ifndef NOHELP
-            "   or : ocrocaml help \"keyword\"    Get help about keyword\n"
+"   or : ocrocaml help \"keyword\"     Get help about keyword\n"
 #endif
-            "\n\
-            Arguments : \n\
-            -f \"filter\"[,opt]               Apply filter with options\n\
-            -i \"file\"                       load picture \"file\"\n\
-            -ofilters \"file\"                save file after applying filters\n\
-            -v                              verbose\n\
-            \n\n\
-            Neural network arguments :\n\
-            \n\n\
-            More about this software : http://ocrocaml.ovh/\n");
+"\n\
+Arguments : \n\
+    -f \"filter\"[,opt]               Apply filter with options\n\
+    -i \"file\"                       Load picture \"file\"\n\
+    -ofilters \"file\"                Save file after applying filters\n\
+    -v                              Verbose\n\
+\n\
+Neural network arguments :\n");
+    print_nn_help();
+    printf("\nMore about this software : http://ocrocaml.ovh/\n");
 }
 
 static int get_flags(int argc, char *argv[], struct s_flags *flags)
