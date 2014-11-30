@@ -84,7 +84,7 @@ void print_matching_char(long double *vector, size_t size)
  *  testing functions
  */
 
-static int checkFlags(int argc, char* argv[], struct s_flags_nn *flags, long double ****inputs);
+static int checkFlags(int argc, char* argv[], struct s_flags_nn *flags);
 static int print_flag_error();
 static void print_nn_help();
 
@@ -99,38 +99,22 @@ int nn_main(int argc, char *argv[])
     struct s_flags_nn flags;
 
     //NETWORKS PARAMETERS
-    int NUMBER_FONTS = 1;
+    size_t fonts_count;
     long double error;
     int iterations;
 
-
-    long double ***all_inputs;
-
-    long double ***all_results = calloc(NUMBER_FONTS, sizeof(long double));
-    long double ***all_targets = calloc(NUMBER_FONTS, sizeof(long double));
+    long double ***all_inputs, ***all_results, ***all_targets;
 
     //inputsUser is used so as to debug/check the NN
-    long double *inputsUser = calloc(NUMBER_PIXELS_CHARACTER,
-            sizeof(long double));
+    //long double *inputsUser;
 
-    int a, b;
-    for(a = 0; a < NUMBER_FONTS; a++)
-    {
-        all_results[a] = calloc(NUMBER_PATTERNS, sizeof(long double));
-        all_targets[a] = calloc(NUMBER_PATTERNS, sizeof(long double));
-    }
-    for(a = 0; a < NUMBER_FONTS; a++)
-        for(b = 0; b < NUMBER_PATTERNS; b++)
-        {
-            all_results[a][b] = calloc(NUMBER_PIXELS_CHARACTER,
-                    sizeof(long double));
-            all_targets[a][b] = calloc(NUMBER_PIXELS_CHARACTER,
-                    sizeof(long double));
-        }
+    size_t i, j;
 
-    for(a = 0; a < NUMBER_FONTS; a++)
-        for(b = 0; b < NUMBER_PATTERNS; b++)
-            all_targets[a][b][b] = 1;
+    fonts_count = 0;
+    //inputsUser = calloc(NUMBER_PIXELS_CHARACTER, sizeof(long double));
+    all_results = calloc(fonts_count, sizeof(long double **));
+    all_targets = calloc(fonts_count, sizeof(long double **));
+
 
     //*******************************************//
     //          VARIABLES AFFECTATIONS           //
@@ -142,7 +126,7 @@ int nn_main(int argc, char *argv[])
     iterations = 0;
     error = 100;
 
-    if(checkFlags(argc, argv, &flags, &all_inputs))
+    if(checkFlags(argc, argv, &flags))
         return 1;
     else
     {
@@ -150,22 +134,39 @@ int nn_main(int argc, char *argv[])
                 NUMBER_INPUT_NEURONS,
                 NUMBER_HIDDEN_NEURONS,
                 BIAS);
-        inputsUser = all_inputs[0][0 + 9];
+        //inputsUser = all_inputs[0][0 + 9];
 
         if(flags.learning == 0)
         {
             //Compute just for checking
-            printResultsVector(compute_character(&neural_network.network,
-                        inputsUser), NUMBER_PATTERNS);
+            //printResultsVector(compute_character(&neural_network.network,
+            //            inputsUser), NUMBER_PATTERNS);
         }
         else
         {
+            all_inputs = load_image_set(flags.dataset_files,
+                    NUMBER_PATTERNS, &fonts_count);
+
+            for(i = 0; i < fonts_count; i++)
+            {
+                all_results[i] = calloc(NUMBER_PATTERNS, sizeof(long double*));
+                all_targets[i] = calloc(NUMBER_PATTERNS, sizeof(long double*));
+                for(j = 0; j < NUMBER_PATTERNS; j++)
+                {
+                    all_results[i][j] = calloc(NUMBER_PIXELS_CHARACTER,
+                            sizeof(long double));
+                    all_targets[i][j] = calloc(NUMBER_PIXELS_CHARACTER,
+                            sizeof(long double));
+                    all_targets[i][j][j] = 1;
+                }
+            }
+
             learning_fonts(&neural_network.network, NUMBER_PATTERNS, &iterations,
-                    NUMBER_FONTS, &all_inputs, &all_targets,
+                    fonts_count, &all_inputs, &all_targets,
                     &all_results,
                     &error, ETA, ALPHA, ERROR);
-            printResultsVector(compute_character(&neural_network.network,
-                        inputsUser), NUMBER_PATTERNS);
+            //printResultsVector(compute_character(&neural_network.network,
+            //            inputsUser), NUMBER_PATTERNS);
             if(flags.serialize)
                 serialization(&neural_network.network);
         }
@@ -174,8 +175,7 @@ int nn_main(int argc, char *argv[])
     return 0;
 }
 
-static int checkFlags(int argc, char *argv[], struct s_flags_nn *flags,
-        long double ****p_all_inputs)
+static int checkFlags(int argc, char *argv[], struct s_flags_nn *flags)
 {
     int i;
     if(argc == 2 && strcmp(argv[1], "-h") == 0)
@@ -205,18 +205,6 @@ static int checkFlags(int argc, char *argv[], struct s_flags_nn *flags,
             {
                 i++;
                 flags->dataset_files = parse_file_cslist(argv[i]);
-                // TODO : REMOVE THIS FUCKIN TEST BUT BZKFERZGFROZKZGKOEROGER
-                // BAPTISTE WANT THIS SHIT BECAUSE SOME TIMES ITS PAIN IN
-                // THE ASS TO UNDERSTAND THAT I MAKE GOOD CODE EVERY FUCKIN
-                // DAY BUT WHEN I SLEEP I MAKE SOME AWESOME FUCKING GODLIKE
-                // CODE.
-                // LET ME SLEEP !!!!!!!!!!!!!!!!!
-
-                // Sleeping is cheating
-                // You are weak
-                // Nixon said : what an old cock sucker
-                size_t dzed;
-                (*p_all_inputs) = load_image_set(flags->dataset_files, 52, &dzed);
             }
         }
         else
