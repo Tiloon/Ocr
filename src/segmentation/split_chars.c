@@ -15,10 +15,14 @@ unsigned int get_step(struct s_rectangle *car)
 
 size_t* get_spaces(struct s_rectangle *car)
 {
-    if(car[0].h || !car[0].w || !car[1].h || !car[1].w)
+    if(!car || !car[0].h || !car[0].w || !car[1].h || !car[1].w)
+    {
+        //printf("why hello there!");
         return calloc(1,sizeof(size_t)); //0 or 1  car, no spaces
+    }
 
-    unsigned int step = get_step(car) * 1.4;
+    unsigned int step = get_step(car) * 1.5;
+    //unsigned int step = 8;
 
     int l;
     for(l = 0; car[l].h || car[l].w;l++){} //get lenght
