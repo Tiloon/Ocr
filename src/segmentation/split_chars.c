@@ -21,7 +21,7 @@ size_t* get_spaces(struct s_rectangle *car)
         return calloc(1,sizeof(size_t)); //0 or 1  car, no spaces
     }
 
-    unsigned int step = get_step(car) * 1.5;
+    unsigned int step = get_step(car) * 2;
     //unsigned int step = 8;
 
     int l;
@@ -31,7 +31,7 @@ size_t* get_spaces(struct s_rectangle *car)
     int k = 0;
     size_t i;
     
-    //printf("step = %i\n", step);
+    printf("step = %i\n", step);
     for(i = 0; car[i+1].h || car[i+1].w; i++)
     {
         //printf("current space = %i\n", car[i+1].x - car[i].x - car[i].w);
