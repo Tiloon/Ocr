@@ -28,28 +28,36 @@ static unsigned char * gdk_to_8bit_grayscale(GdkPixbuf *picture)
     return grayscale;
 }
 
-static float * make_histogram(unsigned char * grayscale, size_t size)
+static long double * make_histogram(unsigned char * grayscale, size_t size)
 {
-    size_t tmp_histo[256];
+    size_t *tmp_histo;
     size_t i;
-    float *histo;
+    long double *histo;
+
+    if(!(tmp_histo = calloc(256, sizeof(size_t))))
+    {
+        LOG_ALLOC_ERR();
+        return NULL;
+    }
 
     for(i = 0; i < size; i++)
         (tmp_histo[grayscale[i]])++;
 
-    if(!(histo = calloc(256, sizeof(float))))
+    if(!(histo = calloc(256, sizeof(long double))))
     {
         LOG_ALLOC_ERR();
         return NULL;
     }
 
     for(i = 0; i < 256; i++)
-        histo[i] = ((float) tmp_histo[i]) / ((float) size);
+        histo[i] = ((long double) tmp_histo[i]) / ((long double) size);
+
+    FREE(tmp_histo);
 
     return histo;
 }
 
-static unsigned char get_treshold(float * histo)
+static unsigned char get_treshold(long double *histo)
 {
     // Otsu's method implemenation
 
@@ -79,6 +87,7 @@ static unsigned char get_treshold(float * histo)
         mB = sumB / wB;
         mF = (sum - sumB) / wF;
         between = wB * wF * (mB - mF) * (mB - mF);
+        printf("%Lf\n", between);
         if(between >= max)
         {
             threshold1 = i;
@@ -87,7 +96,7 @@ static unsigned char get_treshold(float * histo)
             max = between;
         }
     }
-    return (unsigned char)((threshold1 + threshold2) * (long double)0x7F);
+    return (unsigned char)((threshold1 + threshold2) / ((long double)2));
 }
 
 int gdk_to_binary(GdkPixbuf *picture, struct s_binarypic *binarypic)
@@ -95,7 +104,7 @@ int gdk_to_binary(GdkPixbuf *picture, struct s_binarypic *binarypic)
     size_t i;
     unsigned char *grayscale;
     unsigned char threshold;
-    float *histogram;
+    long double *histogram;
 
     binarypic->h = gdk_pixbuf_get_height(picture);
     binarypic->w = gdk_pixbuf_get_width(picture);
@@ -107,6 +116,7 @@ int gdk_to_binary(GdkPixbuf *picture, struct s_binarypic *binarypic)
         return 1;
 
     threshold = get_treshold(histogram);
+    printf("%u", threshold);
 
     if(!(binarypic->pixels = calloc((1 + binarypic->w) * (1 + binarypic->h),
                     sizeof(char))))
