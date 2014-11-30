@@ -8,6 +8,7 @@
 
 #include "sample_filter.h"
 #include "gaussian_filter.h"
+#include "rot_filter.h"
 // Every other filter
 
 /*

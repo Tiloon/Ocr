@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <glib.h>
 
-#define FILTER_LIST_SZE 2
+#define FILTER_LIST_SZE 3
 
 const struct s_filter_entry filter_list[] = {
     {
@@ -20,7 +20,15 @@ const struct s_filter_entry filter_list[] = {
 #ifndef NOHELP
         gaussian_filter_help_msg
 #endif
+    },
+    {
+        rot_filter,
+        rot_filter_name,
+#ifndef NOHELP
+        rot_filter_help_msg
+#endif
     }
+
     // Other filters...
 };
 
