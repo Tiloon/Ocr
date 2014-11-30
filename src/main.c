@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
         if(filters_apply_all(picture_get_image()))
         {
             if(FLAGS->verbosity)
-                printf(BOLDRED "FAIL : " RESET "can't apply all filters\n");
+                printf(BOLDRED "FAIL: " RESET "can't apply all filters\n");
             return 1;
         }
         if(FLAGS->verbosity)
@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
             if(picture_save_to_file(FLAGS->filteroutput))
             {
                 if(FLAGS->verbosity)
-                    printf(BOLDRED "FAIL : " RESET "can't save to %s\n",
+                    printf(BOLDRED "FAIL: " RESET "can't save to %s\n",
                             FLAGS->filteroutput);
                 return 1;
             } else
@@ -70,12 +70,17 @@ int main(int argc, char *argv[])
     return 0;
 }
 
+
+
 static GdkPixbuf* segmentation_full(GdkPixbuf *origin)
 {
     GdkPixbuf *pixbuf;
     struct s_binarypic *pic, *mask;
     struct s_rectangle *chars, *lines, *blocs;
+    struct s_neural_network neural_network;
     size_t itr_chars, itr_lines, itr_blocs;
+    char *vectorized;
+    long double *nn_inputs;
 
     mask = NULL;
     if(!(pic = calloc(1, sizeof(struct s_binarypic))))
@@ -87,6 +92,11 @@ static GdkPixbuf* segmentation_full(GdkPixbuf *origin)
     blocs = NULL;
     lines = NULL;
     chars = NULL;
+
+    initialization_neural_network(&neural_network, NUMBER_PATTERNS,
+            NUMBER_INPUT_NEURONS,
+            NUMBER_HIDDEN_NEURONS,
+            BIAS);
 
     gdk_to_binary(origin, pic);
     binary_to_gdk(pic, &pixbuf);
@@ -113,7 +123,21 @@ static GdkPixbuf* segmentation_full(GdkPixbuf *origin)
                     for(itr_chars = 0; chars[itr_chars].h || chars[itr_chars].w;
                             itr_chars++)
                     {
-                        free(vectorize_char(pic, chars + itr_chars));
+                        vectorized = vectorize_char(pic, chars + itr_chars);
+                        if(!vectorized)
+                        {
+                            FREE(chars);
+                            FREE(lines);
+                            FREE(blocs);
+                            FREE(pic);
+                            LOG_ALLOC_ERR();
+                            return NULL;
+                        }
+                        nn_inputs = vector_bool_to_nn(vectorized, 256);
+                        print_matching_char(
+                        compute_character(&neural_network.network, nn_inputs),
+                                NUMBER_PATTERNS);
+                        FREE(vectorized);
                         draw_rectangle(pixbuf, chars + itr_chars, ~0, 0, 0);
                     }
                 }
@@ -134,25 +158,25 @@ static GdkPixbuf* segmentation_full(GdkPixbuf *origin)
 static void show_main_help()
 {
     printf("OCAML : Optical Character Analysis and Machine Learning\n\
-(Compiled : " __DATE__ " " __TIME__")\n\
-usage : ocrocaml [args] -i file     Process file\n"
+            (Compiled : " __DATE__ " " __TIME__")\n\
+            usage : ocrocaml [args] -i file     Process file\n"
 #ifndef NOGUI
-"   or : ocrocaml -gui               Graphical Interface\n"
+            "   or : ocrocaml -gui               Graphical Interface\n"
 #endif
-"   or : ocrocaml nn [args]          Neural network setup\n"
+            "   or : ocrocaml nn [args]          Neural network setup\n"
 #ifndef NOHELP
-"   or : ocrocaml help \"keyword\"    Get help about keyword\n"
+            "   or : ocrocaml help \"keyword\"    Get help about keyword\n"
 #endif
-"\n\
-Arguments : \n\
-    -f \"filter\"[,opt]               Apply filter with options\n\
-    -i \"file\"                       load picture \"file\"\n\
-    -ofilters \"file\"                save file after applying filters\n\
-    -v                              verbose\n\
-\n\n\
-Neural network arguments :\n\
-\n\n\
-More about this software : http://ocrocaml.ovh/\n");
+            "\n\
+            Arguments : \n\
+            -f \"filter\"[,opt]               Apply filter with options\n\
+            -i \"file\"                       load picture \"file\"\n\
+            -ofilters \"file\"                save file after applying filters\n\
+            -v                              verbose\n\
+            \n\n\
+            Neural network arguments :\n\
+            \n\n\
+            More about this software : http://ocrocaml.ovh/\n");
 }
 
 static int get_flags(int argc, char *argv[], struct s_flags *flags)

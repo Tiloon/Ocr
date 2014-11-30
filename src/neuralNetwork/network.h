@@ -13,17 +13,17 @@
 long double random_values(void);
 
 void initialization_neural_network(struct s_neural_network *neural_network,
-				   int nb_patterns, int nb_inputs,
-                                   int nb_hidden_neurons, long double bias);
+        int nb_patterns, int nb_inputs,
+        int nb_hidden_neurons, long double bias);
 void initialize_network(struct s_network *network,
         struct s_layer *input, struct s_layer *hidden, struct s_layer *output);
 void super_initialization_network(struct s_network *network,
-				  struct s_layer *input,
-				  struct s_layer *hidden,
-				  struct s_layer *output,
-				  int nb_patterns, int nb_inputs,
-				  int nb_hidden_neurons,
-				  long double bias);
+        struct s_layer *input,
+        struct s_layer *hidden,
+        struct s_layer *output,
+        int nb_patterns, int nb_inputs,
+        int nb_hidden_neurons,
+        long double bias);
 void free_network(struct s_network *network);
 //Compute the pattern (call setInputs to set a pattern)
 void feedforward(struct s_network *network);
