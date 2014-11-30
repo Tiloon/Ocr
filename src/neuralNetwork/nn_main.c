@@ -54,10 +54,10 @@ void printInputVector(long double *vector, size_t size)
     {
         if(u != 0 && u % 16 == 0)
             printf("\n");
-	if(vector[u] > 0)
-	    printf("+%Lf", vector[u]);
-	else
-	    printf("%Lf", vector[u]);
+        if(vector[u] > 0)
+            printf("+%Lf", vector[u]);
+        else
+            printf("%Lf", vector[u]);
     }
 }
 
@@ -70,6 +70,14 @@ void printResultsVector(long double *vector, size_t size)
     }
 }
 
+void print_matching_char(long double *vector, size_t size)
+{
+    size_t max, i;
+    max = 0;
+    for(i = 0; i < size; i++)
+        max = (vector[max] < vector[i]) ? i : max;
+    printf("%c", "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"[max]);
+}
 
 
 /*
@@ -91,15 +99,7 @@ int nn_main(int argc, char *argv[])
     struct s_flags_nn flags;
 
     //NETWORKS PARAMETERS
-    int NUMBER_FONTS = 3;
-    int NUMBER_PATTERNS = 52;
-    int NUMBER_PIXELS_CHARACTER = 256;
-    int NUMBER_INPUT_NEURONS = NUMBER_PIXELS_CHARACTER;
-    int NUMBER_HIDDEN_NEURONS = 0.1 * NUMBER_INPUT_NEURONS;
-    long double ETA = 0.4;
-    long double ALPHA = 0.4;
-    long double BIAS = 0.5;
-    long double ERROR = 0.08;
+    int NUMBER_FONTS = 1;
     long double error;
     int iterations;
 
@@ -111,26 +111,26 @@ int nn_main(int argc, char *argv[])
 
     //inputsUser is used so as to debug/check the NN
     long double *inputsUser = calloc(NUMBER_PIXELS_CHARACTER,
-				     sizeof(long double));
+            sizeof(long double));
 
     int a, b;
     for(a = 0; a < NUMBER_FONTS; a++)
     {
-	all_results[a] = calloc(NUMBER_PATTERNS, sizeof(long double));
-	all_targets[a] = calloc(NUMBER_PATTERNS, sizeof(long double));
+        all_results[a] = calloc(NUMBER_PATTERNS, sizeof(long double));
+        all_targets[a] = calloc(NUMBER_PATTERNS, sizeof(long double));
     }
     for(a = 0; a < NUMBER_FONTS; a++)
-	for(b = 0; b < NUMBER_PATTERNS; b++)
-	{
-	    all_results[a][b] = calloc(NUMBER_PIXELS_CHARACTER,
-				       sizeof(long double));
-	    all_targets[a][b] = calloc(NUMBER_PIXELS_CHARACTER,
-				       sizeof(long double));
-	}
+        for(b = 0; b < NUMBER_PATTERNS; b++)
+        {
+            all_results[a][b] = calloc(NUMBER_PIXELS_CHARACTER,
+                    sizeof(long double));
+            all_targets[a][b] = calloc(NUMBER_PIXELS_CHARACTER,
+                    sizeof(long double));
+        }
 
     for(a = 0; a < NUMBER_FONTS; a++)
-	for(b = 0; b < NUMBER_PATTERNS; b++)
-	    all_targets[a][b][b] = 1;
+        for(b = 0; b < NUMBER_PATTERNS; b++)
+            all_targets[a][b][b] = 1;
 
     //*******************************************//
     //          VARIABLES AFFECTATIONS           //
@@ -146,36 +146,36 @@ int nn_main(int argc, char *argv[])
         return 1;
     else
     {
-	initialization_neural_network(&neural_network, NUMBER_PATTERNS,
-				      NUMBER_INPUT_NEURONS,
-				      NUMBER_HIDDEN_NEURONS,
-				      BIAS);
-	inputsUser = all_inputs[0][0 + 9];
+        initialization_neural_network(&neural_network, NUMBER_PATTERNS,
+                NUMBER_INPUT_NEURONS,
+                NUMBER_HIDDEN_NEURONS,
+                BIAS);
+        inputsUser = all_inputs[0][0 + 9];
 
-	if(flags.learning == 0)
-	{
-	    //Compute just for checking
-	    printResultsVector(compute_character(&neural_network.network,
-						 inputsUser), NUMBER_PATTERNS);
-	}
-	else
-            {
-		learning_fonts(&neural_network.network, NUMBER_PATTERNS, &iterations,
-			       NUMBER_FONTS, &all_inputs, &all_targets,
-			       &all_results,
-			       &error, ETA, ALPHA, ERROR);
-		printResultsVector(compute_character(&neural_network.network,
-						     inputsUser), NUMBER_PATTERNS);
-		if(flags.serialize)
-                    serialization(&neural_network.network);
-            }
+        if(flags.learning == 0)
+        {
+            //Compute just for checking
+            printResultsVector(compute_character(&neural_network.network,
+                        inputsUser), NUMBER_PATTERNS);
+        }
+        else
+        {
+            learning_fonts(&neural_network.network, NUMBER_PATTERNS, &iterations,
+                    NUMBER_FONTS, &all_inputs, &all_targets,
+                    &all_results,
+                    &error, ETA, ALPHA, ERROR);
+            printResultsVector(compute_character(&neural_network.network,
+                        inputsUser), NUMBER_PATTERNS);
+            if(flags.serialize)
+                serialization(&neural_network.network);
+        }
     }
     printf("\n\n");
     return 0;
 }
 
 static int checkFlags(int argc, char *argv[], struct s_flags_nn *flags,
-		      long double ****p_all_inputs)
+        long double ****p_all_inputs)
 {
     int i;
     if(argc == 2 && strcmp(argv[1], "-h") == 0)
@@ -197,7 +197,7 @@ static int checkFlags(int argc, char *argv[], struct s_flags_nn *flags,
                 return print_flag_error();
             flags->serialize = 1;
         }
-	else if(!strcmp(argv[i], "-datasetsfiles"))
+        else if(!strcmp(argv[i], "-datasetsfiles"))
         {
             if(i + 1 >= argc)
                 return print_flag_error();
@@ -212,12 +212,12 @@ static int checkFlags(int argc, char *argv[], struct s_flags_nn *flags,
                 // CODE.
                 // LET ME SLEEP !!!!!!!!!!!!!!!!!
 
-		// Sleeping is cheating
-		// You are weak
-		// Nixon said : what an old cock sucker
-		size_t dzed;
+                // Sleeping is cheating
+                // You are weak
+                // Nixon said : what an old cock sucker
+                size_t dzed;
                 (*p_all_inputs) = load_image_set(flags->dataset_files, 52, &dzed);
-	    }
+            }
         }
         else
             return print_flag_error();
@@ -236,7 +236,7 @@ static void print_nn_help(void)
 {
     printf("\n\n./main then -\"your arguments\"\n");
     printf("Here is the list of available args : \n"
-	   "-learning -> start the learning process\n"
-	   "-serialize -> serialize the NN into serialize\n"
-	   "-datasetsfiles 2.png\n\n");
+            "-learning -> start the learning process\n"
+            "-serialize -> serialize the NN into serialize\n"
+            "-datasetsfiles 2.png\n\n");
 }

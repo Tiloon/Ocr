@@ -5,8 +5,10 @@
 #define PTTS 3
 #include <stdlib.h>
 #include <stdio.h>
-#include "network.h"
 #include <string.h>
+
+#include "consts.h"
+#include "network.h"
 
 struct s_flags_nn
 {
@@ -15,6 +17,7 @@ struct s_flags_nn
     int serialize;
 };
 
+void print_matching_char(long double *vector, size_t size);
 int nn_main(int argc, char *argv[]);
 
 #endif
