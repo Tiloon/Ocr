@@ -82,7 +82,7 @@ static int append_to_output(wchar_t *word, wchar_t **output,
         {
             (*output_size) += TEXT_BLOCK_SIZE;
             (*output) = realloc(*output, (*output_size) * sizeof(wchar_t));
-            if(*output)
+            if(!(*output))
             {
                 LOG_ALLOC_ERR();
                 return -1;
@@ -91,7 +91,7 @@ static int append_to_output(wchar_t *word, wchar_t **output,
         (*output)[*output_pos + i] = word[i];
     }
 
-    (*output_size) += i;
+    (*output_pos) += i;
     (*output)[*output_size] = 0;
     return 0;
 }
@@ -104,7 +104,7 @@ static GdkPixbuf* segmentation_full(GdkPixbuf *origin)
     struct s_neural_network neural_network;
     struct s_dictionary *dictionary;
     size_t itr_chars, itr_lines, itr_blocs, itr_spaces, *spaces, output_size,
-           output_pos, i;
+           output_pos;
     char *vectorized;
     long double *nn_inputs;
     wchar_t *output, *current;
@@ -127,9 +127,9 @@ static GdkPixbuf* segmentation_full(GdkPixbuf *origin)
         //dictionary = load_dictionary(FLAGS->dictionary_file);
     }
     initialization_neural_network(&neural_network, NUMBER_PATTERNS,
-				  NUMBER_INPUT_NEURONS,
-				  NUMBER_HIDDEN_NEURONS,
-				  BIAS);
+            NUMBER_INPUT_NEURONS,
+            NUMBER_HIDDEN_NEURONS,
+            BIAS);
 
     output_pos = 0;
     output_size = TEXT_BLOCK_SIZE;
@@ -139,8 +139,8 @@ static GdkPixbuf* segmentation_full(GdkPixbuf *origin)
     gdk_to_binary(origin, pic);
     binary_to_gdk(pic, &pixbuf);
     mask = copy_binarypic(pic);
-    // TODO : change constants to some document size function
-    morph_erode(mask->pixels, mask->w, mask->h, mask->w/100, mask->h/100);
+
+    morph_erode(mask->pixels, mask->w, mask->h, mask->w / 100, mask->h / 100);
 
     blocs = split_blocs(mask);
 
@@ -176,37 +176,34 @@ static GdkPixbuf* segmentation_full(GdkPixbuf *origin)
                         }
                         nn_inputs = vector_bool_to_nn(vectorized, 256);
                         print_matching_char(
-			    compute_character(&neural_network.network, nn_inputs),
-			    NUMBER_PATTERNS, &neural_network.network);
+                                compute_character(&neural_network.network,
+                                    nn_inputs),
+                                NUMBER_PATTERNS, &neural_network.network);
                         FREE(vectorized);
                         draw_rectangle(pixbuf, chars + itr_chars, ~0, 0, 0);
                         if(spaces[itr_spaces] && spaces[itr_spaces] == itr_chars + 1)
                         {
-                            printf("eeee\n");
-                            append_to_output(L" a", &output, &output_size,
+                            append_to_output(L" ", &output, &output_size,
                                     &output_pos);
                             itr_spaces++;
-                            wprintf(L"%s", output);
-                            for(i = output_size; i < output_size; i++)
-                                current[i] = 0;
-                            printf("re\n");
                         }
                     }
                 }
                 FREE(spaces);
                 FREE(chars);
                 draw_rectangle(pixbuf, lines + itr_lines, 0, 0, ~0);
-                printf(" ");
+                append_to_output(L" ", &output, &output_size, &output_pos);
             }
         }
         FREE(lines);
         draw_rectangle(pixbuf, blocs + itr_blocs, 0, ~0, 0);
-        printf("\n");
+        append_to_output(L"\n", &output, &output_size, &output_pos);
     }
     FREE(blocs);
     FREE(pic);
-
-    wprintf(L"%s", output);
+    // Wprintf + fwide or printf because a stream can only be byte OR wide
+    // oriented, but not both
+    printf("%ls", output);
 
     return pixbuf;
 }
@@ -215,24 +212,24 @@ static GdkPixbuf* segmentation_full(GdkPixbuf *origin)
 static void show_main_help()
 {
     printf("OCAML : Optical Character Analysis and Machine Learning\n\
-(Compiled : " __DATE__ " " __TIME__")\n\
-usage : ocrocaml [args] -i file     Process file\n"
+            (Compiled : " __DATE__ " " __TIME__")\n\
+            usage : ocrocaml [args] -i file     Process file\n"
 #ifndef NOGUI
-"   or : ocrocaml -gui               Graphical Interface\n"
+            "   or : ocrocaml -gui               Graphical Interface\n"
 #endif
-"   or : ocrocaml nn [args]          Neural network setup\n"
+            "   or : ocrocaml nn [args]          Neural network setup\n"
 #ifndef NOHELP
-"   or : ocrocaml help \"keyword\"     Get help about keyword\n"
+            "   or : ocrocaml help \"keyword\"     Get help about keyword\n"
 #endif
-"\n\
-Arguments : \n\
-    -f \"filter\"[,opt]               Apply filter with options\n\
-    -i \"file\"                       Load picture \"file\"\n\
-    -ofilters \"file\"                Save file after applying filters\n\
-    -dictionary \"file\"              Load a spell checking file\n\
-    -v                              Verbose\n\
-\n\
-Neural network arguments :\n");
+            "\n\
+            Arguments : \n\
+            -f \"filter\"[,opt]               Apply filter with options\n\
+            -i \"file\"                       Load picture \"file\"\n\
+            -ofilters \"file\"                Save file after applying filters\n\
+            -dictionary \"file\"              Load a spell checking file\n\
+            -v                              Verbose\n\
+            \n\
+            Neural network arguments :\n");
     print_nn_help();
     printf("\nMore about this software : http://ocrocaml.ovh/\n");
 }
