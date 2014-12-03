@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <wchar.h>
 
 #include "serialization.h"
 
@@ -12,6 +13,13 @@
 
 void network_to_text(FILE *file, struct s_network *network)
 {
+    // FREAKIN PREVENTIVE CALLOC
+    // SHOULD BE OUTPUT LEN
+    // HARDCORE CODIN' ISNT IT ?
+
+    network->charset = calloc(666, sizeof(wchar_t));
+    fwscanf(file, L"%ls", network->charset);
+
     set_general_data(file, network);
     set_specific_data(file, network);
 }
@@ -63,12 +71,14 @@ void set_number_weights(FILE *file, struct s_network *network)
     nb_w_outputs = network->output->nbWeights;
     fprintf(file, "%d %d %d \n", nb_w_inputs, nb_w_hidden, nb_w_outputs);
 }
+
 void set_weights(FILE *file, struct s_network *network)
 {
     set_weights_layer(file, network->input);
     set_weights_layer(file, network->hidden);
     set_weights_layer(file, network->output);
 }
+
 void set_bias(FILE *file, struct s_network *network)
 {
     set_bias_layer(file, network->input);
@@ -100,6 +110,7 @@ void set_weights_layer(FILE *file, struct s_layer *layer)
             fprintf(file, "%Lf \n", layer->weights[nb_units][nb_weights]);
     }
 }
+
 void set_bias_layer(FILE *file, struct s_layer *layer)
 {
     if(file == NULL)
@@ -126,6 +137,7 @@ void text_to_network(FILE *file, struct s_network *network)
     get_general_data(file, network);
     get_specific_data(file, network);
 }
+
 void get_general_data(FILE *file, struct s_network *network)
 {
     fscanf(file, "%d %d %d %d %d %d",

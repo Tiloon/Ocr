@@ -1,7 +1,7 @@
 #include "dictionary.h"
 
-static long double get_matching_word_probability(char *charset,
-        size_t charset_count, char *word, long double **chars)
+static long double get_matching_word_probability(wchar_t *charset,
+        size_t charset_count, wchar_t *word, long double **chars)
 {
     size_t i, j;
     long double probability;
@@ -27,8 +27,8 @@ static long double get_matching_word_probability(char *charset,
     return probability * i; // Probability times word size.
 }
 
-char * approcimative_match(long double **chars, size_t count, char *text,
-        size_t text_len, struct s_dictionary *dictionary, char *charset,
+wchar_t * approcimative_match(long double **chars, size_t count, wchar_t *text,
+        size_t text_len, struct s_dictionary *dictionary, wchar_t *charset,
         size_t charset_count)
 {
     size_t index, i;
@@ -36,7 +36,6 @@ char * approcimative_match(long double **chars, size_t count, char *text,
 
     if(count == 0)
         return NULL;
-
 
     // TODO
     if((text[text_len] == '.') ||
@@ -69,7 +68,8 @@ struct s_dictionary * load_dictionary(char *filename)
 {
     struct s_dictionary *dictionary;
     struct stat stats;
-    char *file, c;
+    wchar_t *file;
+    wint_t c;
     FILE *fd;
     size_t i, j, k, l;
 
@@ -84,7 +84,7 @@ struct s_dictionary * load_dictionary(char *filename)
         return NULL;
     }
 
-    if(!(file = calloc(stats.st_size, sizeof(char))))
+    if(!(file = calloc(stats.st_size, sizeof(wchar_t))))
     {
         FREE(dictionary);
         LOG_ALLOC_ERR();
@@ -99,14 +99,15 @@ struct s_dictionary * load_dictionary(char *filename)
         return NULL;
     }
 
-    while(!feof(fd))
+    dictionary->indexes = calloc(2, sizeof(size_t));
+
+    while((c = getwc(fd)) != WEOF)
     {
-        c = fgetc(fd);
         if(c == '\n')
         {
             file[i] = 0;
             dictionary->words = realloc(dictionary->words, (j + 2) *
-                    sizeof(char*));
+                    sizeof(wchar_t*));
             dictionary->words[j] = file + i + 1;
             if(k > l)
             {
@@ -117,47 +118,20 @@ struct s_dictionary * load_dictionary(char *filename)
                     dictionary->indexes[l] = 0;
 
                 dictionary->indexes[k] = j;
+                dictionary->indexes[k + 1] = 0;
             }
             j++;
             k = 0;
         }
-        file[i] = c;
-        i++;
-        k++;
+        else
+        {
+            file[i] = c;
+            i++;
+            k++;
+        }
     }
 
     fclose(fd);
 
     return dictionary;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

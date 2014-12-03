@@ -19,7 +19,6 @@
 #include "picture/convert_pic.h"
 #include "segmentation/draw_rectangle.h"
 #include "segmentation/morphology.h"
-
 #include "segmentation/vectorize_char.h"
 
 #include "neuralNetwork/nn_main.h"
@@ -27,6 +26,8 @@
 #include "neuralNetwork/consts.h"
 
 #include "help/help.h"
+
+#include "improvements/dictionary.h"
 
 #ifndef NOGUI
 #include "gui/gui.h"
@@ -59,8 +60,9 @@
 struct s_flags {
     char verbosity;
     char gui;
-    char* filename;
-    char* filteroutput;
+    char *filename;
+    char *filteroutput;
+    char *dictionary_file;
     // Other flags
 };
 
