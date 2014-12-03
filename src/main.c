@@ -212,24 +212,24 @@ static GdkPixbuf* segmentation_full(GdkPixbuf *origin)
 static void show_main_help()
 {
     printf("OCAML : Optical Character Analysis and Machine Learning\n\
-            (Compiled : " __DATE__ " " __TIME__")\n\
-            usage : ocrocaml [args] -i file     Process file\n"
+(Compiled : " __DATE__ " " __TIME__")\n\
+usage : ocrocaml [args] -i file     Process file\n"
 #ifndef NOGUI
-            "   or : ocrocaml -gui               Graphical Interface\n"
+"   or : ocrocaml -gui               Graphical Interface\n"
 #endif
-            "   or : ocrocaml nn [args]          Neural network setup\n"
+"   or : ocrocaml nn [args]          Neural network setup\n"
 #ifndef NOHELP
-            "   or : ocrocaml help \"keyword\"     Get help about keyword\n"
+"   or : ocrocaml help \"keyword\"     Get help about keyword\n"
 #endif
-            "\n\
-            Arguments : \n\
-            -f \"filter\"[,opt]               Apply filter with options\n\
-            -i \"file\"                       Load picture \"file\"\n\
-            -ofilters \"file\"                Save file after applying filters\n\
-            -dictionary \"file\"              Load a spell checking file\n\
-            -v                              Verbose\n\
-            \n\
-            Neural network arguments :\n");
+"\n\
+Arguments : \n\
+    -f \"filter\"[,opt]               Apply filter with options\n\
+    -i \"file\"                       Load picture \"file\"\n\
+    -ofilters \"file\"                Save file after applying filters\n\
+    -osegmentation \"file\"           Save file after segmentation\n\
+    -dictionary \"file\"              Load a spell checking file\n\
+    -v                              Verbose\n\n\
+Neural network arguments :\n");
     print_nn_help();
     printf("\nMore about this software : http://ocrocaml.ovh/\n");
 }
@@ -295,8 +295,20 @@ static int get_flags(int argc, char *argv[], struct s_flags *flags)
                 return print_flag_error(argv[i - 1], FLAG_MISSING_ARG);
             flags->dictionary_file = argv[i];
         }
+        else if(!strcmp(argv[i], "-osegmentation"))
+        {
+            if(flags->segmentation_output)
+                return print_flag_error(argv[i], FLAG_ALREADY_SET);
+
+            i++;
+            if(i >= argc)
+                return print_flag_error(argv[i - 1], FLAG_MISSING_ARG);
+            flags->segmentation_output = argv[i];
+        }
         else
+        {
             return print_flag_error(argv[i], FLAG_UNDEFINED);
+        }
     }
     return 0;
 }

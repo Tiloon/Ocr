@@ -64,6 +64,7 @@ struct s_flags {
     char gui;
     char *filename;
     char *filteroutput;
+    char *segmentation_output;
     char *dictionary_file;
     // Other flags
 };
