@@ -21,8 +21,12 @@ void initialize_network(struct s_network *network, struct s_layer *input,
 
 void initialization_neural_network(struct s_neural_network *neural_network,
 				   int nb_patterns, int nb_inputs,
-				   int nb_hidden_neurons, long double bias)
+				   int nb_hidden_neurons, long double bias,
+				   wchar_t *charset)
 {
+    neural_network->network.charset = calloc (150, sizeof(wchar_t));
+    neural_network->network.charset = charset;
+
     super_initialization_network(&neural_network->network,
 				 &neural_network->input,
 				 &neural_network->hidden,
@@ -30,6 +34,7 @@ void initialization_neural_network(struct s_neural_network *neural_network,
 				 nb_patterns, nb_inputs,
 				 nb_hidden_neurons,
 				 bias);
+
 }
 
 void super_initialization_network(struct s_network *network,
@@ -105,12 +110,17 @@ long double *compute_character (struct s_network *network,
 void import_serialization(struct s_network *network)
 {
     FILE *file = NULL;
+    FILE *file2 = NULL;
     file = fopen("serialized", "r+");
+    file2 = fopen("charset", "r+");
     if(file == NULL)
     {
 	printf("File not opened\n");
         return;
     }
-    text_to_network(file, network);
+    if(file2 == NULL)
+	printf("charset not found \n");
+    text_to_network(file, network, file2);
     fclose(file);
+    fclose(file2);
 }

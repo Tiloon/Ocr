@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <wchar.h>
-
 #include "serialization.h"
 
 /*
@@ -11,22 +10,27 @@
  *
  */
 
-void network_to_text(FILE *file, struct s_network *network)
+
+void network_to_text(FILE *file, struct s_network *network, FILE *file2)
 {
-    // FREAKIN PREVENTIVE CALLOC
-    // SHOULD BE OUTPUT LEN
-    // HARDCORE CODIN' ISNT IT ?
-
-    network->charset = calloc(666, sizeof(wchar_t));
-    fwscanf(file, L"%ls", network->charset);
-
     set_general_data(file, network);
     set_specific_data(file, network);
+    set_charset(file2);
+}
+
+void set_charset(FILE *file)
+{
+    char *data = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ\"#$%&\
+'()*+,-./0123456789:;=?@\[\\]_{|\0";
+
+    wchar_t *data2 = calloc(200, sizeof(wchar_t));
+    swprintf(data2, 200, L"%hs", data);
+
+    fwprintf(file, data2);
 }
 
 void set_general_data(FILE *file, struct s_network *network)
 {
-    //    set_header_file(file);
     set_number_units(file, network);
     set_number_weights(file, network);
 }
@@ -34,15 +38,7 @@ void set_general_data(FILE *file, struct s_network *network)
 void set_specific_data(FILE *file, struct s_network *network)
 {
     set_weights_bias(file, network);
-    //set_weights(file, network);
-    //set_bias(file, network);
 }
-
-/*void set_header_file(FILE *file)
-  {
-  fprintf(file, "OSF : OCAML Serialization Format 1.0 24/11/05 \n");
-  }
-  */
 
 void set_number_units(FILE *file, struct s_network *network)
 {
@@ -69,6 +65,7 @@ void set_number_weights(FILE *file, struct s_network *network)
     nb_w_inputs = network->input->nbWeights;
     nb_w_hidden = network->hidden->nbWeights;
     nb_w_outputs = network->output->nbWeights;
+    printf("ok");
     fprintf(file, "%d %d %d \n", nb_w_inputs, nb_w_hidden, nb_w_outputs);
 }
 
@@ -132,10 +129,11 @@ void set_bias_layer(FILE *file, struct s_layer *layer)
  *
  */
 
-void text_to_network(FILE *file, struct s_network *network)
+void text_to_network(FILE *file, struct s_network *network, FILE *file2)
 {
     get_general_data(file, network);
     get_specific_data(file, network);
+    get_charset(file2, network);
 }
 
 void get_general_data(FILE *file, struct s_network *network)
@@ -180,4 +178,9 @@ void get_weights_layer(FILE *file, struct s_layer *layer)
         for(nb_weights = 0; nb_weights < layer->nbWeights; nb_weights++)
             fscanf(file, "%Lf", &layer->weights[nb_units][nb_weights]);
     }
+}
+
+void get_charset(FILE *file, struct s_network *network)
+{
+    fwscanf(file, L"%ls", network->charset);
 }

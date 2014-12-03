@@ -15,16 +15,14 @@
 
 static void serialization(struct s_network *network)
 {
-    FILE *file = NULL;
+    FILE *file = NULL, *file2 = NULL;
     file = fopen("serialized", "w+");
-    if(file == NULL)
-    {
-        printf("File not opened\n");
-        return;
-    }
-    network_to_text(file, network);
+    file2 = fopen("charset", "w+");
+    network_to_text(file, network, file2);
     fclose(file);
+    fclose(file2);
 }
+
 
 void printMatrix (long double ***matrix, int x, int y)
 {
@@ -130,10 +128,15 @@ int nn_main(int argc, char *argv[])
         return 1;
     else
     {
-        initialization_neural_network(&neural_network, NUMBER_PATTERNS,
-                NUMBER_INPUT_NEURONS,
-                NUMBER_HIDDEN_NEURONS,
-                BIAS);
+	wchar_t *data = calloc (300, sizeof(wchar_t));
+	swprintf(data, 300, L"%hs", flags.reference_order);
+	initialization_neural_network(&neural_network, NUMBER_PATTERNS,
+				      NUMBER_INPUT_NEURONS,
+				      NUMBER_HIDDEN_NEURONS,
+				      BIAS, data);
+	int h;
+	for(h = 0; h < 80; h++)
+	    printf("%d\n", neural_network.network.charset[h]);
         //inputsUser = all_inputs[0][0 + 9];
 
         if(flags.learning == 0)
@@ -207,6 +210,15 @@ static int checkFlags(int argc, char *argv[], struct s_flags_nn *flags)
                 flags->dataset_files = parse_file_cslist(argv[i]);
             }
         }
+/*	else if(!strcmp(argv[i], "-charset"))
+	{
+	    if(i + 1 >= argc)
+                return print_flag_error();
+	    i++;
+	    flags->reference_order = calloc(200, sizeof(char));
+	    flags->reference_order = argv[i];
+	}
+*/
         else
             return print_flag_error();
     }
@@ -224,6 +236,7 @@ void print_nn_help(void)
 {
     printf("\
     -learning                       Start the learning process\n\
+    - /* charset [string. Order DOES matter] Set the order of the converging matrix*/\n	\
     -serialize                      Serialize the NN into serialize\n\
     -datasetsfiles [files]          Comma separated file list\n\n");
 }

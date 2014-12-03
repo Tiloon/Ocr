@@ -127,11 +127,12 @@ static GdkPixbuf* segmentation_full(GdkPixbuf *origin)
             printf(BOLDCYAN "Loading dictionary\n" RESET);
         //dictionary = load_dictionary(FLAGS->dictionary_file);
     }
-
+    wchar_t *charset = calloc(1, sizeof(wchar_t));
+    charset[0] = 10;
     initialization_neural_network(&neural_network, NUMBER_PATTERNS,
-            NUMBER_INPUT_NEURONS,
-            NUMBER_HIDDEN_NEURONS,
-            BIAS);
+				  NUMBER_INPUT_NEURONS,
+				  NUMBER_HIDDEN_NEURONS,
+				  BIAS, charset);
 
     output_pos = 0;
     output_size = TEXT_BLOCK_SIZE;
@@ -179,7 +180,7 @@ static GdkPixbuf* segmentation_full(GdkPixbuf *origin)
                         nn_inputs = vector_bool_to_nn(vectorized, 256);
                         print_matching_char(
                         compute_character(&neural_network.network, nn_inputs),
-                                NUMBER_PATTERNS);
+			NUMBER_PATTERNS, &neural_network.network);
                         FREE(vectorized);
                         draw_rectangle(pixbuf, chars + itr_chars, ~0, 0, 0);
                         if(spaces[itr_spaces] && spaces[itr_spaces] == itr_chars + 1)
