@@ -76,6 +76,11 @@ void print_matching_char(long double *vector, size_t size, struct s_network
     for(i = 0; i < size; i++)
         max = (vector[max] < vector[i]) ? i : max;
     wprintf(L"%c", (network->charset)[max]);
+
+    /*
+     * print the string in charset
+     */
+                //wprintf(L"%ls", network->charset);
 }
 
 
@@ -128,25 +133,12 @@ int nn_main(int argc, char *argv[])
         return 1;
     else
     {
-	wchar_t *data = calloc (300, sizeof(wchar_t));
-	swprintf(data, 300, L"%hs", flags.reference_order);
 	initialization_neural_network(&neural_network, NUMBER_PATTERNS,
 				      NUMBER_INPUT_NEURONS,
 				      NUMBER_HIDDEN_NEURONS,
-				      BIAS, data);
-	int h;
-	for(h = 0; h < 80; h++)
-	    printf("%d\n", neural_network.network.charset[h]);
-        //inputsUser = all_inputs[0][0 + 9];
+				      BIAS);
 
-        if(flags.learning == 0)
-        {
-            //Compute just for checking
-            //printResultsVector(compute_character(&neural_network.network,
-            //            inputsUser), NUMBER_PATTERNS);
-        }
-        else
-        {
+
             all_inputs = load_image_set(flags.dataset_files,
                     NUMBER_PATTERNS, &fonts_count);
 
@@ -162,14 +154,12 @@ int nn_main(int argc, char *argv[])
                             sizeof(long double));
                     all_targets[i][j][j] = 1;
                 }
-            }
 
             learning_fonts(&neural_network.network, NUMBER_PATTERNS, &iterations,
                     fonts_count, &all_inputs, &all_targets,
                     &all_results,
                     &error, ETA, ALPHA, ERROR);
-            //printResultsVector(compute_character(&neural_network.network,
-            //            inputsUser), NUMBER_PATTERNS);
+
             if(flags.serialize)
                 serialization(&neural_network.network);
         }

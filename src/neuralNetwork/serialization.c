@@ -182,5 +182,9 @@ void get_weights_layer(FILE *file, struct s_layer *layer)
 
 void get_charset(FILE *file, struct s_network *network)
 {
-    fwscanf(file, L"%ls", network->charset);
+    if(file != NULL)
+    {
+	network->charset = calloc (network->input->nbUnits, sizeof(wchar_t));
+	fwscanf(file, L"%ls", network->charset);
+    }
 }
