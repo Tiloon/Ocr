@@ -196,11 +196,14 @@ void learning_fonts(struct s_network *network, int nb_patterns,
 		set_inputs(network, (*inputs)[f][p]);
 		feedforward(network);
 		outputs_to_list(network, &(*computed)[f][p]);
+		compute_error_fonts(targets, computed, nb_patterns, nb_fonts,
+				    network->output->nbUnits,
+				    error);
 		update_weights(network, (*targets)[f][p], (*computed)[f][p],
 			       eta, alpha);
-		compute_error_fonts(targets, computed, nb_patterns, nb_fonts,
-			      network->output->nbUnits,
-			      error);
+		//compute_error_fonts(targets, computed, nb_patterns, nb_fonts,
+		//	      network->output->nbUnits,
+		//	      error);
 		(*nb_iterations)++;
 	    }
 	}
