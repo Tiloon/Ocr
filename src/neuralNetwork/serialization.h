@@ -6,7 +6,7 @@
  */
 
 //Gather all the setter methods
-void network_to_text(FILE *file, struct s_network *network, FILE *file2);
+void network_to_text(FILE *file, struct s_network *network, FILE *file2, int is_char_set);
 //Gather bias and weights setter methods
 void set_specific_data(FILE *file, struct s_network *network);
 //Gather nb_units and nb weights setter methods

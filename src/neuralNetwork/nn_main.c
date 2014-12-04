@@ -17,8 +17,15 @@ static void serialization(struct s_network *network)
 {
     FILE *file = NULL, *file2 = NULL;
     file = fopen("serialized", "w+");
-    file2 = fopen("charset", "w+");
-    network_to_text(file, network, file2);
+    file2 = fopen("charset", "r+");
+    if(file2 == NULL)
+    {
+	file2 = fopen("charset", "w+");
+	network_to_text(file, network, file2, 1);
+    }
+    else
+	network_to_text(file, network, file2, 0);
+	
     fclose(file);
     fclose(file2);
 }
@@ -138,7 +145,7 @@ int nn_main(int argc, char *argv[])
 				      NUMBER_HIDDEN_NEURONS,
 				      BIAS);
 
-
+	wprintf(L"%ls\n", neural_network.network.charset);
             all_inputs = load_image_set(flags.dataset_files,
                     NUMBER_PATTERNS, &fonts_count);
 

@@ -105,7 +105,7 @@ void import_serialization(struct s_network *network)
     FILE *file2 = NULL;
     file = fopen("serialized", "r+");
     file2 = fopen("charset", "r+");
-    if(file != NULL & file2 != NULL)
+    if(file != NULL && file2 != NULL)
     {
 	text_to_network(file, network, file2);
     	fclose(file);

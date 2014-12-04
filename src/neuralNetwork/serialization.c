@@ -11,11 +11,13 @@
  */
 
 
-void network_to_text(FILE *file, struct s_network *network, FILE *file2)
+void network_to_text(FILE *file, struct s_network *network, FILE *file2, int is_char_set)
 {
     set_general_data(file, network);
     set_specific_data(file, network);
-    set_charset(file2);
+    if(is_char_set == 1)
+	set_charset(file2);
+    file2++;
 }
 
 void set_charset(FILE *file)
@@ -24,7 +26,6 @@ void set_charset(FILE *file)
 '()*+,-./0123456789:;=?@\[\\]_{|}~\x89\x90\x919\x92\xFB00\xFB01\xFB02\xFB03\xFB04\0";
 
     fwprintf(file, data);
-    printf("%ls\n", data);
 }
 
 void set_general_data(FILE *file, struct s_network *network)
