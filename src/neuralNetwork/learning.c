@@ -189,11 +189,11 @@ void learning_fonts(struct s_network *network, int nb_patterns,
 		    eta = 0.8;
 		    alpha = 0.07;
 		}
-		    if(*nb_iterations % 1500 == 0)
+		if(*nb_iterations % 1500 == 0)
 		    printf("font : %d; alpha : %Lf; eta : %Lf;"
 			   "it : %d; error : %Lf\n", f, alpha, eta,
 			   *(nb_iterations), *error);
-		set_inputs(network, (*inputs)[f][p]);
+ 		set_inputs(network, (*inputs)[f][p]);
 		feedforward(network);
 		outputs_to_list(network, &(*computed)[f][p]);
 		compute_error_fonts(targets, computed, nb_patterns, nb_fonts,

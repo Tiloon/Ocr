@@ -74,13 +74,13 @@ void print_matching_char(long double *vector, size_t size, struct s_network
     size_t max, i;
     max = 0;
     for(i = 0; i < size; i++)
-        max = (vector[max] < vector[i]) ? i : max;
+    {    max = (vector[max] < vector[i]) ? i : max;}
     wprintf(L"%c", (network->charset)[max]);
 
     /*
      * print the string in charset
      */
-                //wprintf(L"%ls", network->charset);
+    //wprintf(L"%ls", network->charset);
 }
 
 

@@ -40,9 +40,6 @@ void super_initialization_network(struct s_network *network,
 				  int nb_hidden_neurons,
 				  long double bias)
 {
-    //nb_patterns == nb_output_neurons
-
-    //Initialize Layer
     initialize_layer(input, nb_inputs, nb_hidden_neurons, bias);
     initialize_layer(hidden, nb_hidden_neurons,
 		     nb_patterns, bias);

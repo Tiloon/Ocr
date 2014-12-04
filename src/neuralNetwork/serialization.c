@@ -20,13 +20,11 @@ void network_to_text(FILE *file, struct s_network *network, FILE *file2)
 
 void set_charset(FILE *file)
 {
-    char *data = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ\"#$%&\
-'()*+,-./0123456789:;=?@\[\\]_{|\0";
+    wchar_t *data = L"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ#$%&\
+'()*+,-./0123456789:;=?@\[\\]_{|}~\x89\x90\x919\x92\xFB00\xFB01\xFB02\xFB03\xFB04\0";
 
-    wchar_t *data2 = calloc(200, sizeof(wchar_t));
-    swprintf(data2, 200, L"%hs", data);
-
-    fwprintf(file, data2);
+    fwprintf(file, data);
+    printf("%ls\n", data);
 }
 
 void set_general_data(FILE *file, struct s_network *network)

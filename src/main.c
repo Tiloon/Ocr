@@ -135,18 +135,15 @@ static GdkPixbuf* segmentation_full(GdkPixbuf *origin)
     output_size = TEXT_BLOCK_SIZE;
     output = calloc(output_size, sizeof(wchar_t));
     current = calloc(TEXT_BLOCK_SIZE, sizeof(wchar_t));
-
     gdk_to_binary(origin, pic);
     binary_to_gdk(pic, &pixbuf);
     mask = copy_binarypic(pic);
-
     morph_erode(mask->pixels, mask->w, mask->h, mask->w / 100, mask->h / 100);
 
     blocs = split_blocs(mask);
 
     if(!blocs)
         return pixbuf;
-
     for(itr_blocs = 0; blocs[itr_blocs].h || blocs[itr_blocs].w; itr_blocs++)
     {
         lines = split_lines(pic, blocs + itr_blocs);
