@@ -81,7 +81,8 @@ void print_matching_char(long double *vector, size_t size, struct s_network
     size_t max, i;
     max = 0;
     for(i = 0; i < size; i++)
-    {    max = (vector[max] < vector[i]) ? i : max;}
+        max = (vector[max] < vector[i]) ? i : max;
+
     wprintf(L"%c", (network->charset)[max]);
 
     /*
@@ -225,15 +226,14 @@ static int checkFlags(int argc, char *argv[], struct s_flags_nn *flags)
 
 static int print_flag_error(void)
 {
-    printf("Flag ERROR : type -h for help\n");
+    fprintf(stderr, "Flag ERROR : type -h for help\n");
     return 1;
 }
 
 void print_nn_help(void)
 {
-    printf("\
+    wprintf(L"\
     -learning                       Start the learning process\n\
-    - /* charset [string. Order DOES matter] Set the order of the converging matrix*/\n	\
     -serialize                      Serialize the NN into serialize\n\
     -datasetsfiles [files]          Comma separated file list\n\n");
 }
