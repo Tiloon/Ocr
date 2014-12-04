@@ -186,8 +186,13 @@ void learning_fonts(struct s_network *network, int nb_patterns,
 	    {
 		if(*error < 0.1)
 		{
-		    eta = 0.8;
+		    eta = 0.99;
 		    alpha = 0.07;
+		}
+		else if(*error < 0.2)
+		{
+		    //    eta = 0.4;
+		    //alpha = 0.4;
 		}
 		if(*nb_iterations % 1500 == 0)
 		    printf("font : %d; alpha : %Lf; eta : %Lf;"
