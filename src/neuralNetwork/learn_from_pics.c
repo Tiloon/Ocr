@@ -47,7 +47,6 @@ static int segmentation_get_chars(GdkPixbuf *origin, long double ***p_vect,
                 for(itr_chars = 0; chars[itr_chars].h || chars[itr_chars].w;
                         itr_chars++)
                 {
-                    printf("%zu", i);
                     arr = vectorize_char(pic, chars + itr_chars);
                     (*p_vect)[i] = vector_bool_to_nn(arr, 256);
                     i++;
