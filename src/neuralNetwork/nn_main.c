@@ -38,7 +38,7 @@ void printMatrix (long double ***matrix, int x, int y)
     {
         for(y1 = 0; y1 < y; y1++)
         {
-            printf("Matrix[%d][%d] = (%Lf)\n", x1, y1,
+            wprintf(L"Matrix[%d][%d] = (%Lf)\n", x1, y1,
                     (*matrix)[x1][y1]);
         }
     }
@@ -48,21 +48,21 @@ void printVector(long double *vector, size_t size)
 {
     size_t u;
     for(u = 0; u < size; u++)
-        printf("%Lf ", vector[u]);
+        wprintf(L"%Lf ", vector[u]);
 }
 
 void printInputVector(long double *vector, size_t size)
 {
     size_t u;
-    printf("\n");
+    wprintf(L"\n");
     for(u = 0; u < size; u++)
     {
         if(u != 0 && u % 16 == 0)
-            printf("\n");
+            wprintf(L"\n");
         if(vector[u] > 0)
-            printf("+%Lf", vector[u]);
+            wprintf(L"+%Lf", vector[u]);
         else
-            printf("%Lf", vector[u]);
+            wprintf(L"%Lf", vector[u]);
     }
 }
 
@@ -71,7 +71,7 @@ void printResultsVector(long double *vector, size_t size)
     size_t u;
     for(u = 0; u < size; u++)
     {
-        printf("%zu: %Lf\n", u, vector[u]);
+        wprintf(L"%zu: %Lf\n", u, vector[u]);
     }
 }
 
@@ -83,7 +83,7 @@ void print_matching_char(long double *vector, size_t size, struct s_network
     for(i = 0; i < size; i++)
         max = (vector[max] < vector[i]) ? i : max;
 
-    wprintf(L"%c", (network->charset)[max]);
+    wprintf(L"%lc", (network->charset)[max]);
 
     /*
      * print the string in charset
@@ -172,7 +172,7 @@ int nn_main(int argc, char *argv[])
                 serialization(&neural_network.network);
         }
     }
-    printf("\n\n");
+    wprintf(L"\n\n");
     return 0;
 }
 

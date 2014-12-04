@@ -16,15 +16,15 @@ void network_to_text(FILE *file, struct s_network *network, FILE *file2, int is_
     set_general_data(file, network);
     set_specific_data(file, network);
     if(is_char_set == 1)
-	set_charset(file2);
+        set_charset(file2);
     file2++;
 }
 
 void set_charset(FILE *file)
 {
-    wchar_t *data = L"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ#$%&\
-'()*+,-./0123456789:;=?@\[\\]_{|}~aaee\xFB00\xFB01\xFB02\xFB03\xFB04\0";
-
+    wchar_t data[] = L"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ#$%&\
+                     '()*+,-./0123456789:;=?@\[\\]_{|}~aaee\xFB00\xFB01\xFB02\xFB03\xFB04\0";
+    wprintf(data);
     fwprintf(file, data);
 }
 
@@ -43,7 +43,7 @@ void set_number_units(FILE *file, struct s_network *network)
 {
     if(file == NULL)
     {
-        printf("FILE NULL : set_number_units\n");
+        fprintf(stderr, "FILE NULL : set_number_units\n");
         return;
     }
     int nb_inputs, nb_hidden, nb_outputs;
@@ -57,7 +57,7 @@ void set_number_weights(FILE *file, struct s_network *network)
 {
     if(file == NULL)
     {
-        printf("FILE NULL : set_number_weights\n");
+        fprintf(stderr, "FILE NULL : set_number_weights\n");
         return;
     }
     int nb_w_inputs, nb_w_hidden, nb_w_outputs;
@@ -96,7 +96,7 @@ void set_weights_layer(FILE *file, struct s_layer *layer)
 {
     if(file == NULL)
     {
-        printf("file == NULL : set_weights_layer()\n");
+        fprintf(stderr, "file == NULL : set_weights_layer()\n");
         return;
     }
     int nb_units, nb_weights;
@@ -111,7 +111,7 @@ void set_bias_layer(FILE *file, struct s_layer *layer)
 {
     if(file == NULL)
     {
-        printf("file == NULL : set_bias_layer()\n");
+        fprintf(stderr, "file == NULL : set_bias_layer()\n");
         return;
     }
     int nb_units;
@@ -183,7 +183,8 @@ void get_charset(FILE *file, struct s_network *network)
 {
     if(file != NULL)
     {
-	network->charset = calloc (network->input->nbUnits, sizeof(wchar_t));
-	fwscanf(file, L"%ls", network->charset);
+        network->charset = calloc (network->input->nbUnits, sizeof(wchar_t));
+        fwscanf(file, L"%ls", network->charset);
+        //wprintf(L"%ls\n", network->charset);
     }
 }
