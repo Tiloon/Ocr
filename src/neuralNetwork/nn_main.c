@@ -151,29 +151,30 @@ int nn_main(int argc, char *argv[])
 
 
         all_results = calloc(fonts_count, sizeof(long double **));
-        all_targets = calloc(fonts_count, sizeof(long double **));
+        //all_targets = calloc(fonts_count, sizeof(long double **));
+	all_targets = calloc(fonts_count, sizeof(long double));
 
         for(i = 0; i < fonts_count; i++)
         {
             all_results[i] = calloc(NUMBER_PATTERNS, sizeof(long double*));
-            all_targets[i] = calloc(NUMBER_PATTERNS, sizeof(long double*));
+            all_targets[i] = calloc(NUMBER_PATTERNS, sizeof(long double));
             for(j = 0; j < NUMBER_PATTERNS; j++)
             {
                 all_results[i][j] = calloc(NUMBER_PIXELS_CHARACTER,
                         sizeof(long double));
-                all_targets[i][j] = calloc(NUMBER_PIXELS_CHARACTER,
+                all_targets[i][j] = calloc(NUMBER_PATTERNS,
                         sizeof(long double));
                 all_targets[i][j][j] = 1;
             }
+	}
 
-            learning_fonts(&neural_network.network, NUMBER_PATTERNS, &iterations,
-                    fonts_count, &all_inputs, &all_targets,
-                    &all_results,
-                    &error, ETA, ALPHA, ERROR);
+	learning_fonts(&neural_network.network, NUMBER_PATTERNS, &iterations,
+		       fonts_count, &all_inputs, &all_targets,
+		       &all_results,
+		       &error, ETA, ALPHA, ERROR);
 
-            if(flags.serialize)
-                serialization(&neural_network.network);
-        }
+	if(flags.serialize)
+	    serialization(&neural_network.network);
     }
     wprintf(L"\n\n");
     return 0;
