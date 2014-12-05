@@ -184,16 +184,7 @@ void learning_fonts(struct s_network *network, int nb_patterns,
 	{
 	    for(p = 0; p < nb_patterns; p++)
 	    {
-		if(*error < 0.1)
-		{
-		    eta = 0.99;
-		    alpha = 0.07;
-		}
-		else if(*error < 0.2)
-		{
-		    eta = 0.1;
-		    alpha = 0.80;
-		}
+		update_learning_rate_momemtum(*error, &eta, &alpha);
 		if(*nb_iterations % 1500 == 0)
 		    printf("font : %d; alpha : %Lf; eta : %Lf;"
 			   "it : %d; error : %Lf\n", f, alpha, eta,
@@ -216,3 +207,19 @@ void learning_fonts(struct s_network *network, int nb_patterns,
     printf("Number iterations : %d\n", *nb_iterations);
     printf("Final error : %Lf\n\n", *error);
 }
+
+void update_learning_rate_momemtum(long double error,
+				   long double *eta, long double *alpha)
+{
+    if(error < 5.9)
+    {
+        *eta = 0.1;
+        *alpha = 0.1;
+    }
+
+    else if(error < 7)
+    {
+	*eta = 0.2 ;
+	*alpha = 0.1;
+    }
+ }

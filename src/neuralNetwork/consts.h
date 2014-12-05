@@ -10,5 +10,5 @@
 #define ETA     0.1
 #define ALPHA   0.8
 #define BIAS    0.5
-#define ERROR   0.20
+#define ERROR   5.5
 #endif
