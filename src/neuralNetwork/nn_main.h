@@ -19,8 +19,9 @@ struct s_flags_nn
     char *reference_order; //future wchar_t
 };
 
-void print_matching_char(long double *vector, size_t size, struct s_network
-        *network);
+long double * nn_clone_output(long double *vector, struct s_network *network);
+wchar_t get_matching_char(long double *vector, struct s_network *network);
+void print_matching_char(long double *vector, struct s_network *network);
 int nn_main(int argc, char *argv[]);
 void print_nn_help(void);
 
