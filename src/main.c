@@ -24,7 +24,8 @@ int main(int argc, char *argv[])
 
     if(!strcmp(argv[1], "nn"))
         return nn_main(argc - 1, argv + 1);
-
+    if(!strcmp(argv[1], "gui"))
+        return gui_main(argc - 1, argv + 1);
 #ifndef NOHELP
     if(!strcmp(argv[1], "help"))
         return show_help(argc > 2 ? argv[2] : 0);
