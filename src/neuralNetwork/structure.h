@@ -24,7 +24,7 @@ struct s_layer
 struct s_network
 {
     wchar_t *charset;
-    size_t chartet_len;
+    size_t charset_len;
     struct s_layer *input;
     struct s_layer *hidden;
     struct s_layer *output;

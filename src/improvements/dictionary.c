@@ -1,34 +1,40 @@
 #include "dictionary.h"
 
-static long double get_matching_word_probability(wchar_t *charset,
-        size_t charset_count, wchar_t *word, long double **chars)
+static long double get_char_probability(wchar_t c, wchar_t *charset,
+        size_t charset_count, long double *chars)
 {
-    size_t i, j;
+    size_t i;
+    for(i = 0; i < charset_count; i++)
+    {
+        if(charset[i] == c)
+            return chars[i];
+    }
+
+    return -1;
+}
+
+static long double get_matching_word_probability(wchar_t *charset,
+        size_t charset_count, wchar_t *word, long double **chars,
+        long double seil)
+{
+    size_t i;
     long double probability;
 
     probability = 1;
 
-    for(i = 0; word[i]; i++)
+    for(i = 0; word[i] && chars[i]; i++)
     {
-        for(j = 0; j < charset_count; j++)
-        {
-            if(charset[j] == word[i])
-            {
-                if(chars[i][j] <= 0) // Should be chars[i][j] < ceil
-                    return 0;
+        if(probability < seil)
+            return 0;
 
-                probability *= chars[i][j];
-
-                break;
-            }
-        }
+        probability *= get_char_probability(word[i], charset, charset_count, chars[i]);
     }
 
-    return probability * i; // Probability times word size.
+    return probability; // Probability times word size.
 }
 
-wchar_t * approcimative_match(long double **chars, size_t count, wchar_t *text,
-        size_t text_len, struct s_dictionary *dictionary, wchar_t *charset,
+wchar_t * approcimative_match(long double **chars, size_t count,
+        struct s_dictionary *dictionary, wchar_t *charset,
         size_t charset_count)
 {
     size_t index, i;
@@ -37,19 +43,17 @@ wchar_t * approcimative_match(long double **chars, size_t count, wchar_t *text,
     if(count == 0)
         return NULL;
 
-    // TODO
-    if((text[text_len] == '.') ||
-            (text[text_len] == '?') ||
-            (text[text_len] == '!'))
-        printf("Commence avec une maj\n");
-
     max = 0;
+
+    if(count > dictionary->index_max)
+        return NULL;
+
     index = dictionary->indexes[count];
 
     for(i = index; i < dictionary->indexes[count + 1]; i++)
     {
         tmp = get_matching_word_probability(charset, charset_count,
-                dictionary->words[i], chars);
+                dictionary->words[i], chars, max);
 
         if(tmp > max)
         {
@@ -119,8 +123,10 @@ struct s_dictionary * load_dictionary(char *filename)
 
                 dictionary->indexes[k] = j;
                 dictionary->indexes[k + 1] = 0;
+                dictionary->index_max = k;
             }
             j++;
+            i++;
             k = 0;
         }
         else

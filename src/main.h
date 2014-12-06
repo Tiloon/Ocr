@@ -8,6 +8,7 @@
 #include <math.h>
 #include <locale.h>
 #include <wchar.h>
+#include <gdk-pixbuf/gdk-pixbuf.h>
 
 #include "redef.h"
 
@@ -15,18 +16,9 @@
 #include "picture/binarypic.h"
 #include "picture/loader.h"
 #include "filters/filters.h"
-#include "segmentation/text_picture_segmentation.h"
-#include "segmentation/split_lines.h"
-#include "segmentation/split_chars.h"
-#include "segmentation/split_blocs.h"
 #include "picture/convert_pic.h"
-#include "segmentation/draw_rectangle.h"
-#include "segmentation/morphology.h"
-#include "segmentation/vectorize_char.h"
 
-#include "neuralNetwork/nn_main.h"
-#include "neuralNetwork/learn_from_pics.h"
-#include "neuralNetwork/consts.h"
+#include "perform_ocr.h"
 
 #include "help/help.h"
 
@@ -66,7 +58,7 @@ struct s_flags {
     char *filename;
     char *filteroutput;
     char *segmentation_output;
-    char *dictionary_file;
+    struct s_dictionary *dictionary;
     // Other flags
 };
 
