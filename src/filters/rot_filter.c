@@ -10,7 +10,7 @@
 
 void pointrotate(guchar *new, guchar *tab, int i, int j, int teta, int width, int height, int bpp)
 {
-<<<<<<< HEAD
+//<<<<<<< HEAD
 // i = width = x
 // j = height = y
 int z = i* bpp;
@@ -49,8 +49,8 @@ y = rotinv[1][0] * (i-xm) + rotinv[1][1] * (j-ym);
       //new[y1*bpp*width + x1*bpp] = tab[v+z/*y1*bpp+x1*bpp*height*/];
       //new[y1*bpp*width + x1*bpp+1] = tab[v+z + 1/*y1*bpp+x1*bpp*height+1*/];
       //new[y1*bpp*width + x1*bpp+2] = tab[v+z+2/*y1*bpp+x1*bpp*height+2*/];
-=======
-    double rotinv[2][2];
+//=======
+/*    double rotinv[2][2];
     double        x = 0;
     double y = 0;
     int x1 = 0;
@@ -77,7 +77,7 @@ y = rotinv[1][0] * (i-xm) + rotinv[1][1] * (j-ym);
         new[j*3*height+i] = tab[y1*3*height + x1];
         new[j*3*height+1+i] = tab[y1*3*height+x1 + 1];
         new[j*3*height+i+2] = tab[y1*3*height+x1+2];
->>>>>>> 953ceb83b8446931f9554100d817b37c25833a6e
+*///>>>>>>> 953ceb83b8446931f9554100d817b37c25833a6e
     }
 //new[j+i] = 0;
 //new[j+i+1] = 0;
@@ -85,7 +85,7 @@ y = rotinv[1][0] * (i-xm) + rotinv[1][1] * (j-ym);
 
 }
 
-<<<<<<< HEAD
+//<<<<<<< HEAD
 void rotation(guchar	*tab,
 				   int		width,
 				   int		height, int bpp)
@@ -112,7 +112,7 @@ tab[z] = new[z];
 //tab[a] = 0;
 
 //  return (0);
-=======
+/*//=======
 guchar *rotation(guchar *tab,
         int width,
         int height)
@@ -129,7 +129,7 @@ guchar *rotation(guchar *tab,
             pointrotate(new, tab, i, j, teta, width, height);
     }
     return (new);
->>>>>>> 953ceb83b8446931f9554100d817b37c25833a6e
+*///>>>>>>> 953ceb83b8446931f9554100d817b37c25833a6e
 }
 
 int **angle(int **hough, int x, int y, int th)
@@ -234,19 +234,19 @@ int rot_filter(GdkPixbuf *picture, size_t nb_params, char **params)
       hough[i][j] = 0;
     //printf ("%d ", hough[i][j]);
     }*/
-<<<<<<< HEAD
+//<<<<<<< HEAD
 /*tab = malloc (sizeof (guchar *) * ht;
 for (i = 0; i < th; i++)
 tab[i]  = malloce (sizeof (guchar) * wt;*/
 //    to pixels.
 pixel = gdk_pixbuf_get_pixels(picture);
-=======
-    /*tab = malloc (sizeof (guchar *) * ht;
-      for (i = 0; i < th; i++)
-      tab[i]  = malloce (sizeof (guchar) * wt;*/
+/*//=======
+    //tab = malloc (sizeof (guchar *) * ht;
+    //  for (i = 0; i < th; i++)
+    //  tab[i]  = malloce (sizeof (guchar) * wt;
     //    to pixels.
     pixel = gdk_pixbuf_get_pixels(picture);
->>>>>>> 953ceb83b8446931f9554100d817b37c25833a6e
+*///>>>>>>> 953ceb83b8446931f9554100d817b37c25833a6e
     bpp = gdk_pixbuf_get_n_channels(picture);
     rowstride = wt * bpp;
 
@@ -264,7 +264,7 @@ pixel = gdk_pixbuf_get_pixels(picture);
             //pixel[i*rowstride + j+0]=0;
             //pixel[i*rowstride + j+1]=0;
             //pixel[i*rowstride + j+2]=blue
-<<<<<<< HEAD
+//<<<<<<< HEAD
          //   if(grayscale < 0xFF*3/2)
 //{
 //tab[i][j/3];
@@ -285,7 +285,7 @@ pixel = gdk_pixbuf_get_pixels(picture);
 theta = getmax(hough,th);
 rotation(pixel, wt, ht, bpp);
 return theta;
-=======
+/*//=======
             if(grayscale < 0xFF*3/2)
             {
                 //tab[i][j/3];
@@ -308,7 +308,7 @@ return theta;
     printf("Detected rotation : %f", theta);
     //pixel = rotation(pixel, wt, ht);
     return theta;
->>>>>>> 953ceb83b8446931f9554100d817b37c25833a6e
+*///>>>>>>> 953ceb83b8446931f9554100d817b37c25833a6e
 }
 /*for(i = 0; i < ht; i++) //iterate over the height of image.
   {
