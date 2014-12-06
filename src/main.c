@@ -1,13 +1,16 @@
 #include "main.h"
 
+#define TEXT_BLOCK_SIZE 512
+
 static void show_main_help(void);
 static int get_flags(int argc, char *argv[], struct s_flags *flags);
 static int print_flag_error(char *flag, int error);
 static GdkPixbuf* segmentation_full(GdkPixbuf *origin);
-
+static int segment_and_save(GdkPixbuf *origin);
 
 int main(int argc, char *argv[])
 {
+    setlocale(LC_ALL, "");
     FLAGS->gui = 0;
     FLAGS->verbosity = 0;
     FLAGS->filename = NULL;
@@ -36,32 +39,30 @@ int main(int argc, char *argv[])
     if(FLAGS->filename)
     {
         if(FLAGS->verbosity)
-            printf(BOLDCYAN "\nFilters\n" RESET);
+            wprintf(L"" BOLDCYAN "\nFilters\n" RESET);
         if(filters_apply_all(picture_get_image()))
         {
             if(FLAGS->verbosity)
-                printf(BOLDRED "FAIL: " RESET "can't apply all filters\n");
+                wprintf(L"" BOLDRED "FAIL: " RESET "can't apply all filters\n");
             return 1;
         }
         if(FLAGS->verbosity)
-            printf(BOLDCYAN "All filters applied\n" RESET);
+            wprintf(L"" BOLDCYAN "All filters applied\n" RESET);
 
         if(FLAGS->filteroutput)
         {
             if(FLAGS->verbosity)
-                printf(BOLDCYAN "\nPreporcess output\n" RESET);
+                wprintf(L"" BOLDCYAN "\nPreporcess output\n" RESET);
             if(picture_save_to_file(FLAGS->filteroutput))
             {
                 if(FLAGS->verbosity)
-                    printf(BOLDRED "FAIL: " RESET "can't save to %s\n",
+                    wprintf(L"" BOLDRED "FAIL: " RESET "can't save to %s\n",
                             FLAGS->filteroutput);
                 return 1;
             } else
-                printf("saved to %s\n", FLAGS->filteroutput);
+                wprintf(L"saved to %s\n", FLAGS->filteroutput);
         }
-        // Debug
-        picture_save_pixbuf(segmentation_full(picture_get_image()),
-                "./segmentation_demo.png");
+        segment_and_save(picture_get_image());
     }
 #ifndef NOGUI
     if(FLAGS->gui)
@@ -70,7 +71,38 @@ int main(int argc, char *argv[])
     return 0;
 }
 
+static int append_to_output(wchar_t *word, wchar_t **output,
+        size_t *output_size, size_t *output_pos)
+{
+    size_t i;
+    for(i = 0; word[i]; i++)
+    {
+        while((*output_pos) + i + 1 >= (*output_size))
+        {
+            (*output_size) += TEXT_BLOCK_SIZE;
+            (*output) = realloc(*output, (*output_size) * sizeof(wchar_t));
+            if(!(*output))
+            {
+                LOG_ALLOC_ERR();
+                return -1;
+            }
+        }
+        (*output)[*output_pos + i] = word[i];
+    }
 
+    (*output_pos) += i;
+    (*output)[*output_size] = 0;
+    return 0;
+}
+
+static int segment_and_save(GdkPixbuf *origin)
+{
+    GdkPixbuf *segmented;
+    segmented = segmentation_full(origin);
+    if(FLAGS->segmentation_output)
+        return !picture_save_pixbuf(segmented, FLAGS->segmentation_output);
+    return !segmented;
+}
 
 static GdkPixbuf* segmentation_full(GdkPixbuf *origin)
 {
@@ -78,33 +110,53 @@ static GdkPixbuf* segmentation_full(GdkPixbuf *origin)
     struct s_binarypic *pic, *mask;
     struct s_rectangle *chars, *lines, *blocs;
     struct s_neural_network neural_network;
-    size_t itr_chars, itr_lines, itr_blocs, itr_spaces, *spaces;
+    struct s_dictionary *dictionary;
+    size_t itr_chars, itr_lines, itr_blocs, itr_spaces, *spaces, output_size,
+           output_pos;
     char *vectorized;
     long double *nn_inputs;
+    wchar_t *output, *current;
 
     mask = NULL;
     if(!(pic = calloc(1, sizeof(struct s_binarypic))))
     {
         LOG_ALLOC_ERR();
-        return 0;
+        return NULL;
     }
     pixbuf = NULL;
     blocs = NULL;
     lines = NULL;
     chars = NULL;
 
+    // Dictionary initialisation
+    dictionary = NULL;
+    if(FLAGS->dictionary_file)
+    {
+        if(FLAGS->verbosity)
+            wprintf(L"" BOLDCYAN "Loading dictionary\n" RESET);
+        //dictionary = load_dictionary(FLAGS->dictionary_file);
+    }
+
+    // Neural network initialisation
     initialization_neural_network(&neural_network, NUMBER_PATTERNS,
             NUMBER_INPUT_NEURONS,
             NUMBER_HIDDEN_NEURONS,
             BIAS);
 
-    gdk_to_binary(origin, pic);
-    binary_to_gdk(pic, &pixbuf);
-    mask = copy_binarypic(pic);
-    // TODO : change constants to some document size function
-    morph_erode(mask->pixels, mask->w, mask->h, mask->w/100, mask->h/100);
 
+    // Text initialisation
+    output_pos = 0;
+    output_size = TEXT_BLOCK_SIZE;
+    output = calloc(output_size, sizeof(wchar_t));
+    current = calloc(TEXT_BLOCK_SIZE, sizeof(wchar_t));
+
+    gdk_to_binary(origin, pic);
+    mask = copy_binarypic(pic);
+    morph_erode(mask->pixels, mask->w, mask->h, mask->w / 100, mask->h / 100);
     blocs = split_blocs(mask);
+
+    if(FLAGS->segmentation_output)
+        binary_to_gdk(pic, &pixbuf);
 
     if(!blocs)
         return pixbuf;
@@ -120,20 +172,6 @@ static GdkPixbuf* segmentation_full(GdkPixbuf *origin)
                 chars = split_chars(pic, lines + itr_lines);
                 spaces = get_spaces(chars);
                 itr_spaces = 0;
-                //debuging spaces
-                /*if(itr_lines == 0 && itr_blocs == 0)
-                {
-                    printf("start\n");
-                    size_t *spaces = get_spaces(chars);
-                    int fake = 0;
-                    for(fake = 0; spaces[fake]; fake++)
-                    {
-                        printf("space number %i = %zu\n",
-                             fake+1, spaces[fake]);
-                    }
-                    free(spaces); //good idea to free at the end of each line
-                    printf("end\n");
-                }*/
 
                 if(chars)
                 {
@@ -150,31 +188,47 @@ static GdkPixbuf* segmentation_full(GdkPixbuf *origin)
                             LOG_ALLOC_ERR();
                             return NULL;
                         }
-                        nn_inputs = vector_bool_to_nn(vectorized, 256);
+                        nn_inputs = vector_bool_to_nn(vectorized,
+                                NUMBER_PIXELS_CHARACTER);
                         print_matching_char(
-                        compute_character(&neural_network.network, nn_inputs),
-                                NUMBER_PATTERNS);
+                                compute_character(&neural_network.network,
+                                    nn_inputs),
+                                NUMBER_PATTERNS, &neural_network.network);
                         FREE(vectorized);
-                        draw_rectangle(pixbuf, chars + itr_chars, ~0, 0, 0);
-                        if(spaces[itr_spaces] && spaces[itr_spaces] == itr_chars + 1)
+                        if(pixbuf)
+                            draw_rectangle(pixbuf, chars + itr_chars, ~0, 0,
+                                    0);
+                        if(spaces[itr_spaces] &&
+                                (spaces[itr_spaces] == itr_chars + 1))
                         {
-                            printf(" ");
+                            if(append_to_output(L" ", &output, &output_size,
+                                    &output_pos) == -1)
+                            {
+                                FREE(chars);
+                                FREE(lines);
+                                FREE(blocs);
+                                FREE(pic);
+                                return NULL;
+                            }
                             itr_spaces++;
                         }
                     }
                 }
                 FREE(spaces);
                 FREE(chars);
-                draw_rectangle(pixbuf, lines + itr_lines, 0, 0, ~0);
-                printf(" ");
+                if(pixbuf)
+                    draw_rectangle(pixbuf, lines + itr_lines, 0, 0, ~0);
+                append_to_output(L" ", &output, &output_size, &output_pos);
             }
         }
         FREE(lines);
-        draw_rectangle(pixbuf, blocs + itr_blocs, 0, ~0, 0);
-        printf("\n");
+        if(pixbuf)
+            draw_rectangle(pixbuf, blocs + itr_blocs, 0, ~0, 0);
+        append_to_output(L"\n", &output, &output_size, &output_pos);
     }
     FREE(blocs);
     FREE(pic);
+    wprintf(L"%ls", output);
 
     return pixbuf;
 }
@@ -182,7 +236,7 @@ static GdkPixbuf* segmentation_full(GdkPixbuf *origin)
 
 static void show_main_help()
 {
-    printf("OCAML : Optical Character Analysis and Machine Learning\n\
+    wprintf(L"OCAML : Optical Character Analysis and Machine Learning\n\
 (Compiled : " __DATE__ " " __TIME__")\n\
 usage : ocrocaml [args] -i file     Process file\n"
 #ifndef NOGUI
@@ -197,11 +251,12 @@ Arguments : \n\
     -f \"filter\"[,opt]               Apply filter with options\n\
     -i \"file\"                       Load picture \"file\"\n\
     -ofilters \"file\"                Save file after applying filters\n\
-    -v                              Verbose\n\
-\n\
+    -osegmentation \"file\"           Save file after segmentation\n\
+    -dictionary \"file\"              Load a spell checking file\n\
+    -v                              Verbose\n\n\
 Neural network arguments :\n");
     print_nn_help();
-    printf("\nMore about this software : http://ocrocaml.ovh/\n");
+    wprintf(L"\nMore about this software : http://ocrocaml.ovh/\n");
 }
 
 static int get_flags(int argc, char *argv[], struct s_flags *flags)
@@ -220,7 +275,7 @@ static int get_flags(int argc, char *argv[], struct s_flags *flags)
             if(flags->verbosity)
                 return print_flag_error(argv[i], FLAG_ALREADY_SET);
             flags->verbosity = 1;
-            printf(BOLDCYAN "Flags\n" RESET "Verbosity is set\n");
+            wprintf(L"" BOLDCYAN "Flags\n" RESET "Verbosity is set\n");
         }
         else if(!strcmp(argv[i], "-i"))
         {
@@ -233,7 +288,7 @@ static int get_flags(int argc, char *argv[], struct s_flags *flags)
             if(picture_load_from_file(argv[i]))
                 return print_flag_error(argv[i], FLAG_INVALID_ARG);
             if(flags->verbosity)
-                printf("Image loaded (%s)\n", argv[i]);
+                wprintf(L"Image loaded (%s)\n", argv[i]);
         }
         else if(!strcmp(argv[i], "-f"))
         {
@@ -243,7 +298,7 @@ static int get_flags(int argc, char *argv[], struct s_flags *flags)
             if(filter_add(argv[i]))
                 return print_flag_error(argv[i], FLAG_INVALID_ARG);
             if(flags->verbosity)
-                printf("Filter added : %s\n", argv[i]);
+                wprintf(L"Filter added : %s\n", argv[i]);
         }
         else if(!strcmp(argv[i], "-ofilters"))
         {
@@ -255,8 +310,30 @@ static int get_flags(int argc, char *argv[], struct s_flags *flags)
                 return print_flag_error(argv[i - 1], FLAG_MISSING_ARG);
             flags->filteroutput = argv[i];
         }
+        else if(!strcmp(argv[i], "-dictionary"))
+        {
+            if(flags->dictionary_file)
+                return print_flag_error(argv[i], FLAG_ALREADY_SET);
+
+            i++;
+            if(i >= argc)
+                return print_flag_error(argv[i - 1], FLAG_MISSING_ARG);
+            flags->dictionary_file = argv[i];
+        }
+        else if(!strcmp(argv[i], "-osegmentation"))
+        {
+            if(flags->segmentation_output)
+                return print_flag_error(argv[i], FLAG_ALREADY_SET);
+
+            i++;
+            if(i >= argc)
+                return print_flag_error(argv[i - 1], FLAG_MISSING_ARG);
+            flags->segmentation_output = argv[i];
+        }
         else
+        {
             return print_flag_error(argv[i], FLAG_UNDEFINED);
+        }
     }
     return 0;
 }
@@ -272,7 +349,7 @@ static int print_flag_error(char *flag, int error)
     if(error & FLAG_INVALID_ARG)
         fprintf(stderr, "Error : invalid argument '%s'\n", flag);
 
-    printf("type \"ocrocaml -h\" for help\n\n");
+    wprintf(L"type \"ocrocaml -h\" for help\n\n");
     return 1;
 }
 

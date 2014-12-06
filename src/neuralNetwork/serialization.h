@@ -6,7 +6,7 @@
  */
 
 //Gather all the setter methods
-void network_to_text(FILE *file, struct s_network *network);
+void network_to_text(FILE *file, struct s_network *network, FILE *file2, int is_char_set);
 //Gather bias and weights setter methods
 void set_specific_data(FILE *file, struct s_network *network);
 //Gather nb_units and nb weights setter methods
@@ -37,7 +37,7 @@ void set_number_weights(FILE *file, struct s_network *network);
 void set_weights(FILE *file, struct s_network *network);
 void set_bias(FILE *file, struct s_network *network);
 void set_weights_bias(FILE *file, struct s_network *network);
-
+void set_charset(FILE *file);
 void set_weights_layer(FILE *file, struct s_layer *layer);
 void set_bias_layer(FILE *file, struct s_layer *layer);
 
@@ -47,10 +47,10 @@ void set_bias_layer(FILE *file, struct s_layer *layer);
  * into a working neural network
  */
 
-void text_to_network(FILE *file, struct s_network *network);
+void text_to_network(FILE *file, struct s_network *network, FILE *file2);
 void get_general_data(FILE *file, struct s_network *network);
 void get_specific_data(FILE *file, struct s_network *network);
-
+void get_charset(FILE *file, struct s_network *network);
 void get_number_units(FILE *file, struct s_network *network);
 void get_number_weights(FILE *file, struct s_network *network);
 void get_bias(FILE *file, struct s_network *network);

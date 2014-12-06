@@ -87,7 +87,6 @@ static unsigned char get_treshold(long double *histo)
         mB = sumB / wB;
         mF = (sum - sumB) / wF;
         between = wB * wF * (mB - mF) * (mB - mF);
-        printf("%Lf\n", between);
         if(between >= max)
         {
             threshold1 = i;
@@ -116,7 +115,6 @@ int gdk_to_binary(GdkPixbuf *picture, struct s_binarypic *binarypic)
         return 1;
 
     threshold = get_treshold(histogram);
-    printf("%u", threshold);
 
     if(!(binarypic->pixels = calloc((1 + binarypic->w) * (1 + binarypic->h),
                     sizeof(char))))

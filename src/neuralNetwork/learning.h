@@ -49,4 +49,6 @@ void compute_error_fonts(long double ****targets, long double ****outputs,
 			 int nb_patterns, int nb_fonts, long double nb_units,
 			 long double *error);
 
+void update_learning_rate_momemtum(long double error,
+				   long double *eta, long double *alpha);
 #endif

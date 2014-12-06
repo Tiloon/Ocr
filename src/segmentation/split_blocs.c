@@ -82,7 +82,7 @@ int find_bloc(struct s_binarypic *picture,
         }
     }
 
-    free(points);
+    FREE(points);
     rect->w -= rect->x;
     rect->h -= rect->y;
 
@@ -147,7 +147,7 @@ struct s_rectangle* split_blocs(struct s_binarypic *picture)
             }
         }
     }
-    free(tab);
+    FREE(tab);
     tab = NULL;
 
     if(blocs == NULL)

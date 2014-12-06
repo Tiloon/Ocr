@@ -40,9 +40,6 @@ void super_initialization_network(struct s_network *network,
 				  int nb_hidden_neurons,
 				  long double bias)
 {
-    //nb_patterns == nb_output_neurons
-
-    //Initialize Layer
     initialize_layer(input, nb_inputs, nb_hidden_neurons, bias);
     initialize_layer(hidden, nb_hidden_neurons,
 		     nb_patterns, bias);
@@ -105,12 +102,20 @@ long double *compute_character (struct s_network *network,
 void import_serialization(struct s_network *network)
 {
     FILE *file = NULL;
+    FILE *file2 = NULL;
     file = fopen("serialized", "r+");
-    if(file == NULL)
+    file2 = fopen("charset", "r+");
+    if(file != NULL && file2 != NULL)
     {
-	printf("File not opened\n");
-        return;
+	text_to_network(file, network, file2);
+    	fclose(file);
+	fclose(file2);
     }
-    text_to_network(file, network);
-    fclose(file);
+    else
+    {
+	if(file == NULL)
+	    printf("FILE = NULL\n");
+	if(file2 == NULL)
+	    printf("FILE = NULL\n");
+    }
 }

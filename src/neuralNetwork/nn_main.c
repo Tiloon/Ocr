@@ -15,16 +15,21 @@
 
 static void serialization(struct s_network *network)
 {
-    FILE *file = NULL;
+    FILE *file = NULL, *file2 = NULL;
     file = fopen("serialized", "w+");
-    if(file == NULL)
+    file2 = fopen("charset", "r+");
+    if(file2 == NULL)
     {
-        printf("File not opened\n");
-        return;
+        file2 = fopen("charset", "w+");
+        network_to_text(file, network, file2, 1);
     }
-    network_to_text(file, network);
+    else
+        network_to_text(file, network, file2, 0);
+
     fclose(file);
+    fclose(file2);
 }
+
 
 void printMatrix (long double ***matrix, int x, int y)
 {
@@ -33,7 +38,7 @@ void printMatrix (long double ***matrix, int x, int y)
     {
         for(y1 = 0; y1 < y; y1++)
         {
-            printf("Matrix[%d][%d] = (%Lf)\n", x1, y1,
+            wprintf(L"Matrix[%d][%d] = (%Lf)\n", x1, y1,
                     (*matrix)[x1][y1]);
         }
     }
@@ -43,21 +48,21 @@ void printVector(long double *vector, size_t size)
 {
     size_t u;
     for(u = 0; u < size; u++)
-        printf("%Lf ", vector[u]);
+        wprintf(L"%Lf ", vector[u]);
 }
 
 void printInputVector(long double *vector, size_t size)
 {
     size_t u;
-    printf("\n");
+    wprintf(L"\n");
     for(u = 0; u < size; u++)
     {
         if(u != 0 && u % 16 == 0)
-            printf("\n");
+            wprintf(L"\n");
         if(vector[u] > 0)
-            printf("+%Lf", vector[u]);
+            wprintf(L"+%Lf", vector[u]);
         else
-            printf("%Lf", vector[u]);
+            wprintf(L"%Lf", vector[u]);
     }
 }
 
@@ -66,17 +71,24 @@ void printResultsVector(long double *vector, size_t size)
     size_t u;
     for(u = 0; u < size; u++)
     {
-        printf("%zu: %Lf\n", u, vector[u]);
+        wprintf(L"%zu: %Lf\n", u, vector[u]);
     }
 }
 
-void print_matching_char(long double *vector, size_t size)
+void print_matching_char(long double *vector, size_t size, struct s_network
+        *network)
 {
     size_t max, i;
     max = 0;
     for(i = 0; i < size; i++)
         max = (vector[max] < vector[i]) ? i : max;
-    printf("%c", "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"[max]);
+
+    wprintf(L"%lc", (network->charset)[max]);
+
+    /*
+     * print the string in charset
+     */
+    //wprintf(L"%ls", network->charset);
 }
 
 
@@ -111,8 +123,7 @@ int nn_main(int argc, char *argv[])
 
     fonts_count = 0;
     //inputsUser = calloc(NUMBER_PIXELS_CHARACTER, sizeof(long double));
-    all_results = calloc(fonts_count, sizeof(long double **));
-    all_targets = calloc(fonts_count, sizeof(long double **));
+
 
 
     //*******************************************//
@@ -123,7 +134,7 @@ int nn_main(int argc, char *argv[])
     flags.learning = 0;
     flags.serialize = 0;
     iterations = 0;
-    error = 100;
+    error = 5.9999;
 
     if(checkFlags(argc, argv, &flags))
         return 1;
@@ -133,44 +144,39 @@ int nn_main(int argc, char *argv[])
                 NUMBER_INPUT_NEURONS,
                 NUMBER_HIDDEN_NEURONS,
                 BIAS);
-        //inputsUser = all_inputs[0][0 + 9];
 
-        if(flags.learning == 0)
-        {
-            //Compute just for checking
-            //printResultsVector(compute_character(&neural_network.network,
-            //            inputsUser), NUMBER_PATTERNS);
-        }
-        else
-        {
-            all_inputs = load_image_set(flags.dataset_files,
-                    NUMBER_PATTERNS, &fonts_count);
+        //wprintf(L"%ls\n", neural_network.network.charset);
+        all_inputs = load_image_set(flags.dataset_files,
+                NUMBER_PATTERNS, &fonts_count);
 
-            for(i = 0; i < fonts_count; i++)
+
+        all_results = calloc(fonts_count, sizeof(long double **));
+        //all_targets = calloc(fonts_count, sizeof(long double **));
+	all_targets = calloc(fonts_count, sizeof(long double));
+
+        for(i = 0; i < fonts_count; i++)
+        {
+            all_results[i] = calloc(NUMBER_PATTERNS, sizeof(long double*));
+            all_targets[i] = calloc(NUMBER_PATTERNS, sizeof(long double));
+            for(j = 0; j < NUMBER_PATTERNS; j++)
             {
-                all_results[i] = calloc(NUMBER_PATTERNS, sizeof(long double*));
-                all_targets[i] = calloc(NUMBER_PATTERNS, sizeof(long double*));
-                for(j = 0; j < NUMBER_PATTERNS; j++)
-                {
-                    all_results[i][j] = calloc(NUMBER_PIXELS_CHARACTER,
-                            sizeof(long double));
-                    all_targets[i][j] = calloc(NUMBER_PIXELS_CHARACTER,
-                            sizeof(long double));
-                    all_targets[i][j][j] = 1;
-                }
+                all_results[i][j] = calloc(NUMBER_PIXELS_CHARACTER,
+                        sizeof(long double));
+                all_targets[i][j] = calloc(NUMBER_PATTERNS,
+                        sizeof(long double));
+                all_targets[i][j][j] = 1;
             }
+	}
 
-            learning_fonts(&neural_network.network, NUMBER_PATTERNS, &iterations,
-                    fonts_count, &all_inputs, &all_targets,
-                    &all_results,
-                    &error, ETA, ALPHA, ERROR);
-            //printResultsVector(compute_character(&neural_network.network,
-            //            inputsUser), NUMBER_PATTERNS);
-            if(flags.serialize)
-                serialization(&neural_network.network);
-        }
+	learning_fonts(&neural_network.network, NUMBER_PATTERNS, &iterations,
+		       fonts_count, &all_inputs, &all_targets,
+		       &all_results,
+		       &error, ETA, ALPHA, ERROR);
+
+	if(flags.serialize)
+	    serialization(&neural_network.network);
     }
-    printf("\n\n");
+    wprintf(L"\n\n");
     return 0;
 }
 
@@ -206,8 +212,17 @@ static int checkFlags(int argc, char *argv[], struct s_flags_nn *flags)
                 flags->dataset_files = parse_file_cslist(argv[i]);
             }
         }
-        else
+        /*	else if(!strcmp(argv[i], "-charset"))
+            {
+            if(i + 1 >= argc)
             return print_flag_error();
+            i++;
+            flags->reference_order = calloc(200, sizeof(char));
+            flags->reference_order = argv[i];
+            }
+            */
+            else
+                return print_flag_error();
     }
     return 0;
 }
@@ -215,14 +230,14 @@ static int checkFlags(int argc, char *argv[], struct s_flags_nn *flags)
 
 static int print_flag_error(void)
 {
-    printf("Flag ERROR : type -h for help\n");
+    fprintf(stderr, "Flag ERROR : type -h for help\n");
     return 1;
 }
 
 void print_nn_help(void)
 {
-    printf("\
-    -learning                       Start the learning process\n\
-    -serialize                      Serialize the NN into serialize\n\
-    -datasetsfiles [files]          Comma separated file list\n\n");
+    wprintf(L"\
+            -learning                       Start the learning process\n\
+            -serialize                      Serialize the NN into serialize\n\
+            -datasetsfiles [files]          Comma separated file list\n\n");
 }
