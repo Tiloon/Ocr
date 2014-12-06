@@ -71,6 +71,26 @@ int main(int argc, char *argv[])
     return 0;
 }
 
+static int append_wchar_to_output(wchar_t c, wchar_t **output,
+        size_t *output_size, size_t *output_pos)
+{
+    while((*output_pos) + 1 >= (*output_size))
+    {
+        (*output_size) += TEXT_BLOCK_SIZE;
+        (*output) = realloc(*output, (*output_size) * sizeof(wchar_t));
+        if(!(*output))
+        {
+            LOG_ALLOC_ERR();
+            return -1;
+        }
+    }
+    (*output)[*output_pos] = c;
+
+    (*output_pos) += 1;
+    (*output)[*output_pos] = 0;
+    return 0;
+}
+
 static int append_to_output(wchar_t *word, wchar_t **output,
         size_t *output_size, size_t *output_pos)
 {
@@ -115,7 +135,7 @@ static GdkPixbuf* segmentation_full(GdkPixbuf *origin)
            output_pos;
     char *vectorized;
     long double *nn_inputs;
-    wchar_t *output, *current;
+    wchar_t *output, *current, c;
 
     mask = NULL;
     if(!(pic = calloc(1, sizeof(struct s_binarypic))))
@@ -134,7 +154,7 @@ static GdkPixbuf* segmentation_full(GdkPixbuf *origin)
     {
         if(FLAGS->verbosity)
             wprintf(L"" BOLDCYAN "Loading dictionary\n" RESET);
-        //dictionary = load_dictionary(FLAGS->dictionary_file);
+        dictionary = load_dictionary(FLAGS->dictionary_file);
     }
 
     // Neural network initialisation
@@ -150,10 +170,11 @@ static GdkPixbuf* segmentation_full(GdkPixbuf *origin)
     output = calloc(output_size, sizeof(wchar_t));
     current = calloc(TEXT_BLOCK_SIZE, sizeof(wchar_t));
 
+    // Binarization
     gdk_to_binary(origin, pic);
-    mask = copy_binarypic(pic);
-    morph_erode(mask->pixels, mask->w, mask->h, mask->w / 100, mask->h / 100);
-    blocs = split_blocs(mask);
+
+    // Bloc segmentation
+    blocs = split_blocs(pic);
 
     if(FLAGS->segmentation_output)
         binary_to_gdk(pic, &pixbuf);
@@ -161,20 +182,24 @@ static GdkPixbuf* segmentation_full(GdkPixbuf *origin)
     if(!blocs)
         return pixbuf;
 
+    // Loop across each blocs (paragraphs...)
     for(itr_blocs = 0; blocs[itr_blocs].h || blocs[itr_blocs].w; itr_blocs++)
     {
         lines = split_lines(pic, blocs + itr_blocs);
         if(lines)
         {
+            // Loop across each lines
             for(itr_lines = 0; lines[itr_lines].h || lines[itr_lines].w;
                     itr_lines++)
             {
                 chars = split_chars(pic, lines + itr_lines);
+
                 spaces = get_spaces(chars);
                 itr_spaces = 0;
 
                 if(chars)
                 {
+                    // Loop across eacg characters
                     for(itr_chars = 0; chars[itr_chars].h || chars[itr_chars].w;
                             itr_chars++)
                     {
@@ -190,10 +215,22 @@ static GdkPixbuf* segmentation_full(GdkPixbuf *origin)
                         }
                         nn_inputs = vector_bool_to_nn(vectorized,
                                 NUMBER_PIXELS_CHARACTER);
-                        print_matching_char(
+
+                        c = get_matching_char(
                                 compute_character(&neural_network.network,
                                     nn_inputs),
-                                NUMBER_PATTERNS, &neural_network.network);
+                                &neural_network.network);
+
+                        if(c)
+                        {
+                            append_wchar_to_output(c, &output, &output_size,
+                                   &output_pos);
+                        }
+                        else
+                        {
+                            fprintf(stderr, "Bad character");
+                        }
+
                         FREE(vectorized);
                         if(pixbuf)
                             draw_rectangle(pixbuf, chars + itr_chars, ~0, 0,

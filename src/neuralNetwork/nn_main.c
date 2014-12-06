@@ -75,15 +75,20 @@ void printResultsVector(long double *vector, size_t size)
     }
 }
 
-void print_matching_char(long double *vector, size_t size, struct s_network
-        *network)
+wchar_t get_matching_char(long double *vector, struct s_network *network)
 {
-    size_t max, i;
+    size_t i, max;
+
     max = 0;
-    for(i = 0; i < size; i++)
+    for(i = 0; network->charset[i]; i++)
         max = (vector[max] < vector[i]) ? i : max;
 
-    wprintf(L"%lc", (network->charset)[max]);
+    return network->charset[max];
+}
+
+void print_matching_char(long double *vector, struct s_network *network)
+{
+    wprintf(L"%lc", get_matching_char(vector, network));
 
     /*
      * print the string in charset
@@ -152,7 +157,7 @@ int nn_main(int argc, char *argv[])
 
         all_results = calloc(fonts_count, sizeof(long double **));
         //all_targets = calloc(fonts_count, sizeof(long double **));
-	all_targets = calloc(fonts_count, sizeof(long double));
+        all_targets = calloc(fonts_count, sizeof(long double));
 
         for(i = 0; i < fonts_count; i++)
         {
@@ -166,15 +171,15 @@ int nn_main(int argc, char *argv[])
                         sizeof(long double));
                 all_targets[i][j][j] = 1;
             }
-	}
+        }
 
-	learning_fonts(&neural_network.network, NUMBER_PATTERNS, &iterations,
-		       fonts_count, &all_inputs, &all_targets,
-		       &all_results,
-		       &error, ETA, ALPHA, ERROR);
+        learning_fonts(&neural_network.network, NUMBER_PATTERNS, &iterations,
+                fonts_count, &all_inputs, &all_targets,
+                &all_results,
+                &error, ETA, ALPHA, ERROR);
 
-	if(flags.serialize)
-	    serialization(&neural_network.network);
+        if(flags.serialize)
+            serialization(&neural_network.network);
     }
     wprintf(L"\n\n");
     return 0;
@@ -236,8 +241,8 @@ static int print_flag_error(void)
 
 void print_nn_help(void)
 {
-    wprintf(L"\
-            -learning                       Start the learning process\n\
-            -serialize                      Serialize the NN into serialize\n\
-            -datasetsfiles [files]          Comma separated file list\n\n");
+    wprintf(L""
+"    -learning                       Start the learning process\n"
+"    -serialize                      Serialize the NN into serialize\n"
+"    -datasetsfiles [files]          Comma separated file list\n\n");
 }
