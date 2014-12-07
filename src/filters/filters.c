@@ -90,7 +90,7 @@ void print_filter_error(const char *str, const char *filter_name)
     fprintf(stderr, "Filter error (%s) : %s", filter_name, str);
 }
 
-int filters_apply_all(GdkPixbuf *picture)
+int filters_apply_all(GdkPixbuf **picture)
 {
     unsigned int i;
     int id;

@@ -17,7 +17,7 @@
  *
  * parameter is a string of the format 'parm1=0,parm1="fze"'
  */
-typedef int (t_filter)(GdkPixbuf*, size_t, char**);
+typedef int (t_filter)(GdkPixbuf**, size_t, char**);
 
 struct s_filter_entry
 {
@@ -29,7 +29,7 @@ struct s_filter_entry
 };
 
 void print_filter_error(const char *str, const char *filter_name);
-int filters_apply_all(GdkPixbuf *picture);
+int filters_apply_all(GdkPixbuf **picture);
 int filter_add(char *name);
 
 #ifndef NOHELP

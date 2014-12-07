@@ -18,7 +18,7 @@ static char sample_filter_help_msg[] =
 
 #endif
 
-extern int sample_filter(GdkPixbuf *picture, size_t nb_params, char **params);
+extern int sample_filter(GdkPixbuf **picture, size_t nb_params, char **params);
 
 
 #endif
