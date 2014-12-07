@@ -7,7 +7,6 @@ unsigned int get_step(struct s_rectangle *car)
 
     for(i = 0; car[i + 1].h || car[i + 1].w; i++)
     {
-        //printf("calculating step, i+1.x = %i, i.x = %i, i.w = %i\n", car[i+1].x, car[i].x, car[i].w);
         rep += car[i + 1].x - car[i].x - car[i].w;
     }
     return rep / i;
