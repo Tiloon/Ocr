@@ -154,8 +154,8 @@ static int rotate_pixbuf(GdkPixbuf **picture, long double angle,
     h1 = gdk_pixbuf_get_height(*picture);
     w1 = gdk_pixbuf_get_width(*picture);
 
-    h2 = w1 * sin(angle) + h1 * cos(angle);
-    w2 = w1 * cos(angle) - h1 * sin(angle);
+    h2 = (size_t)abs(((long double)w1) * sin(angle) + ((long double)h1) * cos(angle));
+    w2 = (size_t)abs(((long double)w1) * cos(angle) - ((long double)h1) * sin(angle));
 
     pixels = gdk_pixbuf_get_pixels(*picture);
 
@@ -167,8 +167,8 @@ static int rotate_pixbuf(GdkPixbuf **picture, long double angle,
     {
         for(x = 0; x < w2; x++)
         {
-            x_rot = x * cos(angle) - y * sin(angle);
-            y_rot = x * sin(angle) + y * cos(angle);
+            x_rot = abs(x * cos(angle) - y * sin(angle));
+            y_rot = abs(x * sin(angle) + y * cos(angle));
             tmp[(y * w2 + x) * channels] =
                 pixels[(y_rot * w1 + x_rot) * channels];
             tmp[(y * w2 + x) * channels + 1] =
@@ -180,7 +180,6 @@ static int rotate_pixbuf(GdkPixbuf **picture, long double angle,
 
 
     g_object_unref(*picture);
-    while(*picture);
 
     if(!(*picture = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, w2, h2)))
     {
