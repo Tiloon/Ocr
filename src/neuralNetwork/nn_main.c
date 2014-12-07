@@ -154,7 +154,7 @@ int nn_main(int argc, char *argv[])
     flags.learning = 0;
     flags.serialize = 0;
     iterations = 0;
-    error = 10;
+    error = 25;
 
     if(checkFlags(argc, argv, &flags))
         return 1;

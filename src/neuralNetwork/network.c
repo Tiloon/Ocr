@@ -23,8 +23,6 @@ void initialization_neural_network(struct s_neural_network *neural_network,
         int nb_patterns, int nb_inputs,
         int nb_hidden_neurons, long double bias)
 {
-    size_t i;
-
     super_initialization_network(&neural_network->network,
             &neural_network->input,
             &neural_network->hidden,
@@ -32,9 +30,6 @@ void initialization_neural_network(struct s_neural_network *neural_network,
             nb_patterns, nb_inputs,
             nb_hidden_neurons,
             bias);
-
-    for(i = 0; (neural_network->network.charset)[i]; i++);
-    neural_network->network.charset_len = i;
 }
 
 void super_initialization_network(struct s_network *network,
@@ -108,6 +103,7 @@ void import_serialization(struct s_network *network)
 {
     FILE *file = NULL;
     FILE *file2 = NULL;
+    size_t i = 0;
     file = fopen("serialized", "r+");
     file2 = fopen("charset", "r+");
     if(file != NULL && file2 != NULL)
@@ -115,6 +111,8 @@ void import_serialization(struct s_network *network)
         text_to_network(file, network, file2);
         fclose(file);
         fclose(file2);
+	for(i = 0; (network->charset)[i]; i++);
+	network->charset_len = i;
     }
     else
     {
@@ -122,5 +120,7 @@ void import_serialization(struct s_network *network)
             printf("FILE = NULL\n");
         if(file2 == NULL)
             printf("FILE = NULL\n");
+	network->charset_len = 0;
     }
 }
+
