@@ -16,7 +16,7 @@ int debug(struct s_binarypic *picture)
         }
         printf("\n");
     }
-    //printf("endchar\n");
+    printf("endchar\n");
     return 0;
 }
 

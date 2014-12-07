@@ -86,24 +86,25 @@ static int segment_and_save(GdkPixbuf *origin)
 static void show_main_help()
 {
     wprintf(L"OCAML : Optical Character Analysis and Machine Learning\n\
-            (Compiled : " __DATE__ " " __TIME__")\n\
-            usage : ocrocaml [args] -i file     Process file\n"
+(Compiled : " __DATE__ " " __TIME__")\n\
+usage : ocrocaml [args] -i file     Process file\n"
 #ifndef NOGUI
-            "   or : ocrocaml -gui               Graphical Interface\n"
+"   or : ocrocaml -gui               Graphical Interface\n"
 #endif
-            "   or : ocrocaml nn [args]          Neural network setup\n"
+"   or : ocrocaml nn [args]          Neural network setup\n"
 #ifndef NOHELP
-            "   or : ocrocaml help \"keyword\"     Get help about keyword\n"
+"   or : ocrocaml help \"keyword\"     Get help about keyword\n"
 #endif
-            "\n\
-            Arguments : \n\
-            -f \"filter\"[,opt]               Apply filter with options\n\
-            -i \"file\"                       Load picture \"file\"\n\
-            -ofilters \"file\"                Save file after applying filters\n\
-            -osegmentation \"file\"           Save file after segmentation\n\
-            -dictionary \"file\"              Load a spell checking file\n\
-            -v                              Verbose\n\n\
-            Neural network arguments :\n");
+"\n\
+Arguments : \n\
+    -f \"filter\"[,opt]               Apply filter with options\n\
+    -i \"file\"                       Load picture \"file\"\n\
+    -ofilters \"file\"                Save file after applying filters\n\
+    -osegmentation \"file\"           Save file after segmentation\n\
+    -dictionary \"file\"              Load a spell checking file\n\
+    -kerning                        Apply kerning segmentation (slower)\n\
+    -v                              Verbose\n\n\
+Neural network arguments :\n");
     print_nn_help();
     wprintf(L"\nMore about this software : http://ocrocaml.ovh/\n");
 }
@@ -119,6 +120,15 @@ static int get_flags(int argc, char *argv[], struct s_flags *flags)
             if(flags->gui)
                 return print_flag_error(argv[i], FLAG_ALREADY_SET);
             flags->gui = 1;
+        }
+        else if(!strcmp(argv[i], "-kerning"))
+        {
+            if(flags->kerning_segm)
+                return print_flag_error(argv[i], FLAG_ALREADY_SET);
+            flags->kerning_segm = 1;
+            if(flags->verbosity)
+                wprintf(L"" BOLDCYAN "Flags\n" RESET "Kerning segmentation is"
+                        "set\n");
         }
         else if(!strcmp(argv[i], "-v"))
         {

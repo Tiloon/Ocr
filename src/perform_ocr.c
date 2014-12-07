@@ -121,7 +121,7 @@ GdkPixbuf* perform_ocr(GdkPixbuf *origin)
     chars = NULL;
 
     //s_rectangle initalisation for segm
-    segm = calloc(1,sizeof(struct s_rectangle));
+    segm = calloc(1, sizeof(struct s_rectangle));
     segm->x = 0;
     segm->y = 0;
     segm->w = 1;
@@ -178,6 +178,7 @@ GdkPixbuf* perform_ocr(GdkPixbuf *origin)
                     chars && (chars[itr_chars].h && chars[itr_chars].w);
                     itr_chars++)
             {
+
                 //segmentation
                 letter = kerning(pic, chars + itr_chars);
                 //reinitialise segm
@@ -185,24 +186,18 @@ GdkPixbuf* perform_ocr(GdkPixbuf *origin)
                 segm->y = 0;
                 segm->w = letter->w;
                 segm->h = letter->h;
-                //printf("letter %i %i\n", segm->w, segm->h);
                 segm = split_chars(letter, segm);
-                //printf("probhere\n");
-                //printf("%i\n", segm == NULL);
-                //printf("segm %i %i %i %i\n", segm->x, segm->y, segm->w, segm->h);
-                //start
-                for(letternb = 0; segm && (segm[letternb].h || segm[letternb].w); letternb++)
+
+                for(letternb = 0; segm && (segm[letternb].h
+                            || segm[letternb].w); letternb++)
                 {
-                //printf("probhere\n");
-                    //printf("prob et lettre numero %i\n", letternb);
-                    /*swp = segm[letternb].x;
-                      segm[letternb].x = segm[letternb].y;
-                      segm[letternb].y = swp;*/ 
-                    //printf("%i %i %i %i\n", segm[letternb].x, segm[letternb].y, segm[letternb].w, segm[letternb].h);
-                    vectorized = vectorize_char(letter, segm + letternb);
-                    //printf("prob\n");
-                    //vectorized = vectorize_char(pic, chars + itr_chars);
-                    if(!segm[letternb+1].h && !segm[letternb+1].w)
+                    //new segm
+                    if(FLAGS->kerning_segm)
+                        vectorized = vectorize_char(letter, segm + letternb);
+                    else
+                        vectorized = vectorize_char(pic, chars + itr_chars);
+
+                    if(!segm[letternb + 1].h && !segm[letternb + 1].w)
                         FREE(letter);
                     if(!vectorized)
                     {
@@ -220,7 +215,8 @@ GdkPixbuf* perform_ocr(GdkPixbuf *origin)
 
                     if(FLAGS->dictionary)
                     {
-                        nn_output = nn_clone_output(nn_output, &(nnetwork.network));
+                        nn_output = nn_clone_output(nn_output,
+                            &(nnetwork.network));
                         append_to_vector_word(nn_output,
                                 &current_word_outputs, &word_size, &word_pos);
                     }
@@ -248,11 +244,13 @@ GdkPixbuf* perform_ocr(GdkPixbuf *origin)
                     {
                         if(FLAGS->dictionary)
                         {
-                            tmp_word = get_dictionary_match(current_word_outputs,
+                            tmp_word = get_dictionary_match(
+                                    current_word_outputs,
                                     word_pos, FLAGS->dictionary, &nnetwork);
                             if(tmp_word)
                             {
-                                if(append_to_output(tmp_word, &output, &output_size,
+                                if(append_to_output(tmp_word, &output,
+                                            &output_size,
                                             &output_pos) == -1)
                                 {
                                     FREE(chars);
@@ -277,12 +275,8 @@ GdkPixbuf* perform_ocr(GdkPixbuf *origin)
                         }
                         itr_spaces++;
                     }
-                    //printf("prob\n");
                 }
-                    //printf("probout\n");
-                //end
             }
-            //printf("prob2\n");
             FREE(spaces);
             FREE(chars);
             if(pixbuf)

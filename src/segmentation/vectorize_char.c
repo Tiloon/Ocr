@@ -23,6 +23,7 @@ int get_in_bounds(struct s_binarypic *pic,
 }
 
 char* vectorize_char(struct s_binarypic *picture, struct s_rectangle *orig) {
+    //printf("%i %i %i %i\n", orig->x, orig->y, orig->w, orig->h);
     char *car;
     int A, B, C, D, x, y, imax, jmax;
     size_t dim;
@@ -76,7 +77,7 @@ char* vectorize_char(struct s_binarypic *picture, struct s_rectangle *orig) {
                     + D * (x_diff * y_diff)) < 0.5F);
         }
     }
-
+    //printf("here is a car:");
     //debug_vectorized_char(car); //draw the letter
     return car;
 }
