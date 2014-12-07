@@ -214,7 +214,8 @@ GdkPixbuf* perform_ocr(GdkPixbuf *origin)
 
                     if(FLAGS->dictionary)
                     {
-                        nn_output = nn_clone_output(nn_output, &(nnetwork.network));
+                        nn_output = nn_clone_output(nn_output, 
+                            &(nnetwork.network));
                         append_to_vector_word(nn_output,
                                 &current_word_outputs, &word_size, &word_pos);
                     }
@@ -242,11 +243,13 @@ GdkPixbuf* perform_ocr(GdkPixbuf *origin)
                     {
                         if(FLAGS->dictionary)
                         {
-                            tmp_word = get_dictionary_match(current_word_outputs,
+                            tmp_word = get_dictionary_match(
+                                    current_word_outputs,
                                     word_pos, FLAGS->dictionary, &nnetwork);
                             if(tmp_word)
                             {
-                                if(append_to_output(tmp_word, &output, &output_size,
+                                if(append_to_output(tmp_word, &output, 
+                                            &output_size,
                                             &output_pos) == -1)
                                 {
                                     FREE(chars);
