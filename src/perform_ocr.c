@@ -121,7 +121,7 @@ GdkPixbuf* perform_ocr(GdkPixbuf *origin)
     chars = NULL;
 
     //s_rectangle initalisation for segm
-    segm = calloc(1,sizeof(struct s_rectangle));
+    segm = calloc(1, sizeof(struct s_rectangle));
     segm->x = 0;
     segm->y = 0;
     segm->w = 1;
@@ -188,15 +188,16 @@ GdkPixbuf* perform_ocr(GdkPixbuf *origin)
                 segm->h = letter->h;
                 segm = split_chars(letter, segm);
 
-                for(letternb = 0; segm && (segm[letternb].h 
+                for(letternb = 0; segm && (segm[letternb].h
                             || segm[letternb].w); letternb++)
                 {
                     //new segm
-                    vectorized = vectorize_char(letter, segm + letternb);
-                    //old seg
-                    //vectorized = vectorize_char(pic, chars + itr_chars);
+                    if(FLAGS->kerning_segm)
+                        vectorized = vectorize_char(letter, segm + letternb);
+                    else
+                        vectorized = vectorize_char(pic, chars + itr_chars);
 
-                    if(!segm[letternb+1].h && !segm[letternb+1].w)
+                    if(!segm[letternb + 1].h && !segm[letternb + 1].w)
                         FREE(letter);
                     if(!vectorized)
                     {
@@ -214,7 +215,7 @@ GdkPixbuf* perform_ocr(GdkPixbuf *origin)
 
                     if(FLAGS->dictionary)
                     {
-                        nn_output = nn_clone_output(nn_output, 
+                        nn_output = nn_clone_output(nn_output,
                             &(nnetwork.network));
                         append_to_vector_word(nn_output,
                                 &current_word_outputs, &word_size, &word_pos);
@@ -248,7 +249,7 @@ GdkPixbuf* perform_ocr(GdkPixbuf *origin)
                                     word_pos, FLAGS->dictionary, &nnetwork);
                             if(tmp_word)
                             {
-                                if(append_to_output(tmp_word, &output, 
+                                if(append_to_output(tmp_word, &output,
                                             &output_size,
                                             &output_pos) == -1)
                                 {
