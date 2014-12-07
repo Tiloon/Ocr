@@ -140,8 +140,8 @@ int binary_to_gdk(struct s_binarypic *binarypic, GdkPixbuf **picture)
     if(*picture)
     {
         g_object_unref(*picture);
-        while(*picture)
-            ;
+        //while(*picture)
+        //    ;
     }
     if(!(*picture = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, binarypic->w,
             binarypic->h)))

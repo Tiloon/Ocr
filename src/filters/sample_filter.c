@@ -153,6 +153,7 @@ size_t dh, dw;
 
     h1 = gdk_pixbuf_get_height(*picture);
     w1 = gdk_pixbuf_get_width(*picture);
+<<<<<<< HEAD
 dh = h1 /2;
 dw = w1 /2;
     h2 = abs(w1-dw * sin(angle) + h1-dh * cos(angle));
@@ -160,6 +161,12 @@ dw = w1 /2;
 h2 +=dh;
 w2 += dw;
 printf ("%lu et %lu \n et %lu et %lu", h2, w2, h1, w1);
+=======
+
+    h2 = (size_t)abs(((long double)w1) * sin(angle) + ((long double)h1) * cos(angle));
+    w2 = (size_t)abs(((long double)w1) * cos(angle) - ((long double)h1) * sin(angle));
+
+>>>>>>> 30b3c89f91b7f9e4a43e192cae0ef9c371af2b98
     pixels = gdk_pixbuf_get_pixels(*picture);
 
     wprintf(L"x1 %zu, x2 %zu\ny1 %zu, y2 %zu\n", h1, h2, w1, w2);
@@ -170,6 +177,7 @@ printf ("%lu et %lu \n et %lu et %lu", h2, w2, h1, w1);
     {
         for(x = 0; x < w2; x++)
         {
+<<<<<<< HEAD
             x_rot = (x+dw) * cos(angle) - (y+dh) * sin(angle);
             y_rot = (x+dw) * sin(angle) + (y+dw) * cos(angle);
 y_rot -= dh;
@@ -178,6 +186,11 @@ x_rot -= dw;
 if ((y*w2+x)*channels +2 < h2*w2*channels && (y_rot*w1+x_rot)*channels + 2 < h1*w1*channels)
 {            
 tmp[(y * w2 + x) * channels] =
+=======
+            x_rot = abs(x * cos(angle) - y * sin(angle));
+            y_rot = abs(x * sin(angle) + y * cos(angle));
+            tmp[(y * w2 + x) * channels] =
+>>>>>>> 30b3c89f91b7f9e4a43e192cae0ef9c371af2b98
                 pixels[(y_rot * w1 + x_rot) * channels];
             tmp[(y * w2 + x) * channels + 1] =
                 pixels[(y_rot * w1 + x_rot) * channels + 1];
@@ -189,7 +202,10 @@ tmp[(y * w2 + x) * channels] =
 
 
     g_object_unref(*picture);
+<<<<<<< HEAD
     //while(*picture)
+=======
+>>>>>>> 30b3c89f91b7f9e4a43e192cae0ef9c371af2b98
 
     if(!(*picture = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, w2, h2)))
     {

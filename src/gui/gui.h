@@ -1,8 +1,11 @@
 int gui_main(int argc, char **argv);
 void load_image();
 void binarize();
-void blockseg();
-void lineseg();
+void apply_gaussian_filter();
+void check_rotation();
+void segmentation();
+void all_filters();
+void start_recognition();
+void save_text();
 void clean();
-
-
+void quit();

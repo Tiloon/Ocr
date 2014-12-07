@@ -213,8 +213,8 @@ void update_learning_rate_momemtum(long double error,
 {
     if(error < 2)
     {
-	*eta = 0.07;
-	*alpha = 0.1;
+	*eta = 0.1;
+	*alpha = 0.9;
     }
     else if(error < 10)
     {

@@ -55,6 +55,7 @@
 struct s_flags {
     char verbosity;
     char gui;
+    char kerning_segm;
     char *filename;
     char *filteroutput;
     char *segmentation_output;
