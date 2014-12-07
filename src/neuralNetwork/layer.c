@@ -56,7 +56,6 @@ void initialize_layer(struct s_layer *layer, int nbUnits, int nbWeights,
     layer->delta = malloc(sizeof(long double) * nbUnits);
     for(u = 0; u < layer->nbUnits; u++)
         layer->delta[u] = 0;
-
 }
 
 void compute_values(struct s_layer *l1, struct s_layer *l2)

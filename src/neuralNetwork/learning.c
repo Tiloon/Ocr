@@ -211,15 +211,14 @@ void learning_fonts(struct s_network *network, int nb_patterns,
 void update_learning_rate_momemtum(long double error,
 				   long double *eta, long double *alpha)
 {
-    if(error < 5.9)
+    if(error < 2)
     {
-        *eta = 0.1;
-        *alpha = 0.1;
-    }
-
-    else if(error < 7)
-    {
-	*eta = 0.2 ;
+	*eta = 0.07;
 	*alpha = 0.1;
+    }
+    else if(error < 10)
+    {
+	*eta = 0.1;
+	*alpha = 0.8;
     }
  }

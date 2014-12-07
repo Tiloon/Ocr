@@ -75,15 +75,35 @@ void printResultsVector(long double *vector, size_t size)
     }
 }
 
-void print_matching_char(long double *vector, size_t size, struct s_network
-        *network)
+long double * nn_clone_output(long double *vector, struct s_network *network)
 {
-    size_t max, i;
+    size_t i, max;
+    long double *copy;
+
+    for(max = 0; (network->charset)[max]; max++);
+
+    copy = calloc(max + 2, sizeof(long double));
+
+    for(i = 0; i <= max; i++)
+        copy[i] = vector[i];
+
+    return copy;
+}
+
+wchar_t get_matching_char(long double *vector, struct s_network *network)
+{
+    size_t i, max;
+
     max = 0;
-    for(i = 0; i < size; i++)
+    for(i = 0; network->charset[i]; i++)
         max = (vector[max] < vector[i]) ? i : max;
 
-    wprintf(L"%lc", (network->charset)[max]);
+    return network->charset[max];
+}
+
+void print_matching_char(long double *vector, struct s_network *network)
+{
+    wprintf(L"%lc", get_matching_char(vector, network));
 
     /*
      * print the string in charset
@@ -134,7 +154,7 @@ int nn_main(int argc, char *argv[])
     flags.learning = 0;
     flags.serialize = 0;
     iterations = 0;
-    error = 5.9999;
+    error = 25;
 
     if(checkFlags(argc, argv, &flags))
         return 1;
@@ -144,15 +164,14 @@ int nn_main(int argc, char *argv[])
                 NUMBER_INPUT_NEURONS,
                 NUMBER_HIDDEN_NEURONS,
                 BIAS);
-
-        //wprintf(L"%ls\n", neural_network.network.charset);
+	//wprintf(L"%ls\n", neural_network.network.charset);
         all_inputs = load_image_set(flags.dataset_files,
                 NUMBER_PATTERNS, &fonts_count);
 
 
         all_results = calloc(fonts_count, sizeof(long double **));
         //all_targets = calloc(fonts_count, sizeof(long double **));
-	all_targets = calloc(fonts_count, sizeof(long double));
+        all_targets = calloc(fonts_count, sizeof(long double));
 
         for(i = 0; i < fonts_count; i++)
         {
@@ -166,15 +185,15 @@ int nn_main(int argc, char *argv[])
                         sizeof(long double));
                 all_targets[i][j][j] = 1;
             }
-	}
+        }
 
-	learning_fonts(&neural_network.network, NUMBER_PATTERNS, &iterations,
-		       fonts_count, &all_inputs, &all_targets,
-		       &all_results,
-		       &error, ETA, ALPHA, ERROR);
+        learning_fonts(&neural_network.network, NUMBER_PATTERNS, &iterations,
+                fonts_count, &all_inputs, &all_targets,
+                &all_results,
+                &error, ETA, ALPHA, ERROR);
 
-	if(flags.serialize)
-	    serialization(&neural_network.network);
+        if(flags.serialize)
+            serialization(&neural_network.network);
     }
     wprintf(L"\n\n");
     return 0;
@@ -236,8 +255,8 @@ static int print_flag_error(void)
 
 void print_nn_help(void)
 {
-    wprintf(L"\
-            -learning                       Start the learning process\n\
-            -serialize                      Serialize the NN into serialize\n\
-            -datasetsfiles [files]          Comma separated file list\n\n");
+    wprintf(L""
+"    -learning                       Start the learning process\n"
+"    -serialize                      Serialize the NN into serialize\n"
+"    -datasetsfiles [files]          Comma separated file list\n\n");
 }

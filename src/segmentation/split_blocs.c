@@ -106,7 +106,7 @@ int bloc_found(unsigned int i, unsigned int j,
 }
 
 
-struct s_rectangle* split_blocs(struct s_binarypic *picture)
+struct s_rectangle* get_blocs(struct s_binarypic *picture)
 {
     unsigned int i, j, nb_bloc;
     struct s_rectangle *blocs;
@@ -157,4 +157,14 @@ struct s_rectangle* split_blocs(struct s_binarypic *picture)
     blocs[nb_bloc].w = 0;
     blocs[nb_bloc].h = 0;
     return blocs;
+}
+
+
+struct s_rectangle *split_blocs(struct s_binarypic *picture)
+{
+    struct s_binarypic *mask;
+
+    mask = copy_binarypic(picture);
+    morph_erode(mask->pixels, mask->w, mask->h, mask->w / 100, mask->h / 100);
+    return get_blocs(mask);
 }

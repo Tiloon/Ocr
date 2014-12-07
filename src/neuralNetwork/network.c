@@ -20,31 +20,31 @@ void initialize_network(struct s_network *network, struct s_layer *input,
 }
 
 void initialization_neural_network(struct s_neural_network *neural_network,
-				   int nb_patterns, int nb_inputs,
-				   int nb_hidden_neurons, long double bias)
+        int nb_patterns, int nb_inputs,
+        int nb_hidden_neurons, long double bias)
 {
     super_initialization_network(&neural_network->network,
-				 &neural_network->input,
-				 &neural_network->hidden,
-				 &neural_network->output,
-				 nb_patterns, nb_inputs,
-				 nb_hidden_neurons,
-				 bias);
+            &neural_network->input,
+            &neural_network->hidden,
+            &neural_network->output,
+            nb_patterns, nb_inputs,
+            nb_hidden_neurons,
+            bias);
 }
 
 void super_initialization_network(struct s_network *network,
-                                  struct s_layer *input,
-                                  struct s_layer *hidden,
-                                  struct s_layer *output,
-                                  int nb_patterns, int nb_inputs,
-				  int nb_hidden_neurons,
-				  long double bias)
+        struct s_layer *input,
+        struct s_layer *hidden,
+        struct s_layer *output,
+        int nb_patterns, int nb_inputs,
+        int nb_hidden_neurons,
+        long double bias)
 {
     initialize_layer(input, nb_inputs, nb_hidden_neurons, bias);
     initialize_layer(hidden, nb_hidden_neurons,
-		     nb_patterns, bias);
+            nb_patterns, bias);
     initialize_layer(output, nb_patterns,
-		     0, bias);
+            0, bias);
 
     initialize_network(network, input, hidden, output);
     import_serialization(network);
@@ -82,14 +82,14 @@ long double *outputs_to_list2(struct s_network *network)
     long double *outputs;
     int u;
     outputs = calloc(network->output->nbUnits,
-		     sizeof(long double));
+            sizeof(long double));
     for(u = 0; u < network->output->nbUnits; u++)
-	outputs[u] = network->output->outputs[u];
+        outputs[u] = network->output->outputs[u];
     return outputs;
 }
 
 long double *compute_character (struct s_network *network,
-				long double *inputs)
+        long double *inputs)
 {
     long double *outputs;
     outputs = calloc(network->output->nbUnits, sizeof(long double));
@@ -103,19 +103,24 @@ void import_serialization(struct s_network *network)
 {
     FILE *file = NULL;
     FILE *file2 = NULL;
+    size_t i = 0;
     file = fopen("serialized", "r+");
     file2 = fopen("charset", "r+");
     if(file != NULL && file2 != NULL)
     {
-	text_to_network(file, network, file2);
-    	fclose(file);
-	fclose(file2);
+        text_to_network(file, network, file2);
+        fclose(file);
+        fclose(file2);
+	for(i = 0; (network->charset)[i]; i++);
+	network->charset_len = i;
     }
     else
     {
-	if(file == NULL)
-	    printf("FILE = NULL\n");
-	if(file2 == NULL)
-	    printf("FILE = NULL\n");
+        if(file == NULL)
+            printf("FILE = NULL\n");
+        if(file2 == NULL)
+            printf("FILE = NULL\n");
+	network->charset_len = 0;
     }
 }
+
