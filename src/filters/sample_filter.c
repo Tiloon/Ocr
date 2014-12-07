@@ -142,21 +142,24 @@ void rotation(int **tab, int width, int height)
             tab[j][i] = new[j][i];
     }
 }
-*/
+*//*
 static int rotate_pixbuf(GdkPixbuf **picture, long double angle,
         size_t channels)
 {
     guchar *pixels, *tmp;
     size_t h1, w1, h2, w2, x, y, x_rot, y_rot;
-
+size_t dh, dw;
     angle = -angle;
 
     h1 = gdk_pixbuf_get_height(*picture);
     w1 = gdk_pixbuf_get_width(*picture);
-
-    h2 = w1 * sin(angle) + h1 * cos(angle);
-    w2 = w1 * cos(angle) - h1 * sin(angle);
-
+dh = h1 /2;
+dw = w1 /2;
+    h2 = abs(w1-dw * sin(angle) + h1-dh * cos(angle));
+    w2 = abs(w1-dw * cos(angle) - h1-dh * sin(angle));
+h2 +=dh;
+w2 += dw;
+printf ("%lu et %lu \n et %lu et %lu", h2, w2, h1, w1);
     pixels = gdk_pixbuf_get_pixels(*picture);
 
     wprintf(L"x1 %zu, x2 %zu\ny1 %zu, y2 %zu\n", h1, h2, w1, w2);
@@ -167,20 +170,26 @@ static int rotate_pixbuf(GdkPixbuf **picture, long double angle,
     {
         for(x = 0; x < w2; x++)
         {
-            x_rot = x * cos(angle) - y * sin(angle);
-            y_rot = x * sin(angle) + y * cos(angle);
-            tmp[(y * w2 + x) * channels] =
+            x_rot = (x+dw) * cos(angle) - (y+dh) * sin(angle);
+            y_rot = (x+dw) * sin(angle) + (y+dw) * cos(angle);
+y_rot -= dh;
+x_rot -= dw;
+
+if ((y*w2+x)*channels +2 < h2*w2*channels && (y_rot*w1+x_rot)*channels + 2 < h1*w1*channels)
+{            
+tmp[(y * w2 + x) * channels] =
                 pixels[(y_rot * w1 + x_rot) * channels];
             tmp[(y * w2 + x) * channels + 1] =
                 pixels[(y_rot * w1 + x_rot) * channels + 1];
             tmp[(y * w2 + x) * channels + 2] =
                 pixels[(y_rot * w1 + x_rot) * channels + 2];
-        }
+} 
+       }
     }
 
 
     g_object_unref(*picture);
-    while(*picture);
+    //while(*picture)
 
     if(!(*picture = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, w2, h2)))
     {
@@ -191,20 +200,42 @@ static int rotate_pixbuf(GdkPixbuf **picture, long double angle,
     pixels = gdk_pixbuf_get_pixels(*picture);
 
     for(y = 0; y < h2; y++)
+
     {
         for(x = 0; x < w2; x++)
-        {
-            pixels[(y * w2 + x) * channels] =
-                tmp[(y * w2 + x) * channels];
-            pixels[(y * w2 + x) * channels + 1] =
-                tmp[(y * w2 + x) * channels + 1];
-            pixels[(y * w2 + x) * channels + 2] =
-                tmp[(y * w2 + x) * channels + 2];
-        }
-    }
-    return 0;
-}
+        {*/
+//printf("%lu \n", (y*w2+x)*channels +2);
+//if ((y*w2+x)*channels +2 < h2*w2*channels && (y*w2+x)*channels + 20000000000000 < h1*w1*channels && (y*w2+x)*channels > 0)
+//{
+        //    pixels[(y * w2 + x) * channels] =
+             //   tmp[(y * w2 + x) * channels];
+           // pixels[(y * w2 + x) * channels + 1] =
+         //       tmp[(y * w2 + x) * channels + 1];
+       //     pixels[(y * w2 + x) * channels + 2] =
+     //           tmp[(y * w2 + x) * channels + 2];
+//} 
+    //   }
+   // }
 
+
+/*for (size_t i = 0; i< h2*w2*channels; i++)
+{
+if (i +2 < h2*w2*channels && i + 2 < h1*w1*channels)
+{
+            pixels[i] =
+                tmp[i];
+            pixels[i + 1] =
+                tmp[i + 1];
+            pixels[i + 2] =
+                tmp[i + 2];
+} 
+
+}*/
+  //  return 0;
+//}
+/*int detectAngle()
+{
+}*/
 
 
 
@@ -264,7 +295,7 @@ int sample_filter(GdkPixbuf **picture, size_t nb_params, char **params)
     }
 
 */
-    rotate_pixbuf(picture, M_PI / 2.0, bpp);
+//    randome = rotate_pixbuf(picture, M_PI / 90.0, bpp);
 
     return 0;
 }
