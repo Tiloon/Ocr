@@ -1,13 +1,8 @@
-#ifndef NOGUI
+int gui_main(int argc, char **argv);
+void load_image();
+void binarize();
+void blockseg();
+void lineseg();
+void clean();
 
-#ifndef GUI_GUI_H
-#define GUI_GUI_H
 
-#include <stdlib.h>
-#include <gtk/gtk.h>
-
-int gui_main (int argc, char *argv[]);
-
-#endif
-
-#endif
