@@ -97,16 +97,18 @@ static wchar_t * get_dictionary_match(long double **chars, size_t count,
 GdkPixbuf* perform_ocr(GdkPixbuf *origin)
 {
     GdkPixbuf *pixbuf;
-    struct s_binarypic *pic, *mask;
-    struct s_rectangle *chars, *lines, *blocs;
+    struct s_binarypic *pic, *mask, *letter;
+    struct s_rectangle *chars, *lines, *blocs, *segm;
     struct s_neural_network nnetwork;
     size_t itr_chars, itr_lines, itr_blocs, itr_spaces, *spaces, output_size,
            output_pos, word_size, word_pos;
     char *vectorized;
     long double *nn_inputs, *nn_output, **current_word_outputs;
     wchar_t *output, *current, *tmp_word, c;
+    int letternb;
 
     mask = NULL;
+    letter = NULL;
     if(!(pic = calloc(1, sizeof(struct s_binarypic))))
     {
         LOG_ALLOC_ERR();
@@ -117,6 +119,13 @@ GdkPixbuf* perform_ocr(GdkPixbuf *origin)
     blocs = NULL;
     lines = NULL;
     chars = NULL;
+
+    //s_rectangle initalisation for segm
+    segm = calloc(1,sizeof(struct s_rectangle));
+    segm->x = 0;
+    segm->y = 0;
+    segm->w = 1;
+    segm->h = 1;
 
     // Neural network initialisation
     initialization_neural_network(&nnetwork, NUMBER_PATTERNS,
@@ -166,84 +175,114 @@ GdkPixbuf* perform_ocr(GdkPixbuf *origin)
 
             // Loop across each characters
             for(itr_chars = 0;
-                    chars && (chars[itr_chars].h || chars[itr_chars].w);
+                    chars && (chars[itr_chars].h && chars[itr_chars].w);
                     itr_chars++)
             {
-                vectorized = vectorize_char(pic, chars + itr_chars);
-                if(!vectorized)
+                //segmentation
+                letter = kerning(pic, chars + itr_chars);
+                //reinitialise segm
+                segm->x = 0;
+                segm->y = 0;
+                segm->w = letter->w;
+                segm->h = letter->h;
+                //printf("letter %i %i\n", segm->w, segm->h);
+                segm = split_chars(letter, segm);
+                //printf("probhere\n");
+                //printf("%i\n", segm == NULL);
+                //printf("segm %i %i %i %i\n", segm->x, segm->y, segm->w, segm->h);
+                //start
+                for(letternb = 0; segm && (segm[letternb].h || segm[letternb].w); letternb++)
                 {
-                    FREE(chars);
-                    FREE(lines);
-                    FREE(blocs);
-                    FREE(pic);
-                    LOG_ALLOC_ERR();
-                    return NULL;
-                }
-                nn_inputs = vector_bool_to_nn(vectorized,
-                        NUMBER_PIXELS_CHARACTER);
-
-                nn_output = compute_character(&nnetwork.network, nn_inputs);
-
-                if(FLAGS->dictionary)
-                {
-                    nn_output = nn_clone_output(nn_output, &(nnetwork.network));
-                    append_to_vector_word(nn_output,
-                            &current_word_outputs, &word_size, &word_pos);
-                }
-                else
-                {
-                    c = get_matching_char(nn_output, &(nnetwork.network));
-
-                    if(c)
-                    {
-                        append_wchar_to_output(c, &output, &output_size,
-                                &output_pos);
-                    }
-                    else
-                    {
-                        fprintf(stderr, "Bad character");
-                    }
-                }
-
-                FREE(vectorized);
-                if(pixbuf)
-                    draw_rectangle(pixbuf, chars + itr_chars, ~0, 0,
-                            0);
-                if(spaces[itr_spaces] &&
-                        (spaces[itr_spaces] == itr_chars + 1))
-                {
-                    if(FLAGS->dictionary)
-                    {
-                        tmp_word = get_dictionary_match(current_word_outputs,
-                                word_pos, FLAGS->dictionary, &nnetwork);
-                        if(tmp_word)
-                        {
-                            if(append_to_output(tmp_word, &output, &output_size,
-                                        &output_pos) == -1)
-                            {
-                                FREE(chars);
-                                FREE(lines);
-                                FREE(blocs);
-                                FREE(pic);
-                                return NULL;
-                            }
-                        }
-                        free_vector_word(current_word_outputs, &word_size,
-                                &word_pos);
-                    }
-
-                    if(append_to_output(L" ", &output, &output_size,
-                                &output_pos) == -1)
+                //printf("probhere\n");
+                    //printf("prob et lettre numero %i\n", letternb);
+                    /*swp = segm[letternb].x;
+                      segm[letternb].x = segm[letternb].y;
+                      segm[letternb].y = swp;*/ 
+                    //printf("%i %i %i %i\n", segm[letternb].x, segm[letternb].y, segm[letternb].w, segm[letternb].h);
+                    vectorized = vectorize_char(letter, segm + letternb);
+                    //printf("prob\n");
+                    //vectorized = vectorize_char(pic, chars + itr_chars);
+                    if(!segm[letternb+1].h && !segm[letternb+1].w)
+                        FREE(letter);
+                    if(!vectorized)
                     {
                         FREE(chars);
                         FREE(lines);
                         FREE(blocs);
                         FREE(pic);
+                        LOG_ALLOC_ERR();
                         return NULL;
                     }
-                    itr_spaces++;
+                    nn_inputs = vector_bool_to_nn(vectorized,
+                            NUMBER_PIXELS_CHARACTER);
+
+                    nn_output = compute_character(&nnetwork.network, nn_inputs);
+
+                    if(FLAGS->dictionary)
+                    {
+                        nn_output = nn_clone_output(nn_output, &(nnetwork.network));
+                        append_to_vector_word(nn_output,
+                                &current_word_outputs, &word_size, &word_pos);
+                    }
+                    else
+                    {
+                        c = get_matching_char(nn_output, &(nnetwork.network));
+
+                        if(c)
+                        {
+                            append_wchar_to_output(c, &output, &output_size,
+                                    &output_pos);
+                        }
+                        else
+                        {
+                            fprintf(stderr, "Bad character");
+                        }
+                    }
+
+                    FREE(vectorized);
+                    if(pixbuf)
+                        draw_rectangle(pixbuf, chars + itr_chars, ~0, 0,
+                                0);
+                    if(spaces[itr_spaces] &&
+                            (spaces[itr_spaces] == itr_chars + 1))
+                    {
+                        if(FLAGS->dictionary)
+                        {
+                            tmp_word = get_dictionary_match(current_word_outputs,
+                                    word_pos, FLAGS->dictionary, &nnetwork);
+                            if(tmp_word)
+                            {
+                                if(append_to_output(tmp_word, &output, &output_size,
+                                            &output_pos) == -1)
+                                {
+                                    FREE(chars);
+                                    FREE(lines);
+                                    FREE(blocs);
+                                    FREE(pic);
+                                    return NULL;
+                                }
+                            }
+                            free_vector_word(current_word_outputs, &word_size,
+                                    &word_pos);
+                        }
+
+                        if(append_to_output(L" ", &output, &output_size,
+                                    &output_pos) == -1)
+                        {
+                            FREE(chars);
+                            FREE(lines);
+                            FREE(blocs);
+                            FREE(pic);
+                            return NULL;
+                        }
+                        itr_spaces++;
+                    }
+                    //printf("prob\n");
                 }
+                    //printf("probout\n");
+                //end
             }
+            //printf("prob2\n");
             FREE(spaces);
             FREE(chars);
             if(pixbuf)

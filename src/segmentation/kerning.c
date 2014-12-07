@@ -16,7 +16,7 @@ int debug(struct s_binarypic *picture)
         }
         printf("\n");
     }
-    printf("\n");
+    //printf("endchar\n");
     return 0;
 }
 
@@ -141,10 +141,18 @@ struct s_binarypic* kerning(struct s_binarypic *picture,
             sizeof(struct s_binarypic));
     res->w = size*chars->w;
     res->h = chars->h;
+        
     //printf("%i %i %i %i\n", chars->x, chars->y, chars->w, chars->h);
     res = copy_kerning(picture, chars, res, size);
     //printf("next\n");
-
+    unsigned int i, j;
+    for(i = 0; i < res->h; i++)
+    {
+        for(j = 0; j < res->w; j++)
+        {
+            res->pixels[i*res->w+j] = !res->pixels[i*res->w+j];
+        }
+    }
     //debug(res);
 
     return res;

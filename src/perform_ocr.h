@@ -16,6 +16,7 @@
 #include "segmentation/split_lines.h"
 #include "segmentation/split_chars.h"
 #include "segmentation/split_blocs.h"
+#include "segmentation/kerning.h"
 #include "segmentation/draw_rectangle.h"
 #include "segmentation/morphology.h"
 #include "segmentation/vectorize_char.h"
