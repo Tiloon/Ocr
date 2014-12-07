@@ -53,6 +53,10 @@ int picture_save_pixbuf(GdkPixbuf *pic, const char *filename)
     return 0;
 }
 
+GdkPixbuf **picture_get_pimage()
+{
+    return &picture;
+}
 GdkPixbuf *picture_get_image()
 {
     return picture;

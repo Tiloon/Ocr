@@ -19,7 +19,7 @@ static char gaussian_filter_help_msg[] =
 
 #endif
 
-extern int gaussian_filter(GdkPixbuf *picture, size_t nb_params, char **params);
+extern int gaussian_filter(GdkPixbuf **picture, size_t nb_params, char **params);
 
 
 #endif

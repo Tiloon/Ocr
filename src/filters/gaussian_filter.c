@@ -73,7 +73,7 @@ int box_blur(unsigned int *in, unsigned int *out, int height, int width,
     return 0;
 }
 
-int gaussian_filter(GdkPixbuf *picture, size_t nb_params, char **params)
+int gaussian_filter(GdkPixbuf **picture, size_t nb_params, char **params)
 {
     int ht, wt;
     int i;
@@ -82,16 +82,18 @@ int gaussian_filter(GdkPixbuf *picture, size_t nb_params, char **params)
     unsigned int *temp, *temp_out, *swap;
     guchar *pixel;
 
+
+
     if(FLAGS->verbosity && nb_params >= 1)
         printf("Filter parameters : \"%s\"\n", params[0]);
 
     printf("%zu\n", nb_params);
-    if(gdk_pixbuf_get_bits_per_sample(picture)!=8)
+    if(gdk_pixbuf_get_bits_per_sample(*picture)!=8)
         return 1;
-    ht = gdk_pixbuf_get_height(picture);
-    wt = gdk_pixbuf_get_width(picture);
-    pixel = gdk_pixbuf_get_pixels(picture);
-    bpp = gdk_pixbuf_get_n_channels(picture);
+    ht = gdk_pixbuf_get_height(*picture);
+    wt = gdk_pixbuf_get_width(*picture);
+    pixel = gdk_pixbuf_get_pixels(*picture);
+    bpp = gdk_pixbuf_get_n_channels(*picture);
     rowstride = wt * bpp;
     if(!((temp = calloc(wt * bpp * ht, sizeof(unsigned int))) &&
         (temp_out = calloc(wt * bpp * ht, sizeof(unsigned int)))))

@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
     {
         if(FLAGS->verbosity)
             wprintf(L"" BOLDCYAN "\nFilters\n" RESET);
-        if(filters_apply_all(picture_get_image()))
+        if(filters_apply_all(picture_get_pimage()))
         {
             if(FLAGS->verbosity)
                 wprintf(L"" BOLDRED "FAIL: " RESET "can't apply all filters\n");

@@ -183,7 +183,7 @@ return (hough);
     return (theta);
 }*/
 
-int rot_filter(GdkPixbuf *picture, size_t nb_params, char **params)
+int rot_filter(GdkPixbuf **ppicture, size_t nb_params, char **params)
 {
 int **hough;
     float theta = 0;
@@ -195,6 +195,7 @@ int **hough;
     int bpp;
     //guchar ** tab;
     guchar *pixel;
+GdkPixbuf *picture = *ppicture;
     unsigned int grayscale = 0;
     if(FLAGS->verbosity && nb_params >= 1)
         printf("Filter parameters : \"%s\"\n", params[0]);
