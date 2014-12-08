@@ -32,7 +32,8 @@ static int append_to_output(wchar_t *word, wchar_t **output,
         while((*output_pos) + i + 2 + TEXT_BLOCK_SIZE >= (*output_size))
         {
             (*output_size) += TEXT_BLOCK_SIZE;
-            (*output) = realloc(*output, (1 + *output_size) * sizeof(wchar_t));
+            (*output) = realloc(*output, (1 + *output_size) *
+                    sizeof(wchar_t));
             if(!(*output))
             {
                 LOG_ALLOC_ERR();
@@ -87,7 +88,7 @@ GdkPixbuf* perform_ocr(GdkPixbuf *origin, wchar_t **ocr_output)
 {
     GdkPixbuf *pixbuf;
     struct s_binarypic *pic, *mask, *letter;
-    struct s_rectangle *chars, *lines, *blocs, *segm, char_draw;
+    struct s_rectangle *chars, *lines, *blocs, *segm;
     struct s_neural_network nnetwork;
     size_t itr_chars, itr_lines, itr_blocs, itr_spaces, *spaces, output_size,
            output_pos, word_size, word_pos, kerning_padding;
@@ -179,6 +180,11 @@ GdkPixbuf* perform_ocr(GdkPixbuf *origin, wchar_t **ocr_output)
                 segm = split_chars(letter, segm);
                 kerning_padding = 0;
 
+                if(pixbuf)
+                {
+                    draw_rectangle(pixbuf, chars + itr_chars, ~0, 0, 0);
+                }
+
                 for(letternb = 0; segm && (segm[letternb].h
                             || segm[letternb].w); letternb++)
                 {
@@ -202,14 +208,15 @@ GdkPixbuf* perform_ocr(GdkPixbuf *origin, wchar_t **ocr_output)
                     nn_inputs = vector_bool_to_nn(vectorized,
                             NUMBER_PIXELS_CHARACTER);
 
-                    nn_output = compute_character(&nnetwork.network, nn_inputs);
+                    nn_output = compute_character(&nnetwork.network,
+                            nn_inputs);
 
                     if(FLAGS->rules)
                     {
                         nn_output = nn_clone_output(nn_output,
                             &(nnetwork.network));
-                        append_to_vector_word(nn_output, &current_word_outputs,
-                                &word_size, &word_pos);
+                        append_to_vector_word(nn_output,
+                                &current_word_outputs, &word_size, &word_pos);
 
 
                     }
@@ -229,10 +236,6 @@ GdkPixbuf* perform_ocr(GdkPixbuf *origin, wchar_t **ocr_output)
                     }
 
                     FREE(vectorized);
-                    if(pixbuf)
-                    {
-                        draw_rectangle(pixbuf, &char_draw, ~0, 0, 0);
-                    }
                     if(spaces[itr_spaces] &&
                             (spaces[itr_spaces] == itr_chars + 1))
                     {

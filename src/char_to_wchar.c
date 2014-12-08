@@ -3,9 +3,14 @@
 char* wchar_to_char(wchar_t *wstr)
 {
     char *str;
-    size_t i, j;
+    size_t i, j, k;
 
+    if(wstr == NULL)
+        return NULL;
+
+    k = 0;
     j = 0;
+
     for(i = 0; wstr[i]; i++)
     {
         j++;
@@ -20,22 +25,23 @@ char* wchar_to_char(wchar_t *wstr)
     for(i = 0; wstr[i]; i++)
     {
         if((wstr[i] == 0xFB00) ||
-                (wstr[i] == 0xFB00) ||
-                (wstr[i] == 0xFB00))
+                (wstr[i] == 0xFB01) ||
+                (wstr[i] == 0xFB02))
         {
-            str[j] = 'f';
+            str[k] = 'f';
             j++;
             if(wstr[i] == 0xFB00)
-                str[j] = 'f';
+                str[k] = 'f';
             if(wstr[i] == 0xFB01)
-                str[j] = 'i';
+                str[k] = 'i';
             if(wstr[i] == 0xFB02)
-                str[j] = 'l';
+                str[k] = 'l';
         }
         else
         {
-            str[j] = wstr[i];
+            str[k] = wstr[i];
         }
+        k++;
     }
 
     return str;

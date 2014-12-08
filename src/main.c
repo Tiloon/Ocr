@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
         if(filters_apply_all(picture_get_pimage()))
         {
             if(FLAGS->verbosity)
-                wprintf(L"" BOLDRED "FAIL: " RESET "can't apply all filters\n");
+                wprintf(L"" BOLDRED "FAIL: " RESET "can't apply filters\n");
             return 1;
         }
         if(FLAGS->verbosity)
