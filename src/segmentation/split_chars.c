@@ -19,7 +19,7 @@ size_t* get_spaces(struct s_rectangle *car)
         return calloc(1,sizeof(size_t)); //0 or 1  car, no spaces
 
     //unsigned int step = 8;
-    step = get_step(car) * 1.2;
+    step = get_step(car) * 1.4;
 
     for(l = 0; car[l].h || car[l].w;l++); //get lenght
 
