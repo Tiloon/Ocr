@@ -20,7 +20,6 @@
 #include "../picture/convert_pic.h"
 #include "../perform_ocr.h"
 #include "../help/help.h"
-#include "../improvements/dictionary.h"
 
 
 //Image that will be analysed

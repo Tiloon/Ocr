@@ -22,11 +22,14 @@
 
 #include "help/help.h"
 
+<<<<<<< HEAD
 #include "improvements/dictionary.h"
 int segment_and_save(GdkPixbuf *origin);
 
 
 
+=======
+>>>>>>> aff467cb61727f3faef7f124dd00a6e0c57d1fa3
 #ifndef NOGUI
 #include "gui/gui.h"
 #endif
@@ -59,10 +62,10 @@ struct s_flags {
     char verbosity;
     char gui;
     char kerning_segm;
+    char rules;
     char *filename;
     char *filteroutput;
     char *segmentation_output;
-    struct s_dictionary *dictionary;
     // Other flags
 };
 
