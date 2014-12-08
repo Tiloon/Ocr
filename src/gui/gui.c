@@ -29,7 +29,9 @@ GtkWidget *image;
 GdkPixbuf *pix2, *pix;
 GError *error = NULL;
 GError *error2 = NULL;
+GtkWidget* text_view = NULL;
 static GtkWidget *pToolbar = NULL;
+GtkTextBuffer* text_buffer = 0;
 
 int gui_main(int argc,char **argv)
 {
@@ -37,7 +39,7 @@ int gui_main(int argc,char **argv)
     GtkWidget* window = NULL;
     GtkWidget *vBox;	
     GtkWidget *hBox;
-    GtkWidget *frame1, *frame2;
+    GtkWidget *frame1;
     
     //initialisation de gtk+
     gtk_init(&argc,&argv);
@@ -185,15 +187,21 @@ int gui_main(int argc,char **argv)
     //hBox contenant la frame1 et la frame2
     hBox = gtk_hbox_new(TRUE, 0);
     frame1 = gtk_frame_new("Test1");
-    frame2 = gtk_frame_new("Test2");
+    //frame2 = gtk_frame_new("Test2");
     gtk_box_pack_start(GTK_BOX(hBox), frame1, TRUE, TRUE, 0);
-    gtk_box_pack_start(GTK_BOX(hBox), frame2, TRUE, TRUE, 0);
     
-    //contenu de la frame1
+
+    GtkWidget* text_view = gtk_text_view_new();
+
+    //gtk_box_pack_start(GTK_BOX(hBox), frame2, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(hBox), text_view,TRUE,TRUE,0);
+
+    //²contenu de la frame1
     //Chargement d'une image a partir d'un fichier
     pix = gdk_pixbuf_new_from_file_at_size(NULL, 1000/2, 1000/2, &error2);
-    image = gtk_image_new_from_pixbuf(pix);
-    gtk_container_add(GTK_CONTAINER(frame2), image);       
+    
+    //image = gtk_image_new_from_pixbuf(pix);
+    //gtk_container_add(GTK_CONTAINER(frame2), image);       
     
     pix2 = gdk_pixbuf_new_from_file_at_size (NULL,
 					    1000 / 2,
@@ -205,6 +213,12 @@ int gui_main(int argc,char **argv)
     //Contenu de la  vBox (Box principale)
     
     gtk_box_pack_start(GTK_BOX(vBox), hBox, TRUE, TRUE, 0);
+
+    text_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_view));
+
+    gtk_text_buffer_set_text (text_buffer,
+			      "OCR OP!\0",
+			      7);
     
     //Permet d'afficher tous les widgets contenu dans cette fenetre
     gtk_widget_show_all(window);
@@ -279,9 +293,9 @@ void segmentation()
     width = gdk_pixbuf_get_width(pix2);
     height = gdk_pixbuf_get_height (pix2);
     pix2 = perform_ocr(picture_get_image());
-    pix2 = gdk_pixbuf_scale_simple (picture_get_image(),
-				    gdk_pixbuf_get_width (pix2),
-				    gdk_pixbuf_get_height (pix2),
+    pix2 = gdk_pixbuf_scale_simple (pix2,
+				    width,
+				    height,
 				    GDK_INTERP_NEAREST);
     gtk_image_set_from_pixbuf(GTK_IMAGE(image2), pix2);
 }
