@@ -265,11 +265,21 @@ void segmentation()
 {
     int width, height;
     GdkPixbuf *tmp;
+    wchar_t *wstr = NULL;
+    char *str;
 
     FLAGS->segmentation_output = "segmentation_output.png";
     width = gdk_pixbuf_get_width(pix2);
     height = gdk_pixbuf_get_height (pix2);
-    tmp = perform_ocr(picture_get_image(), NULL);
+    tmp = perform_ocr(picture_get_image(), &wstr);
+    str = wchar_to_char(wstr);
+    wprintf(L"\n\n\n%s\n\n\n", str);
+    
+    gtk_text_buffer_set_text (text_buffer,
+			      str,
+			      -1);
+
+
     picture_save_pixbuf(tmp, FLAGS->segmentation_output);
     pix2 = gdk_pixbuf_scale_simple (tmp,
             width,
@@ -309,4 +319,9 @@ void clean()
 void quit()
 {
     gtk_main_quit();
+}
+
+GtkTextBuffer ** get_text_buffer()
+{
+    return &text_buffer;
 }
