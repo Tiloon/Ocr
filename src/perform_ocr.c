@@ -1,4 +1,5 @@
 #include "perform_ocr.h"
+#include "gui/gui.h"
 
 #define TEXT_BLOCK_SIZE 512
 #define WORD_BLOC_SIZE 64 
