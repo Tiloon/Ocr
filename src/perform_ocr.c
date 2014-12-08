@@ -83,7 +83,7 @@ static int free_vector_word(long double **output,
     return 0;
 }
 
-GdkPixbuf* perform_ocr(GdkPixbuf *origin)
+GdkPixbuf* perform_ocr(GdkPixbuf *origin, wchar_t **ocr_output)
 {
     GdkPixbuf *pixbuf;
     struct s_binarypic *pic, *mask, *letter;
@@ -282,7 +282,10 @@ GdkPixbuf* perform_ocr(GdkPixbuf *origin)
     }
     FREE(blocs);
     FREE(pic);
-    wprintf(L"%ls", output);
+    if(ocr_output == NULL)
+        wprintf(L"%ls", output);
+    else
+        *ocr_output = output;
 
     return pixbuf;
 }

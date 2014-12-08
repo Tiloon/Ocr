@@ -8,6 +8,7 @@ static int segment_and_save(GdkPixbuf *origin);
 int main(int argc, char *argv[])
 {
     setlocale(LC_ALL, "");
+
     FLAGS->gui = 0;
     FLAGS->verbosity = 0;
     FLAGS->filename = NULL;
@@ -76,7 +77,7 @@ static int segment_and_save(GdkPixbuf *origin)
 {
     GdkPixbuf *segmented;
 
-    segmented = perform_ocr(origin);
+    segmented = perform_ocr(origin, NULL);
     if(FLAGS->segmentation_output)
         return !picture_save_pixbuf(segmented, FLAGS->segmentation_output);
 

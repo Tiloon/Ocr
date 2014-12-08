@@ -25,6 +25,6 @@
 #include "neuralNetwork/consts.h"
 #include "improvements/rules.h"
 
-GdkPixbuf * perform_ocr(GdkPixbuf *origin);
+GdkPixbuf * perform_ocr(GdkPixbuf *origin, wchar_t **output);
 
 #endif
