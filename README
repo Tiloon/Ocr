@@ -10,18 +10,41 @@ http://ocrocaml.ovh
 
 ## Installation
 
-In order to install this program, you need gtk developpement libraries and build
-with :
-    make
+In order to install this program, you need gtk 2 developpement libraries and a
+C99 compliant compiler (like clang or gcc).
+build with :
 
-In order to build the neural network, go in ./src/neuralNetwork and type
     make
+    make proper
 
 ## Usage
 
 In order to try OCAML, you should write in your terminal
 
-    ./ocrocaml -i "picfile" -f sample_filter
+    ./ocrocaml -i "picfile"
 
-where "picfile" is the path to the picture you would like to  picture to
-process.
+where "picfile" is the path to the picture you would like to  picture to process.
+
+There is a plenty of option in OCAML in order to have the best recognicion of you text.
+Here are some of them :
+
+OCAML : Optical Character Analysis and Machine Learning
+            (Compiled : Dec  8 2014 12:48:40)
+            usage : ocrocaml [args] -i file     Process file
+   or : ocrocaml -gui               Graphical Interface
+   or : ocrocaml nn [args]          Neural network setup
+   or : ocrocaml help "keyword"     Get help about keyword
+
+Arguments : 
+    -f "filter"[,opt]               Apply filter with options
+    -i "file"                       Load picture "file"
+    -ofilters "file"                Save file after applying filters
+    -osegmentation "file"           Save file after segmentation
+    -rules                          Load a spell checking file
+    -kerning                        Kerning segmentation (slower)
+    -v                              Verbose
+
+Neural network arguments :
+    -learning                       Start the learning process
+    -serialize                      Serialize the NN into serialize
+    -datasetsfiles [files]          Comma separated file list

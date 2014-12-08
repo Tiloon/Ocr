@@ -306,7 +306,8 @@ void start_recognition()
     width = gdk_pixbuf_get_width(pix2);
     height = gdk_pixbuf_get_height (pix2);
 
-    tmp = perform_ocr(picture_get_image(), &wstr);
+    :q
+TMPuu = perform_ocr(picture_get_image(), &wstr);
     strBUFFER = wchar_to_char(wstr);
     gtk_text_buffer_set_text (text_buffer, str, -1);
 

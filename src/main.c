@@ -87,8 +87,8 @@ int segment_and_save(GdkPixbuf *origin)
 static void show_main_help()
 {
     wprintf(L"OCAML : Optical Character Analysis and Machine Learning\n\
-            (Compiled : " __DATE__ " " __TIME__")\n\
-            usage : ocrocaml [args] -i file     Process file\n"
+(Compiled : " __DATE__ " " __TIME__")\n\
+usage : ocrocaml [args] -i file     Process file\n"
 #ifndef NOGUI
             "   or : ocrocaml -gui               Graphical Interface\n"
 #endif
