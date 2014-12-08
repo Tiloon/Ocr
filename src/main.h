@@ -22,8 +22,6 @@
 
 #include "help/help.h"
 
-#include "improvements/dictionary.h"
-
 #ifndef NOGUI
 #include "gui/gui.h"
 #endif
@@ -56,10 +54,10 @@ struct s_flags {
     char verbosity;
     char gui;
     char kerning_segm;
+    char rules;
     char *filename;
     char *filteroutput;
     char *segmentation_output;
-    struct s_dictionary *dictionary;
     // Other flags
 };
 

@@ -121,6 +121,14 @@ static int get_flags(int argc, char *argv[], struct s_flags *flags)
                 return print_flag_error(argv[i], FLAG_ALREADY_SET);
             flags->gui = 1;
         }
+        else if(!strcmp(argv[i], "-rules"))
+        {
+            if(flags->rules)
+                return print_flag_error(argv[i], FLAG_ALREADY_SET);
+            flags->rules = 1;
+            if(flags->verbosity)
+                wprintf(L"" BOLDCYAN "Flags\n" RESET "Rules are set\n");
+        }
         else if(!strcmp(argv[i], "-kerning"))
         {
             if(flags->kerning_segm)
@@ -169,17 +177,6 @@ static int get_flags(int argc, char *argv[], struct s_flags *flags)
             if(i >= argc)
                 return print_flag_error(argv[i - 1], FLAG_MISSING_ARG);
             flags->filteroutput = argv[i];
-        }
-        else if(!strcmp(argv[i], "-dictionary"))
-        {
-            if(flags->dictionary)
-                return print_flag_error(argv[i], FLAG_ALREADY_SET);
-
-            i++;
-            if(i >= argc)
-                return print_flag_error(argv[i - 1], FLAG_MISSING_ARG);
-            if(!(flags->dictionary = load_dictionary(argv[i])))
-                return print_flag_error(argv[i], FLAG_INVALID_ARG);
         }
         else if(!strcmp(argv[i], "-osegmentation"))
         {

@@ -77,14 +77,12 @@ void printResultsVector(long double *vector, size_t size)
 
 long double * nn_clone_output(long double *vector, struct s_network *network)
 {
-    size_t i, max;
+    size_t i;
     long double *copy;
 
-    for(max = 0; (network->charset)[max]; max++);
+    copy = calloc(network->charset_len + 2, sizeof(long double));
 
-    copy = calloc(max + 2, sizeof(long double));
-
-    for(i = 0; i <= max; i++)
+    for(i = 0; i < network->charset_len; i++)
         copy[i] = vector[i];
 
     return copy;

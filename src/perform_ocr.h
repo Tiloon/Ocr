@@ -23,7 +23,7 @@
 #include "neuralNetwork/nn_main.h"
 #include "neuralNetwork/learn_from_pics.h"
 #include "neuralNetwork/consts.h"
-#include "improvements/dictionary.h"
+#include "improvements/rules.h"
 
 GdkPixbuf * perform_ocr(GdkPixbuf *origin);
 

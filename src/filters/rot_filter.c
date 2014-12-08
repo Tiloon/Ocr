@@ -132,7 +132,7 @@ guchar ** tab;
     wt = gdk_pixbuf_get_width(*picture);
    rowstride = wt*bpp;
 tab = calloc(ht, sizeof (guchar *));
-gdk_to_binary(*picture);
+//gdk_to_binary(*picture); 
   for (int i = 0; i < ht; i++)
     tab[i] = calloc(wt, sizeof (guchar));
 for(i = 0; i < ht; i++) //iterate over the height of image.
