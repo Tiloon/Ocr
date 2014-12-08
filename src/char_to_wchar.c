@@ -41,15 +41,15 @@ char* wchar_to_char(wchar_t *wstr)
         {
             str[k] = wstr[i];
             if(wstr[i] == 0xC3A8)
-                str[k] = 70;
+                str[k] = 'e';
             if(wstr[i] == 0xC3A9)
-                str[k] = 70;
+                str[k] = 'e';
             if(wstr[i] == 0xC3A0)
-                str[k] = 70;
+                str[k] = 'a';
             if(wstr[i] == 0xC3A2)
-                str[k] = 70;
+                str[k] = 'a';
             if(wstr[i] > 0x7F)
-                str[k] = 'd';
+                str[k] = 'e';
 
         }
         k++;

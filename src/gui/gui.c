@@ -31,6 +31,8 @@ GError *error2 = NULL;
 GtkWidget* text_view = NULL;
 static GtkWidget *pToolbar = NULL;
 GtkTextBuffer* text_buffer = 0;
+FILE *file = NULL;
+char *strBUFFER = NULL;
 
 int gui_main(int argc,char **argv)
 {
@@ -43,7 +45,7 @@ int gui_main(int argc,char **argv)
     gtk_init(&argc,&argv);
 
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-    gtk_window_set_title(GTK_WINDOW(window), "OCAML");
+    gtk_window_set_title(GTK_WINDOW(window), "Optical Character Analysis and Machine Learning -GUI");
 
     gtk_window_set_default_size(GTK_WINDOW(window), 800, 800);
     gtk_window_set_resizable (GTK_WINDOW(window), TRUE);
@@ -169,7 +171,7 @@ int gui_main(int argc,char **argv)
 
 
     hBox = gtk_hbox_new(TRUE, 0);
-    frame1 = gtk_frame_new("Test1");
+    frame1 = gtk_frame_new("Your picture");
     //frame2 = gtk_frame_new("Test2");
     gtk_box_pack_start(GTK_BOX(hBox), frame1, TRUE, TRUE, 0);
 
@@ -197,8 +199,8 @@ int gui_main(int argc,char **argv)
     text_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_view));
 
     gtk_text_buffer_set_text (text_buffer,
-            "OCR OP!\0",
-            7);
+			      "Welcome ! Please enjoy this awesome OCR !\nIn order to analyse your picture, please clic on the above buttons and improvise and feel free. If you some help, RTFM\n\n    - Gigatank 3000 (http://ocrocaml.ovh)\n\0",
+            -1);
 
     gtk_widget_show_all(window);
     gtk_main();
@@ -259,7 +261,6 @@ void apply_gaussian_filter()
 
 void check_rotation()
 {
-    filter_add("rot_filter");
 }
 
 void segmentation()
@@ -267,14 +268,12 @@ void segmentation()
     int width, height;
     GdkPixbuf *tmp;
     wchar_t *wstr = NULL;
-    char *str;
+    char *str = NULL;
 
     FLAGS->segmentation_output = "segmentation_output.png";
     width = gdk_pixbuf_get_width(pix2);
     height = gdk_pixbuf_get_height (pix2);
     tmp = perform_ocr(picture_get_image(), &wstr);
-    str = wchar_to_char(wstr);
-    wprintf(L"\n\n\n%s\n\n\n", str);
 
     gtk_text_buffer_set_text (text_buffer,
             str,
@@ -298,24 +297,26 @@ void all_filters()
 void start_recognition()
 {
     wchar_t *wstr;
-    char *str;
+
     size_t i;
 
     wstr = NULL;
     perform_ocr(picture_get_image(), &wstr);
-    str = wchar_to_char(wstr);
+    strBUFFER = wchar_to_char(wstr);
 
-    for(i = 0; str[i]; i++);
-    gtk_text_buffer_set_text (text_buffer, str, -1);
+    for(i = 0; strBUFFER[i]; i++);
+    gtk_text_buffer_set_text (text_buffer, strBUFFER, -1);
 }
 
 void save_text()
 {
+    file = fopen("my_recognized_text.txt", "w+");
+    fprintf(file, "%s", strBUFFER);
 }
 void clean()
 {
-    gtk_widget_destroy(image2);
-    gtk_widget_destroy(image);
+    gtk_image_set_from_pixbuf(GTK_IMAGE(image2), NULL);
+    gtk_image_set_from_pixbuf(GTK_IMAGE(image), NULL);
 }
 void quit()
 {
