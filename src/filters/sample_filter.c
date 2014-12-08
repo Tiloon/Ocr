@@ -2,7 +2,7 @@
 #include "sample_filter.h"
 #include "../main.h"
 
-int sample_filter(GdkPixbuf *picture, size_t nb_params, char **params)
+int sample_filter(GdkPixbuf **ppicture, size_t nb_params, char **params)
 {
     int ht, wt;
     int i, j;
@@ -10,6 +10,8 @@ int sample_filter(GdkPixbuf *picture, size_t nb_params, char **params)
     int bpp;
     unsigned int grayscale;
     guchar *pixel;
+    GdkPixbuf *picture;
+    picture = *ppicture;
 
     if(FLAGS->verbosity && nb_params >= 1)
         printf("Filter parameters : \"%s\"\n", params[0]);

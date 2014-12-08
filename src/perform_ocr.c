@@ -215,20 +215,22 @@ GdkPixbuf* perform_ocr(GdkPixbuf *origin, wchar_t **ocr_output)
                     if(FLAGS->rules)
                     {
                         nn_output = nn_clone_output(nn_output,
-                            &(nnetwork.network));
+                                &(nnetwork.network));
                         append_to_vector_word(nn_output,
-                                &current_word_outputs, &word_size, &word_pos);
+                                &current_word_outputs, &word_size,
+                                &word_pos);
 
 
                     }
                     else
                     {
-                        c = get_matching_char(nn_output, &(nnetwork.network));
+                        c = get_matching_char(nn_output,
+                                &(nnetwork.network));
 
                         if(c)
                         {
-                            append_wchar_to_output(c, &output, &output_size,
-                                    &output_pos);
+                            append_wchar_to_output(c, &output,
+                                    &output_size, &output_pos);
                         }
                         else
                         {
@@ -257,8 +259,8 @@ GdkPixbuf* perform_ocr(GdkPixbuf *origin, wchar_t **ocr_output)
                                     return NULL;
                                 }
                             }
-                            free_vector_word(current_word_outputs, &word_size,
-                                    &word_pos);
+                            free_vector_word(current_word_outputs,
+                                    &word_size, &word_pos);
                         }
                         if(append_to_output(L" ", &output, &output_size,
                                     &output_pos) == -1)

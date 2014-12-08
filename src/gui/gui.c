@@ -50,7 +50,8 @@ int gui_main(int argc,char **argv)
     gtk_window_maximize (GTK_WINDOW(window));
     gtk_window_set_position (GTK_WINDOW (window), GTK_WIN_POS_CENTER);
 
-    g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
+    g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit),
+            NULL);
 
     vBox = gtk_vbox_new(FALSE, 0);
     gtk_container_add(GTK_CONTAINER(window), vBox);
@@ -274,10 +275,10 @@ void segmentation()
     tmp = perform_ocr(picture_get_image(), &wstr);
     str = wchar_to_char(wstr);
     wprintf(L"\n\n\n%s\n\n\n", str);
-    
+
     gtk_text_buffer_set_text (text_buffer,
-			      str,
-			      -1);
+            str,
+            -1);
 
 
     picture_save_pixbuf(tmp, FLAGS->segmentation_output);

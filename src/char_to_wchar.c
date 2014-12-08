@@ -36,11 +36,11 @@ char* wchar_to_char(wchar_t *wstr)
                 str[k] = 'i';
             if(wstr[i] == 0xFB02)
                 str[k] = 'l';
-	}
+        }
         else
         {
-	    str[k] = wstr[i];
-	    if(wstr[i] == 0xC3A8)
+            str[k] = wstr[i];
+            if(wstr[i] == 0xC3A8)
                 str[k] = 70;
             if(wstr[i] == 0xC3A9)
                 str[k] = 70;
