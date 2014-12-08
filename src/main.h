@@ -23,6 +23,9 @@
 #include "help/help.h"
 
 #include "improvements/dictionary.h"
+int segment_and_save(GdkPixbuf *origin);
+
+
 
 #ifndef NOGUI
 #include "gui/gui.h"

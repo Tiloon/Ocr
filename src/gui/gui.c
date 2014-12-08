@@ -293,11 +293,19 @@ void segmentation()
     width = gdk_pixbuf_get_width(pix2);
     height = gdk_pixbuf_get_height (pix2);
     pix2 = perform_ocr(picture_get_image());
+    segment_and_save(pix2);
     pix2 = gdk_pixbuf_scale_simple (pix2,
-				    width,
-				    height,
+				    gdk_pixbuf_get_width(pix2),
+				    gdk_pixbuf_get_height(pix2),
 				    GDK_INTERP_NEAREST);
     gtk_image_set_from_pixbuf(GTK_IMAGE(image2), pix2);
+    segment_and_save(pix2);
+    pix2 = gdk_pixbuf_scale_simple (pix2,
+                                    width,
+                                    height,
+                                    GDK_INTERP_NEAREST);
+    gtk_image_set_from_pixbuf(GTK_IMAGE(image2), pix2);
+
 }
 
 void all_filters()

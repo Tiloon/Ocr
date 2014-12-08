@@ -3,7 +3,7 @@
 static void show_main_help(void);
 static int get_flags(int argc, char *argv[], struct s_flags *flags);
 static int print_flag_error(char *flag, int error);
-static int segment_and_save(GdkPixbuf *origin);
+
 
 int main(int argc, char *argv[])
 {
@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-static int segment_and_save(GdkPixbuf *origin)
+int segment_and_save(GdkPixbuf *origin)
 {
     GdkPixbuf *segmented;
 
