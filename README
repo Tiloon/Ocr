@@ -23,28 +23,54 @@ In order to try OCAML, you should write in your terminal
 
     ./ocrocaml -i "picfile"
 
-where "picfile" is the path to the picture you would like to  picture to process.
-
+where "picfile" is the path to the picture you would like to  picture to process. You can add the "-v" flag to set verbosity on.
 There is a plenty of option in OCAML in order to have the best recognicion of you text.
 Here are some of them :
 
-OCAML : Optical Character Analysis and Machine Learning
-            (Compiled : Dec  8 2014 12:48:40)
-            usage : ocrocaml [args] -i file     Process file
-   or : ocrocaml -gui               Graphical Interface
-   or : ocrocaml nn [args]          Neural network setup
-   or : ocrocaml help "keyword"     Get help about keyword
+	-f filter_name,arg1,arg2
 
-Arguments : 
-    -f "filter"[,opt]               Apply filter with options
-    -i "file"                       Load picture "file"
-    -ofilters "file"                Save file after applying filters
-    -osegmentation "file"           Save file after segmentation
-    -rules                          Load a spell checking file
-    -kerning                        Kerning segmentation (slower)
-    -v                              Verbose
+apply filter to the loaded picture
 
-Neural network arguments :
-    -learning                       Start the learning process
+	-osegmentation "file"
+	-ofilters "file"
+
+save a picture in "file" after segmentation process or filter application process.
+
+	-rules
+
+Apply some rules to have more accurate results in the character recognition process.
+
+	-kerning
+
+Apply inteligent segmentation for kerning detection.
+
+### Graphical User Interface
+
+You may want to use the GTK user interface with
+
+	ocrocaml -gui
+
+### Neural Network
+
+
+	./ocrocaml nn [args]          Neural network setup
+You can learn specific fonts from your BMP files. If you want to modify the recognized characters you just have to change the number of patterns in const.h and the error threeshold with the carset with the good orders of characters. Here are the available arguments :
+
+	-learning                       Start the learning process
     -serialize                      Serialize the NN into serialize
     -datasetsfiles [files]          Comma separated file list
+
+For exemple, if you wanna learn 3 fonts (1.bmp - 2.bmp and 3.bmp) and you want to serialize your data, here is the following code to type :
+	./ocrocaml nn -learning -serialize -datasetsfiles 1.bmp,2.bmp,3.bmp
+If the BMP files haven't the good amount of characters, it will stop immediately and will notice it to you. It can learn about 1400 differents characters with an acceptable error threeshold. Enjoy spending your time in front of learning process!
+
+### Help
+
+If you are lost, you can always use :
+
+	ocrocaml help "keyword"
+
+to have help about keyword "keyword" or
+
+	ocrocaml help
+
