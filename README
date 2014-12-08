@@ -61,7 +61,9 @@ You can learn specific fonts from your BMP files. If you want to modify the reco
     -datasetsfiles [files]          Comma separated file list
 
 For exemple, if you wanna learn 3 fonts (1.bmp - 2.bmp and 3.bmp) and you want to serialize your data, here is the following code to type :
+
 	./ocrocaml nn -learning -serialize -datasetsfiles 1.bmp,2.bmp,3.bmp
+
 If the BMP files haven't the good amount of characters, it will stop immediately and will notice it to you. It can learn about 1400 differents characters with an acceptable error threeshold. Enjoy spending your time in front of learning process!
 
 ### Help
