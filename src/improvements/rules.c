@@ -133,7 +133,8 @@ static int is_wspecialchar(wchar_t c)
 wchar_t * match_rule(long double **chars, size_t count,
         struct s_neural_network *network)
 {
-    // Rules for a word : [(),-.:;?i!]?([0-9]*|([A-Z]?[a-zàéèflfiff]*-?))[!(),-.:;?s
+    // Rules for a word :
+    // [(),-.:;?i!]?([0-9]*|([A-Z]?[a-zàéèflfiff]*-?))[!(),-.:;?]?
     wchar_t *word, *word_tmp, c;
     size_t i;
     int is_first_char, is_alpha;

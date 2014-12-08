@@ -67,7 +67,6 @@ static int segmentation_get_chars(GdkPixbuf *origin, long double ***p_vect,
     return 0;
 }
 
-// TODO : s/i/nb_font/
 long double ***load_image_set(char **files, size_t char_count, size_t *i)
 {
     long double ***p_datasets;
@@ -83,7 +82,8 @@ long double ***load_image_set(char **files, size_t char_count, size_t *i)
             return 0;
         }
         p_datasets[*i] = calloc(char_count, sizeof(char*));
-        segmentation_get_chars(picture_get_image(), p_datasets + (*i), char_count);
+        segmentation_get_chars(picture_get_image(), p_datasets + (*i),
+                char_count);
     }
 
     return p_datasets;
@@ -102,7 +102,7 @@ char **parse_file_cslist(char *str)
     list = calloc(1, sizeof(char*));
     list[0] = str;
 
-    for(i = 0; str[i]; i++) // on créé la liste des str qui finissent par ,
+    for(i = 0; str[i]; i++)
         {
             if(str[i] == ',')
             {
@@ -113,7 +113,7 @@ char **parse_file_cslist(char *str)
             }
         }
 
-    list[j + 1] = NULL; // On marque la fin de la liste
+    list[j + 1] = NULL;
 
     return list;
 }

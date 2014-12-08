@@ -22,8 +22,8 @@ int get_in_bounds(struct s_binarypic *pic,
     return pic->pixels[(y + bounds->y) * pic->w + x + bounds->x];
 }
 
-char* vectorize_char(struct s_binarypic *picture, struct s_rectangle *orig) {
-    //printf("%i %i %i %i\n", orig->x, orig->y, orig->w, orig->h);
+char* vectorize_char(struct s_binarypic *picture, struct s_rectangle *orig)
+{
     char *car;
     int A, B, C, D, x, y, imax, jmax;
     size_t dim;
@@ -40,7 +40,7 @@ char* vectorize_char(struct s_binarypic *picture, struct s_rectangle *orig) {
     imax = CHAR_HEIGHT;
     jmax = CHAR_WIDTH;
     dim = max(orig->w, orig->h);
-    /*
+#if 0
 
     // Centering
 
@@ -50,10 +50,10 @@ char* vectorize_char(struct s_binarypic *picture, struct s_rectangle *orig) {
     x = orig->w / (CHAR_WIDTH / 4);
     y = orig->h / (CHAR_HEIGHT / 4);
     if(x < y)
-        jmax = (orig->w * CHAR_WIDTH) / orig->h;
+    jmax = (orig->w * CHAR_WIDTH) / orig->h;
     else if (x > y)
-        i = CHAR_HEIGHT - (imax = (orig->h * CHAR_HEIGHT) / orig->w);
-    */
+    i = CHAR_HEIGHT - (imax = (orig->h * CHAR_HEIGHT) / orig->w);
+#endif
     x_ratio = ((float)(dim - 1)) / ((float) (CHAR_WIDTH - 2)); // -2 = magic
     y_ratio = ((float)(dim - 1)) / ((float) (CHAR_HEIGHT - 2));
 
@@ -72,12 +72,11 @@ char* vectorize_char(struct s_binarypic *picture, struct s_rectangle *orig) {
             D = get_in_bounds(picture, orig, 1 + x, y + 1);
 
             car[i * CHAR_WIDTH + j] = ((A * (1 - x_diff) * (1 - y_diff)
-                    + B * (x_diff) * (1 - y_diff)
-                    + C * (y_diff) * (1 - x_diff)
-                    + D * (x_diff * y_diff)) < 0.5F);
+                        + B * (x_diff) * (1 - y_diff)
+                        + C * (y_diff) * (1 - x_diff)
+                        + D * (x_diff * y_diff)) < 0.5F);
         }
     }
-    //printf("here is a car:");
     //debug_vectorized_char(car); //draw the letter
     return car;
 }

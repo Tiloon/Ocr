@@ -111,8 +111,8 @@ void import_serialization(struct s_network *network)
         text_to_network(file, network, file2);
         fclose(file);
         fclose(file2);
-	for(i = 0; (network->charset)[i]; i++);
-	network->charset_len = i;
+        for(i = 0; (network->charset)[i]; i++);
+        network->charset_len = i;
     }
     else
     {
@@ -120,7 +120,7 @@ void import_serialization(struct s_network *network)
             printf("FILE = NULL\n");
         if(file2 == NULL)
             printf("FILE = NULL\n");
-	network->charset_len = 0;
+        network->charset_len = 0;
     }
 }
 

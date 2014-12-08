@@ -38,17 +38,17 @@ void compute_error(long double ***targets, long double ***outputs,
         int nbPatterns, int nbUnits, long double *error);
 
 void learning_fonts(struct s_network *network, int nb_patterns,
-		    int *nb_iterations, int nb_fonts,
-		    long double ****inputs,
-		    long double ****targets,
-		    long double ****computed, long double *error,
-		    long double eta,
-		    long double alpha, long double errorThreshold);
+        int *nb_iterations, int nb_fonts,
+        long double ****inputs,
+        long double ****targets,
+        long double ****computed, long double *error,
+        long double eta,
+        long double alpha, long double errorThreshold);
 
 void compute_error_fonts(long double ****targets, long double ****outputs,
-			 int nb_patterns, int nb_fonts, long double nb_units,
-			 long double *error);
+        int nb_patterns, int nb_fonts, long double nb_units,
+        long double *error);
 
 void update_learning_rate_momemtum(long double error,
-				   long double *eta, long double *alpha);
+        long double *eta, long double *alpha);
 #endif

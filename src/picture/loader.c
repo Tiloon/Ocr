@@ -39,7 +39,8 @@ int picture_save_pixbuf(GdkPixbuf *pic, const char *filename)
 
     if((filetype == NULL) || (*(++filetype) == 0))
     {
-        fprintf(stderr, "Can't save : extension  error : \"%s\"\n", filename);
+        fprintf(stderr, "Can't save : extension  error : \"%s\"\n",
+                filename);
         return 1;
     }
 

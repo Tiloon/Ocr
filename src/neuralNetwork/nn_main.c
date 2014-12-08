@@ -75,7 +75,8 @@ void printResultsVector(long double *vector, size_t size)
     }
 }
 
-long double * nn_clone_output(long double *vector, struct s_network *network)
+long double * nn_clone_output(long double *vector,
+        struct s_network *network)
 {
     size_t i;
     long double *copy;
@@ -102,11 +103,6 @@ wchar_t get_matching_char(long double *vector, struct s_network *network)
 void print_matching_char(long double *vector, struct s_network *network)
 {
     wprintf(L"%lc", get_matching_char(vector, network));
-
-    /*
-     * print the string in charset
-     */
-    //wprintf(L"%ls", network->charset);
 }
 
 
@@ -162,7 +158,7 @@ int nn_main(int argc, char *argv[])
                 NUMBER_INPUT_NEURONS,
                 NUMBER_HIDDEN_NEURONS,
                 BIAS);
-	//wprintf(L"%ls\n", neural_network.network.charset);
+        //wprintf(L"%ls\n", neural_network.network.charset);
         all_inputs = load_image_set(flags.dataset_files,
                 NUMBER_PATTERNS, &fonts_count);
 
@@ -229,17 +225,8 @@ static int checkFlags(int argc, char *argv[], struct s_flags_nn *flags)
                 flags->dataset_files = parse_file_cslist(argv[i]);
             }
         }
-        /*	else if(!strcmp(argv[i], "-charset"))
-            {
-            if(i + 1 >= argc)
+        else
             return print_flag_error();
-            i++;
-            flags->reference_order = calloc(200, sizeof(char));
-            flags->reference_order = argv[i];
-            }
-            */
-            else
-                return print_flag_error();
     }
     return 0;
 }
@@ -254,7 +241,10 @@ static int print_flag_error(void)
 void print_nn_help(void)
 {
     wprintf(L""
-"    -learning                       Start the learning process\n"
-"    -serialize                      Serialize the NN into serialize\n"
-"    -datasetsfiles [files]          Comma separated file list\n\n");
+            "    -learning                       "
+            "Start the learning process\n"
+            "    -serialize                      "
+            "Serialize the NN into serialize\n"
+            "    -datasetsfiles [files]          "
+            "Comma separated file list\n\n");
 }

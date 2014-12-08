@@ -5,18 +5,12 @@ struct s_point
     unsigned int x, y;
 };
 
-/*
- * detecte le bloc associé au pixel (i, j) et le stock dans le rectangle
- * rect.
- *
- */
 int find_bloc(struct s_binarypic *picture,
         struct s_rectangle *rect, unsigned int i, unsigned int j, char *tab)
 {
     struct s_point *points;
     size_t top;
 
-    // On quitte si on est déjà passé par là ou que c'est pas un pixel noir
     if((!picture->pixels[i * picture->w + j]) &&
             (tab[i * picture->w + j]))
         return 0;
@@ -30,10 +24,8 @@ int find_bloc(struct s_binarypic *picture,
 
     points[0] = (struct s_point) {i, j};
 
-    // Tant que notre stack est pas vide :
     while(top > 0)
     {
-        // Dépile
         top--;
         i = points[top].x;
         j = points[top].y;
@@ -43,12 +35,11 @@ int find_bloc(struct s_binarypic *picture,
         rect->w = max(j, rect->w);
         rect->h = max(i, rect->h);
 
-        // empile
         if((i > 0) &&
                 !tab[(i - 1) * picture->w + j] &&
                 !picture->pixels[(i - 1) * picture->w + j])
         {
-        tab[(i-1) * picture->w + j] = 1;
+            tab[(i-1) * picture->w + j] = 1;
             points = realloc(points, sizeof(struct s_point) * (top + 1));
             points[top] = (struct s_point) {i - 1, j};
             top++;
@@ -57,7 +48,7 @@ int find_bloc(struct s_binarypic *picture,
                 !tab[i * picture->w + j - 1] &&
                 !picture->pixels[i * picture->w + j - 1])
         {
-        tab[i * picture->w + j-1] = 1;
+            tab[i * picture->w + j-1] = 1;
             points = realloc(points, sizeof(struct s_point) * (top + 1));
             points[top] = (struct s_point) {i, j - 1};
             top++;
@@ -66,7 +57,7 @@ int find_bloc(struct s_binarypic *picture,
                 !tab[(i + 1) * picture->w + j] &&
                 !picture->pixels[(i + 1) * picture->w + j])
         {
-        tab[(i+1) * picture->w + j] = 1;
+            tab[(i+1) * picture->w + j] = 1;
             points = realloc(points, sizeof(struct s_point) * (top + 1));
             points[top] = (struct s_point) {i + 1, j};
             top++;
@@ -75,7 +66,7 @@ int find_bloc(struct s_binarypic *picture,
                 !tab[i * picture->w + j + 1] &&
                 !picture->pixels[i * picture->w + j + 1])
         {
-        tab[i * picture->w + j+1] = 1;
+            tab[i * picture->w + j+1] = 1;
             points = realloc(points, sizeof(struct s_point) * (top + 1));
             points[top] = (struct s_point) {i, j + 1};
             top++;
@@ -165,6 +156,7 @@ struct s_rectangle *split_blocs(struct s_binarypic *picture)
     struct s_binarypic *mask;
 
     mask = copy_binarypic(picture);
-    morph_erode(mask->pixels, mask->w, mask->h, mask->w / 120, mask->h / 120);
+    morph_erode(mask->pixels, mask->w, mask->h, mask->w / 120,
+            mask->h / 120);
     return get_blocs(mask);
 }

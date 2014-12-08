@@ -6,7 +6,8 @@
  */
 
 //Gather all the setter methods
-void network_to_text(FILE *file, struct s_network *network, FILE *file2, int is_char_set);
+void network_to_text(FILE *file, struct s_network *network, FILE *file2,
+        int is_char_set);
 //Gather bias and weights setter methods
 void set_specific_data(FILE *file, struct s_network *network);
 //Gather nb_units and nb weights setter methods
@@ -14,7 +15,8 @@ void set_general_data(FILE *file, struct s_network *network);
 
 /* ------------------ GENERAL DATA ------------------
  * Set on the first line 6 integers on this way :
- * nb_inputs_units (+others layers) nb_weights_input_to_hidden (+others layer)
+ * nb_inputs_units (+others layers) nb_weights_input_to_hidden
+ * (+others layer)
  * with a space between each value
  */
 void set_header_file(FILE *file);

@@ -11,7 +11,8 @@
  */
 
 
-void network_to_text(FILE *file, struct s_network *network, FILE *file2, int is_char_set)
+void network_to_text(FILE *file, struct s_network *network, FILE *file2,
+        int is_char_set)
 {
     set_general_data(file, network);
     set_specific_data(file, network);
@@ -23,8 +24,8 @@ void network_to_text(FILE *file, struct s_network *network, FILE *file2, int is_
 void set_charset(FILE *file)
 {
     wchar_t data[] =
-	L"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ#$%&"
-	"\'()*+,-./0123456789:;=?@\[\\]_{|}~aaee\xFB00\xFB01\xFB02\xFB03\xFB04\0";
+        L"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ#$%&"
+        "\'()*+,-./0123456789:;=?@\[\\]_{|}~aaee\0";
     wprintf(data);
     fwprintf(file, data);
 }

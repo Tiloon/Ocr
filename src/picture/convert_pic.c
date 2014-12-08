@@ -21,8 +21,8 @@ static unsigned char * gdk_to_8bit_grayscale(GdkPixbuf *picture)
     {
         grayscale[i] =
             (pixel_tab[i * channels] +
-            pixel_tab[i * channels + 1] +
-            pixel_tab[i * channels + 2]) / 3;
+             pixel_tab[i * channels + 1] +
+             pixel_tab[i * channels + 2]) / 3;
     }
 
     return grayscale;
@@ -61,7 +61,8 @@ static unsigned char get_treshold(long double *histo)
 {
     // Otsu's method implemenation
 
-    long double sum, sumB, wB, wF, mB, mF,  max, between, threshold1, threshold2;
+    long double sum, sumB, wB, wF, mB, mF, max, between, threshold1,
+         threshold2;
     size_t i;
 
     wB = 0;
@@ -143,8 +144,8 @@ int binary_to_gdk(struct s_binarypic *binarypic, GdkPixbuf **picture)
         //while(*picture)
         //    ;
     }
-    if(!(*picture = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, binarypic->w,
-            binarypic->h)))
+    if(!(*picture = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8,
+                    binarypic->w, binarypic->h)))
     {
         LOG_ALLOC_ERR();
         return 1;

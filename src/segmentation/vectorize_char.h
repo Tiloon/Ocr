@@ -8,6 +8,6 @@
 #include "../neuralNetwork/consts.h"
 #include "rectangle.h"
 
-char* vectorize_char(struct s_binarypic *picture, struct s_rectangle *orig); 
+char* vectorize_char(struct s_binarypic *picture, struct s_rectangle *orig);
 
 #endif

@@ -16,7 +16,7 @@ struct s_flags_nn
     char **dataset_files;
     int learning;
     int serialize;
-    char *reference_order; //future wchar_t
+    char *reference_order;
 };
 
 long double * nn_clone_output(long double *vector, struct s_network *network);
