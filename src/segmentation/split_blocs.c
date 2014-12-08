@@ -165,6 +165,6 @@ struct s_rectangle *split_blocs(struct s_binarypic *picture)
     struct s_binarypic *mask;
 
     mask = copy_binarypic(picture);
-    morph_erode(mask->pixels, mask->w, mask->h, mask->w / 150, mask->h / 150);
+    morph_erode(mask->pixels, mask->w, mask->h, mask->w / 100, mask->h / 100);
     return get_blocs(mask);
 }
